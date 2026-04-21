@@ -1,11 +1,12 @@
 import { canBootPlugin } from './bootstrap/guard.js';
 import { AGNATIVE_KEYS } from './config/keys.js';
-import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
+import { GENRE_MAP_LOCALIZED, hasI18nCode, registerI18nToLampa } from './i18n/index.js';
 
 (function () {
   'use strict';
 
   if (!canBootPlugin()) return;
+  registerI18nToLampa();
 
   var {
     STYLE_ID,
@@ -88,7 +89,7 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
       if (!window.Lampa || !Lampa.Storage) return detectLampaLang();
       var v = Lampa.Storage.get(UI_LANG_KEY, 'auto');
       if (!v || v === 'auto') return detectLampaLang();
-      if (I18N[v]) return v;
+      if (hasI18nCode(v)) return v;
       return 'ru';
     } catch (e) { return 'ru'; }
   }
@@ -138,10 +139,13 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
   function controlPanelEnabled() { return storageFlagOn(CONTROL_PANEL_KEY, 'off'); }
 
   function t(key) {
-    var lang = getUiLang();
-    var dict = I18N[lang] || I18N.ru;
-    if (dict[key]) return dict[key];
-    return (I18N.ru[key] || key);
+    try {
+      if (window.Lampa && Lampa.Lang && typeof Lampa.Lang.translate === 'function') {
+        registerI18nToLampa();
+        return Lampa.Lang.translate(key, getUiLang());
+      }
+    } catch (e) { }
+    return key;
   }
 
   function glareEnabled() {
@@ -210,21 +214,21 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
 
   function getFallbackTopnavItems() {
     return [
-      { action: 'main', label: t('nav_main') },
-      { action: 'movie', label: t('nav_movie') },
-      { action: 'tv', label: t('nav_tv') },
-      { action: 'cartoon', label: t('nav_cartoon') },
-      { action: 'anime', label: t('nav_anime') },
-      { action: 'release', label: t('nav_release') },
-      { action: 'releases', label: t('nav_release') },
-      { action: 'collection', label: t('nav_collection') },
-      { action: 'collections', label: t('nav_collection') },
-      { action: 'schedule', label: t('nav_schedule') },
-      { action: 'history', label: t('nav_history') },
-      { action: 'bookmarks', label: t('nav_bookmarks') },
-      { action: 'notice', label: t('nav_notice') },
+      { action: 'main', label: langText('menu_main', t('nav_main')) },
+      { action: 'movie', label: langText('menu_movies', t('nav_movie')) },
+      { action: 'tv', label: langText('menu_tv', t('nav_tv')) },
+      { action: 'cartoon', label: langText('menu_multmovie', t('nav_cartoon')) },
+      { action: 'anime', label: langText('menu_anime', t('nav_anime')) },
+      { action: 'release', label: langText('title_new', t('nav_release')) },
+      { action: 'releases', label: langText('title_new', t('nav_release')) },
+      { action: 'collection', label: langText('menu_collections', t('nav_collection')) },
+      { action: 'collections', label: langText('menu_collections', t('nav_collection')) },
+      { action: 'schedule', label: langText('menu_timeline', t('nav_schedule')) },
+      { action: 'history', label: langText('menu_history', t('nav_history')) },
+      { action: 'bookmarks', label: langText('menu_bookmark', t('nav_bookmarks')) },
+      { action: 'notice', label: langText('title_notice', t('nav_notice')) },
       { action: 'feed', label: t('nav_feed') },
-      { action: 'console', label: t('nav_console') }
+      { action: 'console', label: langText('menu_torrents', t('nav_console')) }
     ];
   }
 
@@ -428,7 +432,7 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
         param: {
           name: ENABLE_KEY,
           type: 'select',
-          values: { on: t('val_on'), off: t('val_off') },
+          values: { on: langText('extensions_enable', t('val_on')), off: langText('extensions_disable', t('val_off')) },
           default: 'off'
         },
         field: {
@@ -456,14 +460,14 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
           type: 'select',
           values: {
             auto: t('val_auto'),
-            ru: t('val_ru'),
-            en: t('val_en'),
-            uk: t('val_uk')
+            ru: langText('filter_lang_ru', t('val_ru')),
+            en: langText('filter_lang_en', t('val_en')),
+            uk: langText('filter_lang_uk', t('val_uk'))
           },
           default: 'auto'
         },
         field: {
-          name: t('set_ui_lang_name'),
+          name: langText('settings_interface_lang', t('set_ui_lang_name')),
           description: t('set_ui_lang_desc')
         },
         onChange: function () {
@@ -478,9 +482,9 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
           type: 'select',
           values: {
             auto: t('val_auto'),
-            ru: t('val_ru'),
-            en: t('val_en'),
-            uk: t('val_uk')
+            ru: langText('filter_lang_ru', t('val_ru')),
+            en: langText('filter_lang_en', t('val_en')),
+            uk: langText('filter_lang_uk', t('val_uk'))
           },
           default: 'auto'
         },
@@ -545,7 +549,7 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
         param: {
           name: BACKDROP_KEY,
           type: 'select',
-          values: { on: t('val_on'), off: t('val_off') },
+          values: { on: langText('extensions_enable', t('val_on')), off: langText('extensions_disable', t('val_off')) },
           default: 'on'
         },
         field: {
@@ -564,7 +568,7 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
         param: {
           name: BADGE_KEY,
           type: 'select',
-          values: { on: t('val_on'), off: t('val_off') },
+          values: { on: langText('extensions_enable', t('val_on')), off: langText('extensions_disable', t('val_off')) },
           default: 'on'
         },
         field: {
@@ -585,11 +589,11 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
         param: {
           name: RATING_KEY,
           type: 'select',
-          values: { on: t('val_on'), off: t('val_off') },
+          values: { on: langText('extensions_enable', t('val_on')), off: langText('extensions_disable', t('val_off')) },
           default: 'off'
         },
         field: {
-          name: t('set_rating_name'),
+          name: langText('title_rating', t('set_rating_name')),
           description: t('set_rating_desc')
         },
         onChange: function () {
@@ -623,7 +627,7 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
         param: {
           name: GLARE_KEY,
           type: 'select',
-          values: { on: t('val_on'), off: t('val_off') },
+          values: { on: langText('extensions_enable', t('val_on')), off: langText('extensions_disable', t('val_off')) },
           default: 'on'
         },
         field: {
@@ -640,7 +644,7 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
         param: {
           name: CLOCK_SECONDS_KEY,
           type: 'select',
-          values: { on: t('val_on'), off: t('val_off') },
+          values: { on: langText('extensions_enable', t('val_on')), off: langText('extensions_disable', t('val_off')) },
           default: 'off'
         },
         field: {
@@ -657,7 +661,7 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
         param: {
           name: CONTROL_PANEL_KEY,
           type: 'select',
-          values: { on: t('val_on'), off: t('val_off') },
+          values: { on: langText('extensions_enable', t('val_on')), off: langText('extensions_disable', t('val_off')) },
           default: 'off'
         },
         field: {
@@ -706,7 +710,7 @@ import { I18N, GENRE_MAP_LOCALIZED } from './i18n/index.js';
           param: {
             name: 'agnative_topnav_item_' + item.action,
             type: 'select',
-            values: { on: t('val_add'), off: t('val_hide') },
+            values: { on: langText('settings_add', t('val_add')), off: t('val_hide') },
             default: getStoredTopnavActions().indexOf(item.action) > -1 ? 'on' : 'off'
           },
           field: {

@@ -1,0 +1,78 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version tag (example: v0.4.0)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Mark release as pre-release'
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate version format
+        run: |
+          VERSION='${{ github.event.inputs.version }}'
+          echo "$VERSION" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build plugin
+        run: npm run build
+
+      - name: Generate checksums
+        run: |
+          mkdir -p release
+          sha256sum release/appletv_agnative.js > release/checksums.txt
+
+      - name: Ensure tag does not already exist
+        run: |
+          TAG='${{ github.event.inputs.version }}'
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists"
+            exit 1
+          fi
+
+      - name: Create and push tag
+        run: |
+          TAG='${{ github.event.inputs.version }}'
+          git tag "$TAG"
+          git push origin "$TAG"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: ${{ github.event.inputs.version }}
+          generate_release_notes: true
+          prerelease: ${{ github.event.inputs.prerelease }}
+          files: |
+            release/appletv_agnative.js
+            release/checksums.txt

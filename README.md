@@ -8,7 +8,9 @@ A Lampa plugin that reshapes top navigation, content cards, and selected UI part
 - `release/appletv_agnative.js` - compiled artifact
 - `appletv_agnative.js` - root-level copy of the build artifact (for compatibility)
 - `.github/workflows/ci-build.yml` - CI build for `main` and pull requests
-- `.github/workflows/pages.yml` - GitHub Pages deployment from `gh-page`
+- `.github/workflows/release.yml` - manual release workflow
+- `.github/workflows/publish-pages-from-release.yml` - Pages deployment from published release
+- `docs/REPOSITORY_OWNER_RELEASE_GUIDE.md` - repository owner release playbook
 
 ## Branch Strategy
 
@@ -21,19 +23,7 @@ All feature work, fixes, and refactoring should be done here through pull reques
 What runs automatically:
 - `Build` workflow (`npm ci` + `npm run build`)
 
-### `gh-page`
-
-Publishing branch for GitHub Pages.
-
-On every push to this branch, `Deploy GitHub Pages` does the following:
-1. installs dependencies
-2. builds the plugin
-3. prepares `pages-dist`
-4. publishes via GitHub Pages
-
-Important:
-- Do not develop features directly in `gh-page`
-- Treat `gh-page` as a publishing branch only
+No `gh-page` branch is required.
 
 ## Local Development
 
@@ -68,17 +58,7 @@ After `npm run build`:
 - `release/appletv_agnative.js` is updated
 - root `appletv_agnative.js` is synchronized automatically
 
-### Recommended Change Cycle
-
-1. Create a feature branch from `main`
-2. Implement changes in `src/`
-3. Run `npm run build`
-4. Verify generated artifacts were updated
-5. Commit source + build artifacts
-
-## Pull Request Flow to Main Repository
-
-### If You Work in the Main Repository
+## Pull Request Flow
 
 1. Update local `main`
 ```bash
@@ -109,34 +89,18 @@ git push -u origin feature/<short-name>
 
 6. Open PR: `feature/<short-name>` -> `main`
 
-### If You Work from a Fork
+## Release and Pages Publishing
 
-1. Add `upstream` (main repository)
-```bash
-git remote add upstream <main-repo-url>
-```
+Release publishing is batched and manual.
 
-2. Sync with upstream `main`
-```bash
-git fetch upstream
-git checkout main
-git rebase upstream/main
-```
+1. Merge selected PRs to `main`.
+2. Run `Create Release` workflow from GitHub Actions.
+3. Workflow creates tag + GitHub Release with assets.
+4. `Publish Pages from Release` is triggered automatically and updates GitHub Pages.
 
-3. Continue with the same feature branch flow, then open PR into `upstream/main`
+For maintainer steps and branch governance, see:
 
-## Updating GitHub Pages After Merge to `main`
-
-After PR merge to `main`, move changes to `gh-page` and push:
-
-```bash
-git checkout gh-page
-git pull origin gh-page
-git merge origin/main
-git push origin gh-page
-```
-
-This triggers `Deploy GitHub Pages`.
+- `docs/REPOSITORY_OWNER_RELEASE_GUIDE.md`
 
 ## Quality Notes
 

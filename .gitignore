@@ -1,3 +1,5 @@
+AGENTS.md
+.codex
 node_modules/
 release/*.map
 .DS_Store
