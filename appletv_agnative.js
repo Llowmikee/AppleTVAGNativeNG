@@ -50,7 +50,7 @@
     set_main_title: 'Основные настройки',
     set_enable_name: 'AppleTV AgNative',
     set_enable_desc: 'Включает и выключает плагин',
-    set_glare_name: 'Наклон veoveo.ru', set_glare_desc: 'от arabian_q',
+    set_glare_name: 'Анимация Apple TV Card (для мыши)', set_glare_desc: 'от marcreichel',
     set_topnav_name: 'Пункты Topnav', set_topnav_desc: 'Меню слева',
     set_topnav_title: 'Пункты верхнего меню',
     set_topnav_item_desc: 'Пункт menu_list: ',
@@ -97,7 +97,7 @@
     set_main_title: 'Main settings',
     set_enable_name: 'AppleTV AgNative',
     set_enable_desc: 'Enables and disables the plugin',
-    set_glare_name: 'Tilt veoveo.ru', set_glare_desc: 'by arabian_q',
+    set_glare_name: 'Apple TV Card Animation (mouse)', set_glare_desc: 'by marcreichel',
     set_topnav_name: 'Topnav items', set_topnav_desc: 'Left menu',
     set_topnav_title: 'Top navigation items',
     set_topnav_item_desc: 'menu_list item: ',
@@ -144,7 +144,7 @@
     set_main_title: 'Основні налаштування',
     set_enable_name: 'AppleTV AgNative',
     set_enable_desc: 'Вмикає та вимикає плагін',
-    set_glare_name: 'Нахил veoveo.ru', set_glare_desc: 'від arabian_q',
+    set_glare_name: 'Анімація Apple TV Card (для миші)', set_glare_desc: 'від marcreichel',
     set_topnav_name: 'Пункти Topnav', set_topnav_desc: 'Меню ліворуч',
     set_topnav_title: 'Пункти верхнього меню',
     set_topnav_item_desc: 'Пункт menu_list: ',
@@ -485,8 +485,12 @@
 
     function syncGlareClass() {
       if (!document.body) return;
-      if (glareEnabled() && pluginEnabled()) document.body.classList.add(GLARE_CLASS);
-      else document.body.classList.remove(GLARE_CLASS);
+      if (glareEnabled() && pluginEnabled()) {
+        document.body.classList.add(GLARE_CLASS);
+      } else {
+        document.body.classList.remove(GLARE_CLASS);
+        cleanupAllCards();
+      }
     }
 
     function syncFontSize() {
@@ -1131,14 +1135,6 @@
         '  background-image: none !important;',
         '  box-shadow: none !important;',
         '}',
-        'body.' + BODY_CLASS + ' .activity.activity--active .full-start__background,',
-        'body.' + BODY_CLASS + ' .full-start__background {',
-        '  mask-image: none !important;',
-        '  -webkit-mask-image: none !important;',
-        '  filter: none !important;',
-        '  animation: none !important;',
-        '  transform: none !important;',
-        '}',
         'body.' + BODY_CLASS + ' .full-start__status,',
         'body.' + BODY_CLASS + ' .full-start__reactions,',
         'body.' + BODY_CLASS + ' .full-start-new__reactions {',
@@ -1238,8 +1234,8 @@
         'body.' + BODY_CLASS + ' .menu__list {',
         '  border-radius: 1.35em',
         '}',
-        'body.' + BODY_CLASS + ' .layer--wheight {',
-        '  max-height: 90vh',
+        'body.' + BODY_CLASS + ' .settings__body {',
+        '  min-height: 0;',
         '}',
         'body.' + BODY_CLASS + ' .settings-param,',
         'body.' + BODY_CLASS + ' .settings-folder,',
@@ -1438,7 +1434,8 @@
         'body.' + BODY_CLASS + ' .items-cards { padding-left:1.05em !important; padding-right:1.05em !important; gap:.62em !important; }',
         'body.' + BODY_CLASS + ' .items-line__body { padding-left:1.15em !important; }',
         'body.' + BODY_CLASS + ' .items-line__title { font-size:1em !important; line-height:1.2 !important; font-weight:700 !important; }',
-        'body.' + BODY_CLASS + ' .scroll__body.mapping--line { display:flex !important; gap:1.5em !important; align-items:flex-start !important; }',
+        'body.' + BODY_CLASS + ' .scroll__body.mapping--line { display:flex !important; gap:1.5em !important; }',
+        'body.' + BODY_CLASS + ' .scroll__body.mapping--line .full-person { padding: 1em !important; }',
         'body.' + BODY_CLASS + ' .mapping--grid { display:grid !important; grid-template-columns:repeat(5, minmax(0, 1fr)) !important; gap:.52em !important; align-items:start !important; }',
         '@media (max-width: 1279px) { body.' + BODY_CLASS + ' .mapping--grid { grid-template-columns:repeat(4, minmax(0, 1fr)) !important; } }',
         '@media (max-width: 767px) { body.' + BODY_CLASS + ' .mapping--grid { grid-template-columns:repeat(3, minmax(0, 1fr)) !important; } }',
@@ -1473,11 +1470,17 @@
         'body.' + BODY_CLASS + ' .card-episode.hover .full-episode__img { filter: saturate(1.02) brightness(1.01) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 10px 24px rgba(0,0,0,.16) !important; }',
         'body.' + BODY_CLASS + ':not(.' + GLARE_CLASS + ') .card-episode.focus .full-episode { transform: translateY(-.08em) scale(1.06) !important; }',
         'body.' + BODY_CLASS + ':not(.' + GLARE_CLASS + ') .card-episode.hover .full-episode { transform: translateY(-.04em) scale(1.03) !important; }',
-        'body.' + GLARE_CLASS + ' .card, body.' + GLARE_CLASS + ' .card-episode, body.' + GLARE_CLASS + ' .full-start-new__poster { will-change: transform; transform-style: preserve-3d; }',
-        'body.' + GLARE_CLASS + ' .card__view, body.' + GLARE_CLASS + ' .full-episode__img, body.' + GLARE_CLASS + ' .full-start-new__poster { position: relative; overflow: hidden; }',
-        'body.' + GLARE_CLASS + ' .card .card__view::after, body.' + GLARE_CLASS + ' .card-episode .full-episode__img::after, body.' + GLARE_CLASS + ' .full-start-new__poster::after { content:"" !important; display:block !important; position:absolute; inset:-10%; border-radius:inherit; background: radial-gradient(ellipse at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,.20) 0%, rgba(255,255,255,.16) 12%, rgba(255,255,255,.10) 26%, rgba(255,255,255,.05) 42%, rgba(255,255,255,.02) 58%, rgba(255,255,255,0) 78%) !important; opacity:0; filter: blur(18px); transition: opacity .22s ease, transform .22s ease; pointer-events:none; z-index:8; mix-blend-mode: screen; }',
-        'body.' + GLARE_CLASS + ' .card.focus .card__view::after, body.' + GLARE_CLASS + ' .card.hover .card__view::after, body.' + GLARE_CLASS + ' .card-episode.focus .full-episode__img::after, body.' + GLARE_CLASS + ' .card-episode.hover .full-episode__img::after, body.' + GLARE_CLASS + ' .full-start-new__poster.focus::after, body.' + GLARE_CLASS + ' .full-start-new__poster.hover::after { opacity: 1 !important; }',
-        'body.' + GLARE_CLASS + ' .card.focus .card__view, body.' + GLARE_CLASS + ' .card.hover .card__view, body.' + GLARE_CLASS + ' .card-episode.focus .full-episode, body.' + GLARE_CLASS + ' .card-episode.hover .full-episode, body.' + GLARE_CLASS + ' .full-start-new__poster.focus, body.' + GLARE_CLASS + ' .full-start-new__poster.hover { transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.055) translateY(-.06em) !important; transition: transform .08s linear, box-shadow .24s ease, filter .24s ease !important; }',
+        'body.' + GLARE_CLASS + ' .card, body.' + GLARE_CLASS + ' .card-episode { perspective-origin:50% 50%; transform-style:preserve-3d; }',
+        'body.' + GLARE_CLASS + ' .card__view, body.' + GLARE_CLASS + ' .full-episode__img, body.' + GLARE_CLASS + ' .full-start-new__poster { position:relative; overflow:hidden; transform-origin:50% 50%; transition:transform 50ms ease-in-out, box-shadow .2s ease !important; }',
+        'body.' + GLARE_CLASS + ' .card .card__view, body.' + GLARE_CLASS + ' .card-episode .full-episode__img, body.' + GLARE_CLASS + ' .full-start-new__poster { transform: var(--atv-transform, none) !important; }',
+        'body.' + GLARE_CLASS + ' .card.focus .card__view { transform: var(--atv-transform, translateY(-.08em) scale(1.06)) !important; }',
+        'body.' + GLARE_CLASS + ' .card.hover .card__view { transform: var(--atv-transform, translateY(-.04em) scale(1.03)) !important; }',
+        'body.' + GLARE_CLASS + ' .card-episode.focus .full-episode__img { transform: var(--atv-transform, translateY(-.08em) scale(1.06)) !important; }',
+        'body.' + GLARE_CLASS + ' .card-episode.hover .full-episode__img { transform: var(--atv-transform, translateY(-.04em) scale(1.03)) !important; }',
+        'body.' + GLARE_CLASS + ' .full-start-new__poster.focus, body.' + GLARE_CLASS + ' .full-start-new__poster.hover { transform: var(--atv-transform, translateY(-.08em) scale(1.06)) !important; }',
+        'body.' + GLARE_CLASS + ' .card.hover .card__view, body.' + GLARE_CLASS + ' .card-episode.hover .full-episode__img, body.' + GLARE_CLASS + ' .full-start-new__poster.hover { box-shadow:0 1.5rem 2rem .25rem rgba(0,0,0,.31) !important; }',
+        'body.' + GLARE_CLASS + ' .atv-reflection { position:absolute; top:0; left:0; pointer-events:none; background-image:radial-gradient(rgba(255,255,255,.47), transparent 70%); border-radius:50%; z-index:10; }',
+        'body.' + GLARE_CLASS + ' .atv-shadow { position:absolute; top:0; right:0; bottom:0; left:0; pointer-events:none; background:rgba(0,0,0,.13); opacity:0; z-index:9; }',
         'body.' + BODY_CLASS + ' .card__vote, body.' + BODY_CLASS + ' .card__quality, body.' + BODY_CLASS + ' .card__type, body.' + BODY_CLASS + ' .card__promo-text, body.' + BODY_CLASS + ' .card__promo-title, body.' + BODY_CLASS + ' .full-person__photo, body.' + BODY_CLASS + ' .nfx-card-overlay__match { display:none !important; }',
         'body.' + BODY_CLASS + ' .card__title, body.' + BODY_CLASS + ' .card__age { display:none !important; }',
         'body.' + BODY_CLASS + ' .nfx-card-overlay { position:absolute; left:0; right:0; bottom:0; z-index:0; display:block !important; opacity:1 !important; visibility:visible !important; border-radius:0 0 1.35em 1.35em !important; background:linear-gradient(0deg, rgba(6,8,14,.88) 0%, rgba(6,8,14,.56) 38%, rgba(6,8,14,.16) 68%, rgba(6,8,14,0) 100%) !important; padding:2.15em 1.02em .92em !important; transform: translateZ(14px); transition: transform .28s cubic-bezier(.22,.61,.36,1), opacity .24s ease; pointer-events:none; }',
@@ -2451,84 +2454,212 @@
       }).observe(document.body, { childList: true, subtree: true });
     }
 
+    var GLARE_CARD_SEL = '.card, .card-episode, .full-start-new__poster';
+
+    function getAtvViewEl(container) {
+      if (!container) return null;
+      if (container.matches && container.matches('.card-episode')) {
+        return container.querySelector('.full-episode__img') || container.querySelector('.full-episode') || container;
+      }
+      if (container.matches && container.matches('.full-start-new__poster')) return container;
+      return container.querySelector('.card__view') || container;
+    }
+
+    function cleanupCard(container) {
+      container.classList.remove('hover');
+      container.style.removeProperty('perspective');
+      var view = getAtvViewEl(container);
+      if (view) {
+        view.style.removeProperty('--atv-transform');
+        var refl = view.querySelector('.atv-reflection');
+        if (refl) refl.parentNode.removeChild(refl);
+        var shad = view.querySelector('.atv-shadow');
+        if (shad) shad.parentNode.removeChild(shad);
+      }
+    }
+
+    function cleanupAllCards() {
+      qsa(GLARE_CARD_SEL).forEach(cleanupCard);
+    }
+
     function initGlareRuntime() {
       if (window.__AGNATIVE_TOPNAV_GLARE_RUNTIME__) return;
       window.__AGNATIVE_TOPNAV_GLARE_RUNTIME__ = true;
       if (!document.body) return;
 
-      var GLARE_SEL = '.card, .card-episode, .full-start-new__poster';
-      var activeCard = null;
-      var activeRect = null;
+      var glareOn = glareEnabled();
+
+      // кэш активной карточки — обновляется только при смене карточки или resize/scroll
+      var activeContainer = null;
+      var activeView = null;
+      var activeW = 1;
+      var activeH = 1;
+      var activeRectLeft = 0;
+      var activeRectTop = 0;
+      var activeReflection = null;
+      var activeShadow = null;
       var lastClientX = 0;
       var lastClientY = 0;
-      var rafScheduled = false;
-      var glareOn = glareEnabled();
+      var rafId = null;
+
+      // matchMedia проверяется один раз, не на каждый mousemove
+      var reduced = false;
+      var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+      if (mq) {
+        reduced = mq.matches;
+        if (mq.addEventListener) mq.addEventListener('change', function (e) { reduced = e.matches; });
+        else if (mq.addListener) mq.addListener(function (e) { reduced = e.matches; });
+      }
 
       if (window.Lampa && Lampa.Storage && typeof Lampa.Storage.listener === 'function' && Lampa.Storage.listener.follow) {
         try {
           Lampa.Storage.listener.follow('change', function (e) {
-            if (e && e.name === GLARE_KEY) glareOn = glareEnabled();
+            if (e && e.name === GLARE_KEY) {
+              glareOn = glareEnabled();
+              if (!glareOn) {
+                if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+                activeContainer = null; activeView = null;
+                activeReflection = null; activeShadow = null;
+                cleanupAllCards();
+              }
+            }
           });
         } catch (err) { }
       }
 
-      function flushGlare() {
-        rafScheduled = false;
-        if (!activeCard || !activeRect) return;
-        var x = lastClientX - activeRect.left;
-        var y = lastClientY - activeRect.top;
-        var w = activeRect.width || 1;
-        var h = activeRect.height || 1;
-        var xPct = (x / w) * 2 - 1;
-        var yPct = (y / h) * 2 - 1;
-        var s = activeCard.style;
-        s.setProperty('--gx', x + 'px');
-        s.setProperty('--gy', y + 'px');
-        s.setProperty('--rx', (yPct * -7) + 'deg');
-        s.setProperty('--ry', (xPct * 7) + 'deg');
+      function getContainer(target) {
+        return target && target.closest ? target.closest(GLARE_CARD_SEL) : null;
       }
 
-      function setActiveCard(card) {
-        if (card === activeCard) return;
-        activeCard = card;
-        activeRect = card ? card.getBoundingClientRect() : null;
+      // читаем геометрию карточки один раз при входе/resize/scroll
+      function cacheRect() {
+        if (!activeContainer) return;
+        var rect = activeContainer.getBoundingClientRect();
+        activeRectLeft = rect.left;
+        activeRectTop = rect.top;
+        activeW = activeContainer.clientWidth || 1;
+        activeH = activeContainer.clientHeight || 1;
+      }
+
+      // все DOM-записи только внутри RAF — не более одного раза за кадр
+      function rafFlush() {
+        rafId = null;
+        if (!activeContainer || !activeView) return;
+
+        var posX = lastClientX - activeRectLeft;
+        var posY = lastClientY - activeRectTop;
+
+        if (!reduced) {
+          var angleY = (activeW / 2 - posX) / activeW * 10;
+          var angleX = (activeH / 2 - posY) * -1 / activeH * 10;
+          var tX = (activeW / 2 - posX) * -1 / activeW * 10;
+          var tY = (activeH / 2 - posY) * -1 / activeH * 10;
+          activeView.style.setProperty('--atv-transform',
+            'translateZ(20px) rotateY(' + angleY.toFixed(2) + 'deg) rotateX(' + angleX.toFixed(2) + 'deg) translateX(' + tX.toFixed(1) + 'px) translateY(' + tY.toFixed(1) + 'px)');
+
+          if (activeReflection) {
+            activeReflection.style.transform = 'translateY(' + (posY - activeH / 2) + 'px) translateX(' + (activeW * 0.1 + posX * 0.8) + 'px)';
+          }
+
+          if (activeShadow) {
+            if (posY < activeH / 3) {
+              var op = (1 / (activeH / 3)) * ((activeH / 3) - posY);
+              activeShadow.style.opacity = op.toString();
+              activeShadow.style.boxShadow = 'inset 0 ' + (op * -1) + 'em .4em -.5em rgba(0,0,0,' + Math.min(op, 0.35) + ')';
+            } else {
+              activeShadow.style.opacity = '0';
+              activeShadow.style.boxShadow = '';
+            }
+          }
+        }
+      }
+
+      function scheduleRAF() {
+        if (!rafId) rafId = requestAnimationFrame(rafFlush);
+      }
+
+      function enterCard(container, clientX, clientY) {
+        activeContainer = container;
+        activeView = getAtvViewEl(container);
+        if (!activeView) { activeContainer = null; return; }
+
+        cacheRect();
+        container.style.perspective = (Math.max(activeW, activeH) * 2.5) + 'px';
+        container.classList.add('hover');
+
+        if (!reduced) {
+          // создаём элементы один раз, кэшируем ссылки
+          activeReflection = activeView.querySelector('.atv-reflection');
+          if (!activeReflection) {
+            activeReflection = document.createElement('span');
+            activeReflection.className = 'atv-reflection';
+            activeView.appendChild(activeReflection);
+          }
+          var size = Math.max(activeW, activeH) * 1.5;
+          activeReflection.style.width = size + 'px';
+          activeReflection.style.height = size + 'px';
+          activeReflection.style.margin = (-size / 2) + 'px 0 0 ' + (-size / 2) + 'px';
+
+          activeShadow = activeView.querySelector('.atv-shadow');
+          if (!activeShadow) {
+            activeShadow = document.createElement('span');
+            activeShadow.className = 'atv-shadow';
+            activeView.appendChild(activeShadow);
+          }
+        } else {
+          activeReflection = null;
+          activeShadow = null;
+        }
+
+        lastClientX = clientX;
+        lastClientY = clientY;
+        scheduleRAF();
       }
 
       document.body.addEventListener('mouseover', function (e) {
-        if (!glareOn) { activeCard = null; activeRect = null; return; }
-        var card = e.target.closest ? e.target.closest(GLARE_SEL) : null;
-        setActiveCard(card);
+        if (!glareOn) return;
+        var container = getContainer(e.target);
+        if (!container || container === activeContainer) return;
+        if (activeContainer && activeContainer !== container) {
+          if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+          cleanupCard(activeContainer);
+          activeContainer = null; activeView = null;
+          activeReflection = null; activeShadow = null;
+        }
+        enterCard(container, e.clientX, e.clientY);
       });
 
       document.body.addEventListener('mousemove', function (e) {
-        if (!activeCard) return;
+        if (!glareOn || !activeContainer) return;
         lastClientX = e.clientX;
         lastClientY = e.clientY;
-        if (!rafScheduled) {
-          rafScheduled = true;
-          requestAnimationFrame(flushGlare);
-        }
-      });
-
-      window.addEventListener('scroll', function () {
-        if (activeCard) activeRect = activeCard.getBoundingClientRect();
-      }, true);
-
-      window.addEventListener('resize', function () {
-        if (activeCard) activeRect = activeCard.getBoundingClientRect();
+        scheduleRAF();
       });
 
       document.body.addEventListener('mouseout', function (e) {
-        var card = e.target.closest ? e.target.closest(GLARE_SEL) : null;
-        if (!card) return;
+        var container = getContainer(e.target);
+        if (!container || container !== activeContainer) return;
         var related = e.relatedTarget;
-        if (related && card.contains(related)) return;
-        var s = card.style;
-        s.setProperty('--rx', '0deg');
-        s.setProperty('--ry', '0deg');
-        s.setProperty('--gx', '50%');
-        s.setProperty('--gy', '50%');
-        if (activeCard === card) { activeCard = null; activeRect = null; }
+        if (related && container.contains(related)) return;
+        if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+        cleanupCard(container);
+        activeContainer = null; activeView = null;
+        activeReflection = null; activeShadow = null;
+      });
+
+      // при scroll/resize пересчитываем геометрию (не DOM-записи)
+      window.addEventListener('scroll', cacheRect, true);
+      window.addEventListener('resize', function () {
+        cacheRect();
+        if (activeContainer) {
+          activeContainer.style.perspective = (Math.max(activeW, activeH) * 2.5) + 'px';
+          if (activeReflection) {
+            var size = Math.max(activeW, activeH) * 1.5;
+            activeReflection.style.width = size + 'px';
+            activeReflection.style.height = size + 'px';
+            activeReflection.style.margin = (-size / 2) + 'px 0 0 ' + (-size / 2) + 'px';
+          }
+        }
       });
     }
 

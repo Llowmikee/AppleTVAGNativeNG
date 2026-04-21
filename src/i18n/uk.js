@@ -9,7 +9,7 @@ export const uk = {
   set_main_title: 'Основні налаштування',
   set_enable_name: 'AppleTV AgNative',
   set_enable_desc: 'Вмикає та вимикає плагін',
-  set_glare_name: 'Нахил veoveo.ru', set_glare_desc: 'від arabian_q',
+  set_glare_name: 'Анімація Apple TV Card (для миші)', set_glare_desc: 'від marcreichel',
   set_topnav_name: 'Пункти Topnav', set_topnav_desc: 'Меню ліворуч',
   set_topnav_title: 'Пункти верхнього меню',
   set_topnav_item_desc: 'Пункт menu_list: ',
