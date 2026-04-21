@@ -11,22 +11,197 @@
   var ENABLE_KEY = 'appletv_agnative_topnav_enabled';
   var GLARE_KEY = 'appletv_agnative_topnav_glare_enabled';
   var TOPNAV_ITEMS_KEY = 'appletv_agnative_topnav_items';
-  var ITEMS_LINE_FONT_KEY = 'appletv_agnative_items_line_font_size';
   var LOGO_LANG_KEY = 'appletv_agnative_logo_lang';
+  var FONT_SIZE_KEY = 'appletv_agnative_font_size';
+  var UI_LANG_KEY = 'appletv_agnative_ui_lang';
+  var BACKDROP_KEY = 'appletv_agnative_backdrop';
   var BADGE_KEY = 'appletv_agnative_badge';
   var RATING_KEY = 'appletv_agnative_rating';
+  var RATING_STYLE_KEY = 'appletv_agnative_rating_style';
+  var CATEGORY_SIZE_KEY = 'appletv_agnative_category_size';
+  var CLOCK_SECONDS_KEY = 'appletv_agnative_clock_seconds';
+  var CONTROL_PANEL_KEY = 'appletv_agnative_control_panel';
   var SETTINGS_COMPONENT = 'agnative';
   var TOPNAV_SETTINGS_COMPONENT = 'agnative_topnav';
-  var ABOUT_SETTINGS_COMPONENT = 'agnative_about';
   var GLARE_CLASS = 'appletv-agnative-topnav-glare';
-  var INPUT_KEYS_CLASS = 'appletv-agnative-input-keys';
-  var INPUT_MOUSE_CLASS = 'appletv-agnative-input-mouse';
-  var CONTRIBUTORS = ['nartes_ua', 'GwynnBleiidd', 'ManiacWithAxe'];
+  var FONT_SIZE_ATTR = 'data-agnative-font';
+  var BACKDROP_ATTR = 'data-agnative-backdrop';
+  var BADGE_ATTR = 'data-agnative-badge';
+  var RATING_ATTR = 'data-agnative-rating';
+  var RATING_STYLE_ATTR = 'data-agnative-rating-style';
+  var CATEGORY_SIZE_ATTR = 'data-agnative-category';
+
+  var I18N = {
+    ru: {
+      nav_main: 'Главная', nav_movie: 'Фильмы', nav_tv: 'Сериалы',
+      nav_cartoon: 'Мультфильмы', nav_anime: 'Аниме', nav_release: 'Новинки',
+      nav_collection: 'Подборки', nav_schedule: 'Расписание',
+      nav_history: 'История', nav_bookmarks: 'Избранное',
+      nav_notice: 'Уведомления', nav_feed: 'Лента', nav_console: 'Торренты',
+      badge_movie: 'ФИЛЬМ', badge_tv: 'СЕРИАЛ',
+      set_about_desc: 'Версия 0.3.0  Авторы: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
+      set_main_title: 'Основные настройки',
+      set_enable_name: 'AppleTV AgNative',
+      set_enable_desc: 'Включает и выключает плагин',
+      set_glare_name: 'Наклон veoveo.ru', set_glare_desc: 'от arabian_q',
+      set_topnav_name: 'Пункты Topnav', set_topnav_desc: 'Меню слева',
+      set_topnav_title: 'Пункты верхнего меню',
+      set_topnav_item_desc: 'Пункт menu_list: ',
+      set_logo_lang_name: 'Язык логотипов',
+      set_logo_lang_desc: 'Если логотипа на выбранном языке нет — используется английский',
+      set_font_size_name: 'Размер шрифта',
+      set_font_size_desc: 'Масштаб текста интерфейса и карточек',
+      set_ui_lang_name: 'Язык интерфейса',
+      set_ui_lang_desc: 'Язык подписей плагина',
+      val_on: 'Включить', val_off: 'Выключить',
+      val_add: 'Добавить', val_hide: 'Скрыть',
+      val_ru: 'Русский', val_en: 'Английский', val_uk: 'Украинский',
+      val_auto: 'Автоматически',
+      val_size_xs: 'Мелкий', val_size_sm: 'Маленький',
+      val_size_md: 'Обычный', val_size_lg: 'Крупный', val_size_xl: 'Огромный',
+      val_rating_color: 'Цветной', val_rating_mono: 'Монохромный',
+      set_backdrop_name: 'Горизонтальные кадры',
+      set_backdrop_desc: 'Заменять постер на кадр из фильма (backdrop)',
+      set_badge_name: 'Бейдж «Фильм/Сериал»',
+      set_badge_desc: 'Метка в левом верхнем углу карточки',
+      set_rating_name: 'Рейтинг TMDB',
+      set_rating_desc: 'Показывать оценку в правом верхнем углу',
+      set_rating_style_name: 'Стиль рейтинга TMDB',
+      set_rating_style_desc: 'Цветной или монохромный вид оценки',
+      set_reset_name: 'Сбросить настройки',
+      set_reset_desc: 'Вернуть все параметры плагина к значениям по умолчанию',
+      set_reset_done: 'Настройки AppleTV AgNative сброшены',
+      set_category_size_name: 'Размер названий категорий',
+      set_category_size_desc: 'Заголовки полок (Популярное, Новинки и т.д.)',
+      set_clock_seconds_name: 'Секунды в часах',
+      set_clock_seconds_desc: 'Показывать секунды рядом с часами в шапке',
+      set_control_panel_name: 'Панель по клику на часы',
+      set_control_panel_desc: 'Settings, Synchronization, Player, Cache & Data'
+    },
+    en: {
+      nav_main: 'Home', nav_movie: 'Movies', nav_tv: 'TV Shows',
+      nav_cartoon: 'Cartoons', nav_anime: 'Anime', nav_release: 'New',
+      nav_collection: 'Collections', nav_schedule: 'Schedule',
+      nav_history: 'History', nav_bookmarks: 'Favorites',
+      nav_notice: 'Notifications', nav_feed: 'Feed', nav_console: 'Torrents',
+      badge_movie: 'MOVIE', badge_tv: 'TV SHOW',
+      set_about_desc: 'Версия 0.3.0  Авторы: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
+      set_main_title: 'Main settings',
+      set_enable_name: 'AppleTV AgNative',
+      set_enable_desc: 'Enables and disables the plugin',
+      set_glare_name: 'Tilt veoveo.ru', set_glare_desc: 'by arabian_q',
+      set_topnav_name: 'Topnav items', set_topnav_desc: 'Left menu',
+      set_topnav_title: 'Top navigation items',
+      set_topnav_item_desc: 'menu_list item: ',
+      set_logo_lang_name: 'Logo language',
+      set_logo_lang_desc: 'If no logo in chosen language — English is used',
+      set_font_size_name: 'Font size',
+      set_font_size_desc: 'Interface and card text scale',
+      set_ui_lang_name: 'Interface language',
+      set_ui_lang_desc: 'Plugin label language',
+      val_on: 'Enable', val_off: 'Disable',
+      val_add: 'Add', val_hide: 'Hide',
+      val_ru: 'Russian', val_en: 'English', val_uk: 'Ukrainian',
+      val_auto: 'Auto',
+      val_size_xs: 'Extra small', val_size_sm: 'Small',
+      val_size_md: 'Normal', val_size_lg: 'Large', val_size_xl: 'Extra large',
+      val_rating_color: 'Colored', val_rating_mono: 'Monochrome',
+      set_backdrop_name: 'Landscape stills',
+      set_backdrop_desc: 'Replace poster with backdrop image',
+      set_badge_name: '"Movie/TV" badge',
+      set_badge_desc: 'Label in the top-left corner of the card',
+      set_rating_name: 'TMDB rating',
+      set_rating_desc: 'Show score in the top-right corner',
+      set_rating_style_name: 'TMDB rating style',
+      set_rating_style_desc: 'Colored or monochrome score style',
+      set_reset_name: 'Reset settings',
+      set_reset_desc: 'Restore all plugin options to defaults',
+      set_reset_done: 'AppleTV AgNative settings reset',
+      set_category_size_name: 'Category title size',
+      set_category_size_desc: 'Section titles (Popular, New, etc.)',
+      set_clock_seconds_name: 'Seconds in clock',
+      set_clock_seconds_desc: 'Show seconds next to the header clock',
+      set_control_panel_name: 'Clock click panel',
+      set_control_panel_desc: 'Settings, Synchronization, Player, Cache & Data'
+    },
+    uk: {
+      nav_main: 'Головна', nav_movie: 'Фільми', nav_tv: 'Серіали',
+      nav_cartoon: 'Мультфільми', nav_anime: 'Аніме', nav_release: 'Новинки',
+      nav_collection: 'Добірки', nav_schedule: 'Розклад',
+      nav_history: 'Історія', nav_bookmarks: 'Обране',
+      nav_notice: 'Сповіщення', nav_feed: 'Стрічка', nav_console: 'Торренти',
+      badge_movie: 'ФІЛЬМ', badge_tv: 'СЕРІАЛ',
+      set_about_desc: 'Версия 0.3.0  Авторы: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
+      set_main_title: 'Основні налаштування',
+      set_enable_name: 'AppleTV AgNative',
+      set_enable_desc: 'Вмикає та вимикає плагін',
+      set_glare_name: 'Нахил veoveo.ru', set_glare_desc: 'від arabian_q',
+      set_topnav_name: 'Пункти Topnav', set_topnav_desc: 'Меню ліворуч',
+      set_topnav_title: 'Пункти верхнього меню',
+      set_topnav_item_desc: 'Пункт menu_list: ',
+      set_logo_lang_name: 'Мова логотипів',
+      set_logo_lang_desc: 'Якщо логотип обраною мовою відсутній — використовується англійський',
+      set_font_size_name: 'Розмір шрифту',
+      set_font_size_desc: 'Масштаб тексту інтерфейсу та карток',
+      set_ui_lang_name: 'Мова інтерфейсу',
+      set_ui_lang_desc: 'Мова підписів плагіна',
+      val_on: 'Увімкнути', val_off: 'Вимкнути',
+      val_add: 'Додати', val_hide: 'Приховати',
+      val_ru: 'Російська', val_en: 'Англійська', val_uk: 'Українська',
+      val_auto: 'Автоматично',
+      val_size_xs: 'Дрібний', val_size_sm: 'Малий',
+      val_size_md: 'Звичайний', val_size_lg: 'Великий', val_size_xl: 'Величезний',
+      val_rating_color: 'Кольоровий', val_rating_mono: 'Монохромний',
+      set_backdrop_name: 'Горизонтальні кадри',
+      set_backdrop_desc: 'Заміняти постер на кадр з фільму (backdrop)',
+      set_badge_name: 'Бейдж «Фільм/Серіал»',
+      set_badge_desc: 'Мітка у лівому верхньому куті картки',
+      set_rating_name: 'Рейтинг TMDB',
+      set_rating_desc: 'Показувати оцінку у правому верхньому куті',
+      set_rating_style_name: 'Стиль рейтингу TMDB',
+      set_rating_style_desc: 'Кольоровий або монохромний вигляд оцінки',
+      set_reset_name: 'Скинути налаштування',
+      set_reset_desc: 'Повернути всі параметри плагіна до значень за замовчуванням',
+      set_reset_done: 'Налаштування AppleTV AgNative скинуто',
+      set_category_size_name: 'Розмір назв категорій',
+      set_category_size_desc: 'Заголовки поличок (Популярне, Новинки тощо)',
+      set_clock_seconds_name: 'Секунди в годиннику',
+      set_clock_seconds_desc: 'Показувати секунди поруч із годинником у шапці',
+      set_control_panel_name: 'Панель за кліком на годинник',
+      set_control_panel_desc: 'Settings, Synchronization, Player, Cache & Data'
+    }
+  };
+
+  var GENRE_MAP_LOCALIZED = {
+    ru: {
+      28:'Боевик',12:'Приключения',16:'Мультфильм',35:'Комедия',80:'Криминал',
+      99:'Документальный',18:'Драма',10751:'Семейный',14:'Фэнтези',36:'История',
+      27:'Ужасы',10402:'Музыка',9648:'Детектив',10749:'Мелодрама',878:'Фантастика',
+      10770:'Телефильм',53:'Триллер',10752:'Военный',37:'Вестерн',10759:'Боевик',
+      10762:'Детский',10765:'Фантастика',10767:'Ток-шоу'
+    },
+    en: {
+      28:'Action',12:'Adventure',16:'Animation',35:'Comedy',80:'Crime',
+      99:'Documentary',18:'Drama',10751:'Family',14:'Fantasy',36:'History',
+      27:'Horror',10402:'Music',9648:'Mystery',10749:'Romance',878:'Sci-Fi',
+      10770:'TV Movie',53:'Thriller',10752:'War',37:'Western',10759:'Action',
+      10762:'Kids',10765:'Sci-Fi',10767:'Talk'
+    },
+    uk: {
+      28:'Бойовик',12:'Пригоди',16:'Мультфільм',35:'Комедія',80:'Кримінал',
+      99:'Документальний',18:'Драма',10751:'Сімейний',14:'Фентезі',36:'Історичний',
+      27:'Жахи',10402:'Музика',9648:'Детектив',10749:'Мелодрама',878:'Фантастика',
+      10770:'Телефільм',53:'Трилер',10752:'Воєнний',37:'Вестерн',10759:'Бойовик',
+      10762:'Дитячий',10765:'Фантастика',10767:'Ток-шоу'
+    }
+  };
 
   var scheduled = false;
   var clockTimer = null;
   var logoCache = {};
   var logoPending = {};
+  var posterCache = {};
+  var posterPending = {};
   var storageListenerBound = false;
   var activityListenerBound = false;
   var fullListenerBound = false;
@@ -35,72 +210,7 @@
   var controlPanelPrevController = '';
   var controlPanelControllerReady = false;
   var controlPanelDocCloseBound = false;
-  var inputModeListenerBound = false;
   var swallowClickUntil = 0;
-  var reinitTimer = null;
-
-  var I18N = {
-    ru: {
-      nav_main: 'Главная', nav_movie: 'Фильмы', nav_tv: 'Сериалы', nav_cartoon: 'Мультфильмы',
-      nav_anime: 'Аниме', nav_release: 'Новинки', nav_collection: 'Подборки', nav_schedule: 'Расписание',
-      nav_history: 'История', nav_bookmarks: 'Избранное', nav_notice: 'Уведомления', nav_feed: 'Лента', nav_console: 'Торренты',
-      about_desc: 'Версия 0.1.2 • Автор llowmikee',
-      about_title: 'О плагине',
-      contributors_title: 'Помогали с разработкой',
-      contributors_more: 'Список пополняется',
-      main_title: 'Основные настройки',
-      enable_name: 'AppleTV AgNative', enable_desc: 'Включает и выключает плагин',
-      glare_name: 'Наклон veoveo.ru', glare_desc: 'от arabian_q',
-      font_name: 'Размер шрифта полок', font_desc: '',
-      topnav_name: 'Пункты Topnav', topnav_desc: 'Меню слева', topnav_title: 'Пункты верхнего меню', topnav_item_desc: 'Пункт menu_list: ',
-      logo_lang_name: 'Язык логотипов', logo_lang_desc: 'Если логотипа на выбранном языке нет — используется английский',
-      badge_name: 'Бейдж Фильм/Сериал', badge_desc: 'Авто отключает бейдж в разделах Фильмы и Сериалы',
-      rating_name: 'Рейтинг TMDB', rating_desc: 'Показывать оценку в правом верхнем углу карточки',
-      val_on: 'Включить', val_off: 'Выключить', val_add: 'Добавить', val_hide: 'Скрыть',
-      val_auto: 'Авто', val_small: 'Мелкий', val_ru: 'Русский', val_en: 'Английский', val_uk: 'Украинский',
-      badge_movie: 'ФИЛЬМ', badge_tv: 'СЕРИАЛ'
-    },
-    en: {
-      nav_main: 'Home', nav_movie: 'Movies', nav_tv: 'TV Shows', nav_cartoon: 'Cartoons',
-      nav_anime: 'Anime', nav_release: 'New', nav_collection: 'Collections', nav_schedule: 'Schedule',
-      nav_history: 'History', nav_bookmarks: 'Favorites', nav_notice: 'Notifications', nav_feed: 'Feed', nav_console: 'Torrents',
-      about_desc: 'Version 0.1.2 • Author llowmikee',
-      about_title: 'About plugin',
-      contributors_title: 'Helped with development',
-      contributors_more: 'The list will grow',
-      main_title: 'Main settings',
-      enable_name: 'AppleTV AgNative', enable_desc: 'Enables and disables the plugin',
-      glare_name: 'Tilt veoveo.ru', glare_desc: 'by arabian_q',
-      font_name: 'Shelf font size', font_desc: '',
-      topnav_name: 'Topnav items', topnav_desc: 'Left menu', topnav_title: 'Top navigation items', topnav_item_desc: 'menu_list item: ',
-      logo_lang_name: 'Logo language', logo_lang_desc: 'If a logo is missing in the selected language, English is used',
-      badge_name: 'Movie/TV badge', badge_desc: 'Auto disables the badge in Movies and TV sections',
-      rating_name: 'TMDB rating', rating_desc: 'Show score in the top-right corner of cards',
-      val_on: 'Enable', val_off: 'Disable', val_add: 'Add', val_hide: 'Hide',
-      val_auto: 'Auto', val_small: 'Small', val_ru: 'Russian', val_en: 'English', val_uk: 'Ukrainian',
-      badge_movie: 'MOVIE', badge_tv: 'TV SHOW'
-    },
-    uk: {
-      nav_main: 'Головна', nav_movie: 'Фільми', nav_tv: 'Серіали', nav_cartoon: 'Мультфільми',
-      nav_anime: 'Аніме', nav_release: 'Новинки', nav_collection: 'Добірки', nav_schedule: 'Розклад',
-      nav_history: 'Історія', nav_bookmarks: 'Обране', nav_notice: 'Сповіщення', nav_feed: 'Стрічка', nav_console: 'Торренти',
-      about_desc: 'Версія 0.1.2 • Автор llowmikee',
-      about_title: 'Про плагін',
-      contributors_title: 'Допомагали з розробкою',
-      contributors_more: 'Список поповнюється',
-      main_title: 'Основні налаштування',
-      enable_name: 'AppleTV AgNative', enable_desc: 'Вмикає та вимикає плагін',
-      glare_name: 'Нахил veoveo.ru', glare_desc: 'від arabian_q',
-      font_name: 'Розмір шрифту полиць', font_desc: '',
-      topnav_name: 'Пункти Topnav', topnav_desc: 'Меню ліворуч', topnav_title: 'Пункти верхнього меню', topnav_item_desc: 'Пункт menu_list: ',
-      logo_lang_name: 'Мова логотипів', logo_lang_desc: 'Якщо логотипа обраною мовою немає — використовується англійський',
-      badge_name: 'Бейдж Фільм/Серіал', badge_desc: 'Авто вимикає бейдж у розділах Фільми та Серіали',
-      rating_name: 'Рейтинг TMDB', rating_desc: 'Показувати оцінку у правому верхньому куті картки',
-      val_on: 'Увімкнути', val_off: 'Вимкнути', val_add: 'Додати', val_hide: 'Приховати',
-      val_auto: 'Авто', val_small: 'Дрібний', val_ru: 'Російська', val_en: 'Англійська', val_uk: 'Українська',
-      badge_movie: 'ФІЛЬМ', badge_tv: 'СЕРІАЛ'
-    }
-  };
 
   function qs(sel, root) {
     return (root || document).querySelector(sel);
@@ -119,6 +229,81 @@
     }
   }
 
+  function detectLampaLang() {
+    try {
+      if (!window.Lampa) return 'ru';
+      var l = '';
+      if (Lampa.Storage && Lampa.Storage.get) l = Lampa.Storage.get('language', '') || '';
+      if (!l && Lampa.Lang && Lampa.Lang.selected) l = Lampa.Lang.selected();
+      l = (l || '').toLowerCase();
+      if (l.indexOf('uk') === 0 || l === 'ua') return 'uk';
+      if (l.indexOf('en') === 0) return 'en';
+      if (l.indexOf('ru') === 0 || l === 'be') return 'ru';
+      return 'ru';
+    } catch (e) { return 'ru'; }
+  }
+
+  function getUiLang() {
+    try {
+      if (!window.Lampa || !Lampa.Storage) return detectLampaLang();
+      var v = Lampa.Storage.get(UI_LANG_KEY, 'auto');
+      if (!v || v === 'auto') return detectLampaLang();
+      if (I18N[v]) return v;
+      return 'ru';
+    } catch (e) { return 'ru'; }
+  }
+
+  function getLogoLang() {
+    try {
+      if (!window.Lampa || !Lampa.Storage) return 'ru';
+      var v = Lampa.Storage.get(LOGO_LANG_KEY, 'auto');
+      if (!v || v === 'auto') return detectLampaLang();
+      return v;
+    } catch (e) { return 'ru'; }
+  }
+
+  function getFontSize() {
+    try {
+      if (!window.Lampa || !Lampa.Storage) return 'md';
+      return Lampa.Storage.get(FONT_SIZE_KEY, 'md') || 'md';
+    } catch (e) { return 'md'; }
+  }
+
+  function getCategorySize() {
+    try {
+      if (!window.Lampa || !Lampa.Storage) return 'md';
+      return Lampa.Storage.get(CATEGORY_SIZE_KEY, 'md') || 'md';
+    } catch (e) { return 'md'; }
+  }
+
+  function getRatingStyle() {
+    try {
+      if (!window.Lampa || !Lampa.Storage) return 'color';
+      var value = Lampa.Storage.get(RATING_STYLE_KEY, 'color') || 'color';
+      return value === 'mono' ? 'mono' : 'color';
+    } catch (e) { return 'color'; }
+  }
+
+  function storageFlagOn(key, def) {
+    try {
+      if (!window.Lampa || !Lampa.Storage) return def !== 'off';
+      return Lampa.Storage.get(key, def) !== 'off';
+    } catch (e) { return def !== 'off'; }
+  }
+
+  function backdropEnabled() { return storageFlagOn(BACKDROP_KEY, 'on'); }
+  function badgeEnabled() { return storageFlagOn(BADGE_KEY, 'on'); }
+  function ratingEnabled() { return storageFlagOn(RATING_KEY, 'off'); }
+  function clockSecondsEnabled() { return storageFlagOn(CLOCK_SECONDS_KEY, 'off'); }
+  function controlPanelEnabled() { return storageFlagOn(CONTROL_PANEL_KEY, 'off'); }
+
+  function t(key) {
+    var lang = getUiLang();
+    var dict = I18N[lang] || I18N.ru;
+    if (dict[key]) return dict[key];
+    return (I18N.ru[key] || key);
+  }
+
   function glareEnabled() {
     try {
       if (!window.Lampa || !Lampa.Storage) return true;
@@ -128,140 +313,32 @@
     }
   }
 
-  function getItemsLineFontMode() {
-    try {
-      if (!window.Lampa || !Lampa.Storage) return 'auto';
-      var mode = Lampa.Storage.get(ITEMS_LINE_FONT_KEY, 'auto');
-      if (mode !== 'auto' && mode !== 'small') return 'auto';
-      return mode;
-    } catch (e) {
-      return 'auto';
-    }
-  }
-
-  function detectSystemLang() {
-    try {
-      var lang = '';
-      if (window.Lampa && Lampa.Storage) {
-        lang = (Lampa.Storage.field && Lampa.Storage.field('language')) || Lampa.Storage.get('language') || '';
-      }
-      lang = String(lang || '').toLowerCase();
-      if (lang.indexOf('uk') === 0 || lang === 'ua') return 'uk';
-      if (lang.indexOf('en') === 0) return 'en';
-      return 'ru';
-    } catch (e) {
-      return 'ru';
-    }
-  }
-
-  function t(key) {
-    var dict = I18N[detectSystemLang()] || I18N.ru;
-    return dict[key] || I18N.ru[key] || key;
-  }
-
-  function getLogoLang() {
-    try {
-      if (!window.Lampa || !Lampa.Storage) return detectSystemLang();
-      var value = Lampa.Storage.get(LOGO_LANG_KEY, 'auto');
-      if (!value || value === 'auto') return detectSystemLang();
-      if (value === 'ru' || value === 'uk' || value === 'en') return value;
-      return detectSystemLang();
-    } catch (e) {
-      return detectSystemLang();
-    }
-  }
-
-  function badgeEnabled() {
-    try {
-      if (!window.Lampa || !Lampa.Storage) return true;
-      return Lampa.Storage.get(BADGE_KEY, 'auto') !== 'off';
-    } catch (e) {
-      return true;
-    }
-  }
-
-  function getBadgeMode() {
-    try {
-      if (!window.Lampa || !Lampa.Storage) return 'auto';
-      var mode = Lampa.Storage.get(BADGE_KEY, 'auto');
-      if (mode !== 'auto' && mode !== 'on' && mode !== 'off') return 'auto';
-      return mode;
-    } catch (e) {
-      return 'auto';
-    }
-  }
-
-  function getCurrentMenuAction() {
-    var activeTopnav = qs('.agnative-topnav-shell__item.is-active[data-action]');
-    if (activeTopnav) return activeTopnav.getAttribute('data-action') || '';
-
-    var active = qsa('.menu .menu__item.selector[data-action]').find(function (item) {
-      return item.classList.contains('active') || item.classList.contains('focus') || item.classList.contains('hover') || item.classList.contains('traverse');
-    });
-    if (active) return active.getAttribute('data-action') || '';
-
-    try {
-      var activity = window.Lampa && Lampa.Activity && typeof Lampa.Activity.active === 'function' ? Lampa.Activity.active() : null;
-      if (!activity) return '';
-
-      var url = String(activity.url || '').toLowerCase();
-      if (url === 'movie' || url === 'tv' || url === 'anime') return url;
-      if (activity.component === 'category' && activity.genres === 16) return 'cartoon';
-    } catch (e) { }
-
-    return '';
-  }
-
-  function shouldShowBadge() {
-    var mode = getBadgeMode();
-    if (mode === 'off') return false;
-    if (mode === 'on') return true;
-    var action = getCurrentMenuAction();
-    return action !== 'movie' && action !== 'tv';
-  }
-
-  function ratingEnabled() {
-    try {
-      if (!window.Lampa || !Lampa.Storage) return false;
-      return Lampa.Storage.get(RATING_KEY, 'off') !== 'off';
-    } catch (e) {
-      return false;
-    }
-  }
-
-  function resetCardDecor() {
-    qsa('.card[data-nfx-switched]').forEach(function (card) {
-      card.removeAttribute('data-nfx-switched');
-      var overlay = card.querySelector('.nfx-card-overlay');
-      if (overlay) overlay.remove();
-      var badge = card.querySelector('.nfx-card-logo');
-      if (badge) badge.remove();
-      var rating = card.querySelector('.nfx-card-rating');
-      if (rating) rating.remove();
-    });
-  }
-
   function sceneActive() {
     return true;
   }
 
   function removePluginUi() {
     try {
-      closeControlPanel(false);
-      if (document.body) document.body.classList.remove(BODY_CLASS);
-      if (document.body) document.body.classList.remove(GLARE_CLASS);
-      if (document.body) document.body.classList.remove(INPUT_KEYS_CLASS);
-      if (document.body) document.body.classList.remove(INPUT_MOUSE_CLASS);
+      if (document.body) {
+        document.body.classList.remove(BODY_CLASS);
+        document.body.classList.remove(GLARE_CLASS);
+        document.body.removeAttribute(FONT_SIZE_ATTR);
+        document.body.removeAttribute(CATEGORY_SIZE_ATTR);
+        document.body.removeAttribute(BACKDROP_ATTR);
+        document.body.removeAttribute(BADGE_ATTR);
+        document.body.removeAttribute(RATING_ATTR);
+      }
       var style = document.getElementById(STYLE_ID);
       if (style) style.remove();
       var shell = document.querySelector('.agnative-topnav-shell');
       if (shell) shell.remove();
-      var right = document.querySelector('.agnative-topnav-right');
-      if (right) right.remove();
-      var panel = document.querySelector('.agnative-control-panel');
-      if (panel) panel.remove();
+      var dock = document.querySelector('.agnative-topnav-rightdock');
+      if (dock) dock.remove();
       var clock = document.getElementById(CLOCK_ID);
       if (clock) clock.remove();
+      var panel = document.querySelector('.agnative-control-panel');
+      if (panel) panel.remove();
+      controlPanelOpen = false;
     } catch (e) { }
   }
 
@@ -284,20 +361,11 @@
         onBack: function () {
           topnavSettingsOpen = false;
           Lampa.Settings.create(SETTINGS_COMPONENT);
-          requestPluginReinit(60);
+          setTimeout(function () { startPlugin(); }, 50);
+          setTimeout(function () { schedulePatch(); }, 120);
         }
       });
     }, 0);
-  }
-
-  function normalizeTopnavAction(action) {
-    var value = String(action || '').trim().toLowerCase();
-    if (!value) return '';
-    if (value === 'release' || value === 'releases') return 'relise';
-    if (value === 'bookmarks') return 'favorite';
-    if (value === 'schedule') return 'timetable';
-    if (value === 'collection' || value === 'collections') return 'catalog';
-    return value;
   }
 
   function getFallbackTopnavItems() {
@@ -307,11 +375,13 @@
       { action: 'tv', label: t('nav_tv') },
       { action: 'cartoon', label: t('nav_cartoon') },
       { action: 'anime', label: t('nav_anime') },
-      { action: 'relise', label: t('nav_release') },
-      { action: 'catalog', label: t('nav_collection') },
-      { action: 'timetable', label: t('nav_schedule') },
+      { action: 'release', label: t('nav_release') },
+      { action: 'releases', label: t('nav_release') },
+      { action: 'collection', label: t('nav_collection') },
+      { action: 'collections', label: t('nav_collection') },
+      { action: 'schedule', label: t('nav_schedule') },
       { action: 'history', label: t('nav_history') },
-      { action: 'favorite', label: t('nav_bookmarks') },
+      { action: 'bookmarks', label: t('nav_bookmarks') },
       { action: 'notice', label: t('nav_notice') },
       { action: 'feed', label: t('nav_feed') },
       { action: 'console', label: t('nav_console') }
@@ -323,7 +393,7 @@
     var seen = {};
 
     qsa('.menu .menu__item.selector[data-action]').forEach(function (item) {
-      var action = normalizeTopnavAction(item.getAttribute('data-action'));
+      var action = item.getAttribute('data-action');
       if (!action || seen[action]) return;
       if (action === 'search' || action === 'settings') return;
       var label = '';
@@ -356,8 +426,7 @@
           raw = raw.split(',').map(function (item) { return item.trim(); }).filter(Boolean);
         }
       }
-      var actions = Array.isArray(raw) ? raw : ['main', 'movie', 'tv', 'cartoon'];
-      return actions.map(normalizeTopnavAction).filter(Boolean);
+      return Array.isArray(raw) ? raw : ['main', 'movie', 'tv', 'cartoon'];
     } catch (e) {
       return ['main', 'movie', 'tv', 'cartoon'];
     }
@@ -376,6 +445,83 @@
     else document.body.classList.remove(GLARE_CLASS);
   }
 
+  function syncFontSize() {
+    if (!document.body) return;
+    document.body.setAttribute(FONT_SIZE_ATTR, getFontSize());
+    document.body.setAttribute(CATEGORY_SIZE_ATTR, getCategorySize());
+  }
+
+  function syncCardFlags() {
+    if (!document.body) return;
+    document.body.setAttribute(BACKDROP_ATTR, backdropEnabled() ? 'on' : 'off');
+    document.body.setAttribute(BADGE_ATTR, badgeEnabled() ? 'on' : 'off');
+    document.body.setAttribute(RATING_ATTR, ratingEnabled() ? 'on' : 'off');
+    document.body.setAttribute(RATING_STYLE_ATTR, getRatingStyle());
+  }
+
+  function restoreOriginalImg(cardEl) {
+    var img = cardEl.querySelector('.card__img');
+    if (!img) return;
+    var origSrc = img.getAttribute('data-nfx-original-src');
+    if (origSrc !== null) {
+      if (img.tagName === 'IMG') img.src = origSrc;
+      img.style.objectFit = '';
+      img.style.objectPosition = '';
+    }
+    var origBg = img.getAttribute('data-nfx-original-bg');
+    if (origBg !== null) {
+      img.style.backgroundImage = origBg;
+      img.style.backgroundSize = '';
+      img.style.backgroundPosition = '';
+    }
+  }
+
+  function resetCardSwitches() {
+    qsa('.card[data-nfx-switched]').forEach(function (c) {
+      restoreOriginalImg(c);
+      c.removeAttribute('data-nfx-switched');
+      var overlay = c.querySelector('.nfx-card-overlay');
+      if (overlay) overlay.remove();
+      var badge = c.querySelector('.nfx-card-logo');
+      if (badge) badge.remove();
+      var rating = c.querySelector('.nfx-card-rating');
+      if (rating) rating.remove();
+    });
+  }
+
+  function resetSettings() {
+    try {
+      if (!window.Lampa || !Lampa.Storage) return;
+      Lampa.Storage.set(ENABLE_KEY, 'on');
+      Lampa.Storage.set(GLARE_KEY, 'on');
+      Lampa.Storage.set(UI_LANG_KEY, 'auto');
+      Lampa.Storage.set(LOGO_LANG_KEY, 'auto');
+      Lampa.Storage.set(FONT_SIZE_KEY, 'md');
+      Lampa.Storage.set(CATEGORY_SIZE_KEY, 'md');
+      Lampa.Storage.set(BACKDROP_KEY, 'on');
+      Lampa.Storage.set(BADGE_KEY, 'on');
+      Lampa.Storage.set(RATING_KEY, 'off');
+      Lampa.Storage.set(RATING_STYLE_KEY, 'color');
+      Lampa.Storage.set(CLOCK_SECONDS_KEY, 'off');
+      Lampa.Storage.set(CONTROL_PANEL_KEY, 'off');
+      Lampa.Storage.set(TOPNAV_ITEMS_KEY, ['main', 'movie', 'tv', 'cartoon']);
+      logoCache = {};
+      syncGlareClass();
+      syncFontSize();
+      syncCardFlags();
+      resetCardSwitches();
+      setTimeout(function () { schedulePatch(); }, 80);
+      try {
+        if (Lampa.Noty && Lampa.Noty.show) Lampa.Noty.show(t('set_reset_done'));
+      } catch (e) { }
+      setTimeout(function () {
+        try {
+          if (Lampa.Settings && Lampa.Settings.create) Lampa.Settings.create(SETTINGS_COMPONENT);
+        } catch (e) { }
+      }, 120);
+    } catch (e) { }
+  }
+
   function setTopnavActionState(action, enabled) {
     var order = getAvailableTopnavItems().map(function (item) { return item.action; });
     var current = getStoredTopnavActions().filter(function (item, index, arr) {
@@ -383,10 +529,8 @@
     });
 
     if (enabled) {
-      action = normalizeTopnavAction(action);
-      if (action && current.indexOf(action) === -1) current.push(action);
+      if (current.indexOf(action) === -1) current.push(action);
     } else {
-      action = normalizeTopnavAction(action);
       current = current.filter(function (item) { return item !== action; });
     }
 
@@ -404,7 +548,7 @@
       map[item.action] = item;
     });
     return selected.map(function (action) {
-      return map[normalizeTopnavAction(action)];
+      return map[action];
     }).filter(Boolean);
   }
 
@@ -416,7 +560,6 @@
       if (Lampa.Template && Lampa.Template.add) {
         Lampa.Template.add('settings_' + SETTINGS_COMPONENT, '<div></div>');
         Lampa.Template.add('settings_' + TOPNAV_SETTINGS_COMPONENT, '<div></div>');
-        Lampa.Template.add('settings_' + ABOUT_SETTINGS_COMPONENT, '<div></div>');
       }
 
       Lampa.SettingsApi.addComponent({
@@ -427,20 +570,17 @@
 
       Lampa.SettingsApi.addParam({
         component: SETTINGS_COMPONENT,
-        param: { name: 'agnative_about_info', type: 'button' },
+        param: { name: 'agnative_about_info', type: 'static' },
         field: {
           name: 'AppleTV AgNative',
-          description: t('about_desc')
-        },
-        onChange: function () {
-          openSettingsSection(ABOUT_SETTINGS_COMPONENT, SETTINGS_COMPONENT);
+          description: t('set_about_desc')
         }
       });
 
       Lampa.SettingsApi.addParam({
         component: SETTINGS_COMPONENT,
         param: { type: 'title' },
-        field: { name: t('main_title') }
+        field: { name: t('set_main_title') }
       });
 
       Lampa.SettingsApi.addParam({
@@ -448,62 +588,46 @@
         param: {
           name: ENABLE_KEY,
           type: 'select',
-          values: {
-            on: t('val_on'),
-            off: t('val_off')
-          },
-          default: 'on'
+          values: { on: t('val_on'), off: t('val_off') },
+          default: 'off'
         },
         field: {
-          name: t('enable_name'),
-          description: t('enable_desc')
+          name: t('set_enable_name'),
+          description: t('set_enable_desc')
         },
         onChange: function (value) {
           if (value === 'off') {
             removePluginUi();
             return;
           }
-          requestPluginReinit(60);
+          setTimeout(function () {
+            startPlugin();
+            schedulePatch();
+            setTimeout(function () { schedulePatch(); }, 150);
+            setTimeout(function () { schedulePatch(); }, 500);
+          }, 50);
         }
       });
 
       Lampa.SettingsApi.addParam({
         component: SETTINGS_COMPONENT,
         param: {
-          name: GLARE_KEY,
-          type: 'select',
-          values: {
-            on: t('val_on'),
-            off: t('val_off')
-          },
-          default: 'on'
-        },
-        field: {
-          name: t('glare_name'),
-          description: t('glare_desc')
-        },
-        onChange: function () {
-          syncGlareClass();
-        }
-      });
-
-      Lampa.SettingsApi.addParam({
-        component: SETTINGS_COMPONENT,
-        param: {
-          name: ITEMS_LINE_FONT_KEY,
+          name: UI_LANG_KEY,
           type: 'select',
           values: {
             auto: t('val_auto'),
-            small: t('val_small')
+            ru: t('val_ru'),
+            en: t('val_en'),
+            uk: t('val_uk')
           },
           default: 'auto'
         },
         field: {
-          name: t('font_name'),
-          description: t('font_desc')
+          name: t('set_ui_lang_name'),
+          description: t('set_ui_lang_desc')
         },
         onChange: function () {
-          injectStyle();
+          setTimeout(function () { schedulePatch(); }, 80);
         }
       });
 
@@ -515,19 +639,83 @@
           values: {
             auto: t('val_auto'),
             ru: t('val_ru'),
-            uk: t('val_uk'),
-            en: t('val_en')
+            en: t('val_en'),
+            uk: t('val_uk')
           },
           default: 'auto'
         },
         field: {
-          name: t('logo_lang_name'),
-          description: t('logo_lang_desc')
+          name: t('set_logo_lang_name'),
+          description: t('set_logo_lang_desc')
         },
         onChange: function () {
           logoCache = {};
-          resetCardDecor();
-          schedulePatch();
+          setTimeout(function () { schedulePatch(); }, 80);
+        }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: {
+          name: FONT_SIZE_KEY,
+          type: 'select',
+          values: {
+            xs: t('val_size_xs'),
+            sm: t('val_size_sm'),
+            md: t('val_size_md'),
+            lg: t('val_size_lg'),
+            xl: t('val_size_xl')
+          },
+          default: 'md'
+        },
+        field: {
+          name: t('set_font_size_name'),
+          description: t('set_font_size_desc')
+        },
+        onChange: function () {
+          syncFontSize();
+        }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: {
+          name: CATEGORY_SIZE_KEY,
+          type: 'select',
+          values: {
+            xs: t('val_size_xs'),
+            sm: t('val_size_sm'),
+            md: t('val_size_md'),
+            lg: t('val_size_lg'),
+            xl: t('val_size_xl')
+          },
+          default: 'md'
+        },
+        field: {
+          name: t('set_category_size_name'),
+          description: t('set_category_size_desc')
+        },
+        onChange: function () {
+          syncFontSize();
+        }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: {
+          name: BACKDROP_KEY,
+          type: 'select',
+          values: { on: t('val_on'), off: t('val_off') },
+          default: 'on'
+        },
+        field: {
+          name: t('set_backdrop_name'),
+          description: t('set_backdrop_desc')
+        },
+        onChange: function () {
+          syncCardFlags();
+          resetCardSwitches();
+          setTimeout(function () { schedulePatch(); }, 80);
         }
       });
 
@@ -536,16 +724,19 @@
         param: {
           name: BADGE_KEY,
           type: 'select',
-          values: { auto: t('val_auto'), on: t('val_on'), off: t('val_off') },
-          default: 'auto'
+          values: { on: t('val_on'), off: t('val_off') },
+          default: 'on'
         },
         field: {
-          name: t('badge_name'),
-          description: t('badge_desc')
+          name: t('set_badge_name'),
+          description: t('set_badge_desc')
         },
         onChange: function () {
-          resetCardDecor();
-          schedulePatch();
+          syncCardFlags();
+          if (badgeEnabled()) {
+            resetCardSwitches();
+            setTimeout(function () { schedulePatch(); }, 80);
+          }
         }
       });
 
@@ -558,12 +749,84 @@
           default: 'off'
         },
         field: {
-          name: t('rating_name'),
-          description: t('rating_desc')
+          name: t('set_rating_name'),
+          description: t('set_rating_desc')
         },
         onChange: function () {
-          resetCardDecor();
-          schedulePatch();
+          syncCardFlags();
+          if (ratingEnabled()) {
+            resetCardSwitches();
+            setTimeout(function () { schedulePatch(); }, 80);
+          }
+        }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: {
+          name: RATING_STYLE_KEY,
+          type: 'select',
+          values: { color: t('val_rating_color'), mono: t('val_rating_mono') },
+          default: 'color'
+        },
+        field: {
+          name: t('set_rating_style_name'),
+          description: t('set_rating_style_desc')
+        },
+        onChange: function () {
+          syncCardFlags();
+        }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: {
+          name: GLARE_KEY,
+          type: 'select',
+          values: { on: t('val_on'), off: t('val_off') },
+          default: 'on'
+        },
+        field: {
+          name: t('set_glare_name'),
+          description: t('set_glare_desc')
+        },
+        onChange: function () {
+          syncGlareClass();
+        }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: {
+          name: CLOCK_SECONDS_KEY,
+          type: 'select',
+          values: { on: t('val_on'), off: t('val_off') },
+          default: 'off'
+        },
+        field: {
+          name: t('set_clock_seconds_name'),
+          description: t('set_clock_seconds_desc')
+        },
+        onChange: function () {
+          restartClock();
+        }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: {
+          name: CONTROL_PANEL_KEY,
+          type: 'select',
+          values: { on: t('val_on'), off: t('val_off') },
+          default: 'off'
+        },
+        field: {
+          name: t('set_control_panel_name'),
+          description: t('set_control_panel_desc')
+        },
+        onChange: function (value) {
+          if (value === 'off') closeControlPanel(true);
+          setTimeout(function () { schedulePatch(); }, 80);
         }
       });
 
@@ -571,8 +834,8 @@
         component: SETTINGS_COMPONENT,
         param: { name: 'agnative_open_topnav_settings', type: 'button' },
         field: {
-          name: t('topnav_name'),
-          description: t('topnav_desc')
+          name: t('set_topnav_name'),
+          description: t('set_topnav_desc')
         },
         onChange: function () {
           openTopnavSettingsSection();
@@ -580,41 +843,21 @@
       });
 
       Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: { name: 'agnative_reset_button', type: 'button' },
+        field: {
+          name: t('set_reset_name'),
+          description: t('set_reset_desc')
+        },
+        onChange: function () {
+          resetSettings();
+        }
+      });
+
+      Lampa.SettingsApi.addParam({
         component: TOPNAV_SETTINGS_COMPONENT,
         param: { type: 'title' },
-        field: { name: t('topnav_title') }
-      });
-
-      Lampa.SettingsApi.addParam({
-        component: ABOUT_SETTINGS_COMPONENT,
-        param: { type: 'title' },
-        field: { name: t('about_title') }
-      });
-
-      Lampa.SettingsApi.addParam({
-        component: ABOUT_SETTINGS_COMPONENT,
-        param: { type: 'title' },
-        field: { name: t('contributors_title') }
-      });
-
-      CONTRIBUTORS.forEach(function (name) {
-        Lampa.SettingsApi.addParam({
-          component: ABOUT_SETTINGS_COMPONENT,
-          param: { name: 'agnative_contributor_' + name, type: 'static' },
-          field: {
-            name: name,
-            description: ''
-          }
-        });
-      });
-
-      Lampa.SettingsApi.addParam({
-        component: ABOUT_SETTINGS_COMPONENT,
-        param: { name: 'agnative_contributors_more', type: 'static' },
-        field: {
-          name: t('contributors_more'),
-          description: ''
-        }
+        field: { name: t('set_topnav_title') }
       });
 
       getAvailableTopnavItems().forEach(function (item) {
@@ -623,15 +866,12 @@
           param: {
             name: 'agnative_topnav_item_' + item.action,
             type: 'select',
-            values: {
-              on: t('val_add'),
-              off: t('val_hide')
-            },
+            values: { on: t('val_add'), off: t('val_hide') },
             default: getStoredTopnavActions().indexOf(item.action) > -1 ? 'on' : 'off'
           },
           field: {
             name: item.label,
-            description: t('topnav_item_desc') + item.action
+            description: t('set_topnav_item_desc') + item.action
           },
           onChange: function (value) {
             setTopnavActionState(item.action, value !== 'off');
@@ -681,7 +921,8 @@
       Lampa.Storage.listener.follow('change', function (e) {
         if (e.name === ENABLE_KEY) {
           if (pluginEnabled()) {
-            requestPluginReinit(60);
+            setTimeout(function () { startPlugin(); }, 50);
+            setTimeout(function () { schedulePatch(); }, 120);
           } else {
             removePluginUi();
           }
@@ -693,91 +934,53 @@
           return;
         }
 
-        if (e.name === LOGO_LANG_KEY || e.name === BADGE_KEY || e.name === RATING_KEY) {
-          if (e.name === LOGO_LANG_KEY) logoCache = {};
-          resetCardDecor();
-          schedulePatch();
+        if (e.name === CLOCK_SECONDS_KEY) {
+          restartClock();
           return;
         }
 
-        if (e.name === ITEMS_LINE_FONT_KEY) {
-          injectStyle();
+        if (e.name === FONT_SIZE_KEY || e.name === CATEGORY_SIZE_KEY) {
+          syncFontSize();
+          return;
+        }
+
+        if (e.name === LOGO_LANG_KEY) {
+          logoCache = {};
+          setTimeout(function () { schedulePatch(); }, 80);
+          return;
+        }
+
+        if (e.name === UI_LANG_KEY) {
+          setTimeout(function () { schedulePatch(); }, 80);
+          return;
+        }
+
+        if (e.name === BACKDROP_KEY || e.name === BADGE_KEY || e.name === RATING_KEY) {
+          syncCardFlags();
+          if (e.name === BACKDROP_KEY || (e.value && e.value !== 'off')) {
+            resetCardSwitches();
+            setTimeout(function () { schedulePatch(); }, 80);
+          }
           return;
         }
 
         if (e.name === TOPNAV_ITEMS_KEY) {
           if (topnavSettingsOpen) return;
-          requestPluginReinit(60);
+          setTimeout(function () { startPlugin(); }, 50);
+          setTimeout(function () { schedulePatch(); }, 120);
           return;
         }
 
         if (e.name === 'lampac_theme' || e.name === 'lampac_interface_scene') {
           if (pluginEnabled()) {
-            requestPluginReinit(60);
+            setTimeout(function () { startPlugin(); }, 50);
+            setTimeout(function () { schedulePatch(); }, 120);
           } else {
             removePluginUi();
           }
         }
       });
     }
-  }
-
-  function requestPluginReinit(delay) {
-    clearTimeout(reinitTimer);
-    reinitTimer = setTimeout(function () {
-      startPlugin();
-      schedulePatch();
-    }, typeof delay === 'number' ? delay : 60);
-  }
-
-  function consumeEvent(e) {
-    if (!e) return;
-    try {
-      if (e.cancelable && typeof e.preventDefault === 'function') e.preventDefault();
-      if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
-      if (typeof e.stopPropagation === 'function') e.stopPropagation();
-    } catch (err) { }
-  }
-
-  function markSwallowClick(ms) {
-    swallowClickUntil = Date.now() + (typeof ms === 'number' ? ms : 260);
-  }
-
-  function setInputMode(mode) {
-    if (!document.body) return;
-    if (mode === 'keys') {
-      document.body.classList.add(INPUT_KEYS_CLASS);
-      document.body.classList.remove(INPUT_MOUSE_CLASS);
-      return;
-    }
-    if (mode === 'mouse') {
-      document.body.classList.add(INPUT_MOUSE_CLASS);
-      document.body.classList.remove(INPUT_KEYS_CLASS);
-    }
-  }
-
-  function bindInputModeListeners() {
-    if (inputModeListenerBound || !window || !window.addEventListener) return;
-    inputModeListenerBound = true;
-
-    window.addEventListener('keydown', function (e) {
-      if (!pluginEnabled()) return;
-      if (!e) return;
-      if (e.altKey || e.ctrlKey || e.metaKey) return;
-      var key = String(e.key || '');
-      if (key === 'Shift' || key === 'Alt' || key === 'Control' || key === 'Meta') return;
-      setInputMode('keys');
-    }, true);
-
-    var switchToMouse = function () {
-      if (!pluginEnabled()) return;
-      setInputMode('mouse');
-    };
-
-    window.addEventListener('mousemove', switchToMouse, true);
-    window.addEventListener('mousedown', switchToMouse, true);
-    window.addEventListener('wheel', switchToMouse, true);
-    window.addEventListener('touchstart', switchToMouse, true);
   }
 
   function isMobile() {
@@ -804,25 +1007,17 @@
     return null;
   }
 
-  var GENRE_MAP = {
-    28: 'Боевик', 12: 'Приключения', 16: 'Мультфильм', 35: 'Комедия',
-    80: 'Криминал', 99: 'Документальный', 18: 'Драма', 10751: 'Семейный',
-    14: 'Фэнтези', 36: 'История', 27: 'Ужасы', 10402: 'Музыка',
-    9648: 'Детектив', 10749: 'Мелодрама', 878: 'Фантастика',
-    10770: 'Телефильм', 53: 'Триллер', 10752: 'Военный', 37: 'Вестерн',
-    10759: 'Боевик', 10762: 'Детский', 10765: 'Фантастика', 10767: 'Ток-шоу'
-  };
-
   function getGenreNames(item) {
     var names = [];
     if (!item) return names;
+    var map = GENRE_MAP_LOCALIZED[getUiLang()] || GENRE_MAP_LOCALIZED.ru;
     if (item.genres && item.genres.length) {
       for (var i = 0; i < item.genres.length; i++) {
         if (item.genres[i] && item.genres[i].name) names.push(item.genres[i].name);
       }
     } else if (item.genre_ids && item.genre_ids.length) {
       for (var j = 0; j < item.genre_ids.length; j++) {
-        if (GENRE_MAP[item.genre_ids[j]]) names.push(GENRE_MAP[item.genre_ids[j]]);
+        if (map[item.genre_ids[j]]) names.push(map[item.genre_ids[j]]);
       }
     }
     return names;
@@ -832,24 +1027,10 @@
     if (!document.head && !document.body) return;
     var old = document.getElementById(STYLE_ID);
     if (old) old.remove();
-    var itemsLineFontMode = getItemsLineFontMode();
-    var itemsLineMoreRule = '';
-    var itemsLineTitleRule = '';
-    if (itemsLineFontMode === 'small') {
-      itemsLineMoreRule = 'font-size:.65em !important; padding:.25em .5em !important;';
-      itemsLineTitleRule = 'font-size:.53em !important;';
-    } else if (itemsLineFontMode === 'auto') {
-      itemsLineMoreRule = 'font-size:.83em !important; padding:.25em .5em !important;';
-      itemsLineTitleRule = 'font-size:.83em !important;';
-    }
 
     var style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = [
-      'body.' + INPUT_KEYS_CLASS + ',',
-      'body.' + INPUT_KEYS_CLASS + ' * {',
-      '  cursor: none !important;',
-      '}',
       'body.' + BODY_CLASS + ' .head,',
       'body.' + BODY_CLASS + ' .head__body,',
       'body.' + BODY_CLASS + ' .head__wrapper,',
@@ -886,6 +1067,26 @@
       '  box-shadow: none !important;',
       '  filter: none !important;',
       '}',
+      'body.' + BODY_CLASS + ' .activity.layer--width.activity--active,',
+      'body.' + BODY_CLASS + ' .activity.layer--width.activity--active.application,',
+      'body.' + BODY_CLASS + ' .activity.layer--width.activity--active.applecation {',
+      '  background: transparent !important;',
+      '  background-color: transparent !important;',
+      '  background-image: none !important;',
+      '  box-shadow: none !important;',
+      '}',
+      'body.' + BODY_CLASS + ' .activity.layer--width.activity--active::before,',
+      'body.' + BODY_CLASS + ' .activity.layer--width.activity--active::after,',
+      'body.' + BODY_CLASS + ' .full-start__bottom::before,',
+      'body.' + BODY_CLASS + ' .full-start__bottom::after,',
+      'body.' + BODY_CLASS + ' .full-start-new__bottom::before,',
+      'body.' + BODY_CLASS + ' .full-start-new__bottom::after {',
+      '  content: none !important;',
+      '  display: none !important;',
+      '  background: transparent !important;',
+      '  background-image: none !important;',
+      '  box-shadow: none !important;',
+      '}',
       'body.' + BODY_CLASS + ' .activity.activity--active .full-start__background,',
       'body.' + BODY_CLASS + ' .full-start__background {',
       '  mask-image: none !important;',
@@ -909,6 +1110,11 @@
       '  filter: none !important;',
       '  backdrop-filter: none !important;',
       '  -webkit-backdrop-filter: none !important;',
+      '}',
+      'body.' + BODY_CLASS + ' .wrap__content.layer--height.layer--width,',
+      'body.' + BODY_CLASS + ' .wrap__content,',
+      'body.' + BODY_CLASS + ' .wrap__content .layer--height,',
+      'body.' + BODY_CLASS + ' .wrap__content .layer--width {',
       '  padding-top: .68em !important;',
       '}',
       'body.' + BODY_CLASS + ' .wrap__content.layer--height.layer--width > *,',
@@ -982,6 +1188,15 @@
       '  border-color: transparent !important;',
       '  box-shadow: inset 0 1px 0 rgba(255,255,255,.10) !important;',
       '}',
+      'body.' + BODY_CLASS + ' .scroll--over {',
+      '  max-height: 100%;',
+      '}',
+      'body.' + BODY_CLASS + ' .menu__list {',
+      '  border-radius: 1.35em',
+      '}',
+      'body.' + BODY_CLASS + ' .layer--wheight {',
+      '  max-height: 90vh',
+      '}',
       'body.' + BODY_CLASS + ' .settings-param,',
       'body.' + BODY_CLASS + ' .settings-folder,',
       'body.' + BODY_CLASS + ' .selectbox-item {',
@@ -993,9 +1208,12 @@
       'body.' + BODY_CLASS + ' .settings-param + .settings-param,',
       'body.' + BODY_CLASS + ' .settings-folder + .settings-folder,',
       'body.' + BODY_CLASS + ' .settings-folder + .settings-param,',
+      
       'body.' + BODY_CLASS + ' .settings-param + .settings-folder {',
       '  margin-top: .38em !important;',
       '}',
+      
+      
       'body.' + BODY_CLASS + ' .settings-param__name,',
       'body.' + BODY_CLASS + ' .settings-folder__name,',
       'body.' + BODY_CLASS + ' .settings-param__value,',
@@ -1060,6 +1278,45 @@
       'body.' + BODY_CLASS + ' .head__button {',
       '  display: none !important;',
       '}',
+      'body.' + BODY_CLASS + ' .head__actions {',
+      '  position: absolute !important;',
+      '  left: calc(1em + 2.6em + .8em) !important;',
+      '  top: .46em !important;',
+      '  right: auto !important;',
+      '  bottom: auto !important;',
+      '  height: 2.6em !important;',
+      '  margin: 0 !important;',
+      '  padding: 0 !important;',
+      '  display: inline-flex !important;',
+      '  align-items: center !important;',
+      '  justify-content: flex-start !important;',
+      '  gap: .4em !important;',
+      '  z-index: 20 !important;',
+      '  background: transparent !important;',
+      '  border: 0 !important;',
+      '  box-shadow: none !important;',
+      '  pointer-events: none !important;',
+      '}',
+      'body.' + BODY_CLASS + ' .head__navigator {',
+      '  display: inline-flex !important;',
+      '  align-items: center !important;',
+      '  justify-content: center !important;',
+      '  height: 2.6em !important;',
+      '  padding: 0 1em !important;',
+      '  margin: 0 !important;',
+      '  font-size: calc(.78em * var(--agnative-scale, 1)) !important;',
+      '  font-weight: 700 !important;',
+      '  letter-spacing: .04em !important;',
+      '  color: rgba(255,255,255,.92) !important;',
+      '  background: rgba(22,24,30,.26) !important;',
+      '  border: 1px solid rgba(255,255,255,.10) !important;',
+      '  border-radius: 999px !important;',
+      '  backdrop-filter: blur(18px) saturate(140%) !important;',
+      '  -webkit-backdrop-filter: blur(18px) saturate(140%) !important;',
+      '  box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 8px 18px rgba(0,0,0,.12) !important;',
+      '  white-space: nowrap !important;',
+      '  pointer-events: auto !important;',
+      '}',
       'body.' + BODY_CLASS + ' .head__menu-icon {',
       '  position: absolute !important;',
       '  left: 1em !important;',
@@ -1106,23 +1363,21 @@
       '  background: transparent !important;',
       '  box-shadow: none !important;',
       '}',
-      'body.' + BODY_CLASS + ' .agnative-topnav-shell { position:absolute; left:0; right:0; top:.46em; z-index:20; }',
-      'body.' + BODY_CLASS + ' .agnative-topnav-shell { pointer-events: none; }',
-      'body.' + BODY_CLASS + ' .agnative-topnav-shell__inner { pointer-events: auto; }',
-      'body.' + BODY_CLASS + ' .agnative-topnav-right { pointer-events: auto; }',
-      'body.' + BODY_CLASS + ' .agnative-topnav-shell__item { pointer-events: auto; }',
-      'body.' + BODY_CLASS + ' .agnative-control-panel { pointer-events: auto; }',
-      'body.' + BODY_CLASS + ' .agnative-topnav-shell__inner { margin:0 auto; width:max-content; display:inline-flex; align-items:center; gap:.18em; padding:.22em .32em; border-radius:999px; background:rgba(22,24,30,.28); border:1px solid rgba(255,255,255,.10); box-shadow:inset 0 1px 0 rgba(255,255,255,.10), 0 8px 18px rgba(0,0,0,.12); backdrop-filter:blur(18px) saturate(140%); -webkit-backdrop-filter:blur(18px) saturate(140%); position:relative; left:50%; transform:translateX(-50%); }',
+      'body.' + BODY_CLASS + ' .agnative-topnav-shell { position:absolute; left:50%; top:.46em; transform:translateX(-50%); z-index:20; width:max-content; max-width:calc(100vw - 24em); height:2.6em; display:inline-flex; align-items:center; box-sizing:border-box; }',
+      'body.' + BODY_CLASS + ' .agnative-topnav-shell__inner { height:2.6em; box-sizing:border-box; display:inline-flex; align-items:center; gap:.18em; padding:.21em .32em; border-radius:999px; background:rgba(22,24,30,.28); border:1px solid rgba(255,255,255,.10); box-shadow:inset 0 1px 0 rgba(255,255,255,.10), 0 8px 18px rgba(0,0,0,.12); backdrop-filter:blur(18px) saturate(140%); -webkit-backdrop-filter:blur(18px) saturate(140%); }',
       'body.' + BODY_CLASS + ' .agnative-topnav-shell__items { display:flex; align-items:center; justify-content:center; gap:.08em; }',
-      'body.' + BODY_CLASS + ' .agnative-topnav-right { position:absolute; right:1.15em; top:0; z-index:23; display:inline-flex; align-items:center; gap:.08em; padding:.22em .32em; border-radius:999px; background:rgba(22,24,30,.28); border:1px solid rgba(255,255,255,.10); box-shadow:inset 0 1px 0 rgba(255,255,255,.10), 0 8px 18px rgba(0,0,0,.12); backdrop-filter:blur(18px) saturate(140%); -webkit-backdrop-filter:blur(18px) saturate(140%); }',
+      'body.' + BODY_CLASS + ' .agnative-topnav-shell__right { display:flex; align-items:center; gap:.08em; margin-left:.12em; padding-left:.18em; }',
       'body.' + BODY_CLASS + ' .agnative-topnav-shell__item.selector { appearance:none; -webkit-appearance:none; border:0; background:none; color:rgba(255,255,255,.92); height:2.16em; display:inline-flex; align-items:center; justify-content:center; text-align:center; padding:0 .96em; border-radius:999px; font-size:.83em; font-weight:700; line-height:1; white-space:nowrap; transition:background .2s ease, transform .2s ease, box-shadow .2s ease; }',
       'body.' + BODY_CLASS + ' .agnative-topnav-shell__item--icon.selector { width:2.16em; min-width:2.16em; padding:0; }',
       'body.' + BODY_CLASS + ' .agnative-topnav-shell__item--icon svg { width:1em; height:1em; }',
-      'body.' + BODY_CLASS + ' .agnative-topnav-shell__clock.selector { min-width:4.2em; padding:0 .95em; font-size:.92em; letter-spacing:.01em; }',
-      'body.' + BODY_CLASS + ' .agnative-topnav-shell__clock-time { display:block; min-width:3.4em; text-align:center; }',
       'body.' + BODY_CLASS + ' .agnative-topnav-right__profile.selector { width:2.16em; min-width:2.16em; padding:0; overflow:hidden; }',
       'body.' + BODY_CLASS + ' .agnative-topnav-right__profile-img { width:1.56em; height:1.56em; border-radius:999px; object-fit:cover; display:block; }',
       'body.' + BODY_CLASS + ' .agnative-topnav-shell__item.is-active, body.' + BODY_CLASS + ' .agnative-topnav-shell__item.hover, body.' + BODY_CLASS + ' .agnative-topnav-shell__item.focus { background:rgba(255,255,255,.14); box-shadow:inset 0 1px 0 rgba(255,255,255,.10); }',
+      'body.' + BODY_CLASS + ' .agnative-topnav-rightdock { position:absolute; right:1.15em; top:.46em; z-index:20; height:2.6em; box-sizing:border-box; display:inline-flex; align-items:center; gap:.08em; padding:.21em .32em; border-radius:999px; background:rgba(22,24,30,.28); border:1px solid rgba(255,255,255,.10); box-shadow:inset 0 1px 0 rgba(255,255,255,.10), 0 8px 18px rgba(0,0,0,.12); backdrop-filter:blur(18px) saturate(140%); -webkit-backdrop-filter:blur(18px) saturate(140%); }',
+      'body.' + BODY_CLASS + ' .agnative-topnav-rightdock .agnative-topnav-clock { position:static !important; right:auto !important; top:auto !important; z-index:auto !important; height:2.16em !important; min-width:4.2em !important; padding:0 .95em !important; background:transparent !important; border:0 !important; box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; transition:background .2s ease, transform .2s ease, box-shadow .2s ease; }',
+      'body.' + BODY_CLASS + ' .agnative-topnav-rightdock .agnative-topnav-clock.hover, body.' + BODY_CLASS + ' .agnative-topnav-rightdock .agnative-topnav-clock.focus, body.' + BODY_CLASS + ' .agnative-topnav-rightdock .agnative-topnav-right__profile.hover, body.' + BODY_CLASS + ' .agnative-topnav-rightdock .agnative-topnav-right__profile.focus { background:rgba(255,255,255,.14) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.10) !important; transform:translateY(-.02em); }',
+      'body.' + BODY_CLASS + ' .agnative-topnav-clock { position:absolute; right:1.15em; top:.46em; z-index:20; display:inline-flex; align-items:center; justify-content:center; min-width:4.2em; height:2.6em; padding:0 .95em; border-radius:999px; background:rgba(22,24,30,.26); border:1px solid rgba(255,255,255,.10); box-shadow:inset 0 1px 0 rgba(255,255,255,.10), 0 8px 18px rgba(0,0,0,.12); backdrop-filter:blur(18px) saturate(140%); -webkit-backdrop-filter:blur(18px) saturate(140%); color:rgba(255,255,255,.95); font-size:.92em; font-weight:700; letter-spacing:.01em; }',
+      'body.' + BODY_CLASS + ' .agnative-topnav-clock.selector { cursor:pointer; }',
       'body.' + BODY_CLASS + ' .agnative-control-panel { position:absolute; right:1.15em; top:3.7em; z-index:26; width:18.8em; padding:.72em; border-radius:1.18em; background:rgba(40,48,62,.76); border:1px solid rgba(255,255,255,.13); box-shadow:0 18px 48px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.09); backdrop-filter:blur(22px) saturate(136%); -webkit-backdrop-filter:blur(22px) saturate(136%); opacity:0; transform:translateY(-.35em) scale(.98); pointer-events:none; transition:opacity .2s ease, transform .2s ease; }',
       'body.' + BODY_CLASS + ' .agnative-control-panel.is-open { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }',
       'body.' + BODY_CLASS + ' .agnative-control-panel__title { font-size:1.28em; font-weight:600; color:rgba(255,255,255,.94); padding:.18em .15em .52em; }',
@@ -1133,52 +1388,113 @@
       'body.' + BODY_CLASS + ' .agnative-control-panel__tile.selector .agnative-control-panel__label { font-size:.95em; font-weight:700; line-height:1.15; text-align:left; }',
       'body.' + BODY_CLASS + ' .agnative-control-panel__tile.selector.hover, body.' + BODY_CLASS + ' .agnative-control-panel__tile.selector.focus { background:rgba(255,255,255,.18); box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 0 0 1px rgba(255,255,255,.12); transform:translateY(-.02em); }',
       'body.' + BODY_CLASS + ' .items-line--type-default { min-height:auto !important; padding-top:0 !important; padding-bottom:.12em !important; margin-bottom:.32em !important; }',
-      'body.' + BODY_CLASS + ' .items-line--type-default .items-line__head { margin-bottom:.58em !important; min-height:auto !important; padding-top:0 !important; padding-bottom:0 !important; padding-left:1.05em !important; padding-right:1.05em !important; font-size:1.14em !important; }',
-      'body.' + BODY_CLASS + ' .items-line__more.selector { ' + itemsLineMoreRule + ' opacity:.8 !important; }',
+      'body.' + BODY_CLASS + ' .items-line--type-default .items-line__head { margin-bottom:.58em !important; min-height:auto !important; padding-top:0 !important; padding-bottom:0 !important; padding-left:1.05em !important; padding-right:1.05em !important; font-size:1em !important; }',
+      'body.' + BODY_CLASS + ' .items-line__more.selector { font-size:.7em !important; padding:.3em .6em !important; opacity:.85 !important; }',
       'body.' + BODY_CLASS + ' .items-line--type-default .items-cards { padding-top:0 !important; font-size:.86em !important; }',
       'body.' + BODY_CLASS + ' .items-cards { padding-left:1.05em !important; padding-right:1.05em !important; gap:.62em !important; }',
       'body.' + BODY_CLASS + ' .items-line__body { padding-left:1.15em !important; }',
-      'body.' + BODY_CLASS + ' .items-line__title { ' + itemsLineTitleRule + ' }',
-      'body.' + BODY_CLASS + ' .card { width:17.6em !important; margin-right:.52em !important; margin-bottom:.45em !important; padding-bottom:0 !important; transform-origin:center center !important; overflow:visible !important; }',
-      'body.' + BODY_CLASS + ' .card .card__view { padding-bottom:56.25% !important; margin-bottom:0 !important; border-radius:1.35em !important; overflow:hidden !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(255,255,255,.04), 0 8px 18px rgba(0,0,0,.18) !important; transition: transform .28s cubic-bezier(.22,.61,.36,1), box-shadow .28s ease, filter .28s ease, opacity .18s ease !important; }',
+      'body.' + BODY_CLASS + ' .items-line__title { font-size:1em !important; line-height:1.2 !important; font-weight:700 !important; }',
+      'body.' + BODY_CLASS + ' .scroll__body.mapping--line { display:flex !important; gap:1.5em !important; align-items:flex-start !important; }',
+      'body.' + BODY_CLASS + ' .mapping--grid { display:grid !important; grid-template-columns:repeat(5, minmax(0, 1fr)) !important; gap:.52em !important; align-items:start !important; }',
+      '@media (max-width: 1279px) { body.' + BODY_CLASS + ' .mapping--grid { grid-template-columns:repeat(4, minmax(0, 1fr)) !important; } }',
+      '@media (max-width: 767px) { body.' + BODY_CLASS + ' .mapping--grid { grid-template-columns:repeat(3, minmax(0, 1fr)) !important; } }',
+      'body.' + BODY_CLASS + ' .card { width:auto !important; margin:0 !important; padding-bottom:0 !important; transform-origin:center center !important; overflow:visible !important; }',
+      'body.' + BODY_CLASS + ' .items-line .card { width:17.6em !important; flex:0 0 auto !important; }',
+      'body.' + BODY_CLASS + ' .card .card-watched { transform: scale(.8) !important; bottom: 0 !important; max-height: 100% !important; overflow: hidden !important; }',
+      'body.' + BODY_CLASS + ' .card .card__view { padding-bottom:56.25% !important; margin-bottom:0 !important; border-radius:1.35em !important; overflow:hidden !important; clip-path: inset(0 round 1.35em); -webkit-clip-path: inset(0 round 1.35em); box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(255,255,255,.04), 0 8px 18px rgba(0,0,0,.18) !important; transition: transform .28s cubic-bezier(.22,.61,.36,1), box-shadow .28s ease, filter .28s ease, opacity .18s ease !important; }',
       'body.' + BODY_CLASS + ' .card[data-nfx-switched="1"] .card__view { opacity:1 !important; }',
       'body.' + BODY_CLASS + ' .card__view > *, body.' + BODY_CLASS + ' .card__view img, body.' + BODY_CLASS + ' .card__view .card__img, body.' + BODY_CLASS + ' .card__view .card__image, body.' + BODY_CLASS + ' .card__img, body.' + BODY_CLASS + ' .card__image, body.' + BODY_CLASS + ' .card__filter, body.' + BODY_CLASS + ' .card__filter::before, body.' + BODY_CLASS + ' .card__filter::after { border-radius:1.35em !important; }',
       'body.' + BODY_CLASS + ' .card__img, body.' + BODY_CLASS + ' .card__image { object-fit:cover !important; object-position:center 20% !important; border:none !important; box-shadow:none !important; background-clip:padding-box !important; }',
       'body.' + BODY_CLASS + ' .card.focus .card__view { transform: translateY(-.08em) scale(1.06) !important; filter: saturate(1.06) brightness(1.02) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 0 0 2px rgba(86,141,255,.92), 0 18px 42px rgba(0,0,0,.26), 0 8px 20px rgba(0,0,0,.14) !important; }',
       'body.' + BODY_CLASS + ' .card.hover .card__view { transform: translateY(-.04em) scale(1.03) !important; filter: saturate(1.02) brightness(1.01) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 10px 24px rgba(0,0,0,.16) !important; }',
       'body.' + BODY_CLASS + ' .card.focus::after, body.' + BODY_CLASS + ' .card.hover::after, body.' + BODY_CLASS + ' .card__view::before, body.' + BODY_CLASS + ' .card__view::after { display:none !important; content:none !important; }',
-      'body.' + BODY_CLASS + ' .card-episode__body { display: none !important; }',
-      'body.' + BODY_CLASS + ' .card-episode { width:17.6em !important; margin-right:.52em !important; margin-bottom:.45em !important; padding-bottom:0 !important; transform-origin:center center !important; overflow:visible !important; display: inline-block !important; transition: transform .28s cubic-bezier(.22,.61,.36,1) !important; }',
-      'body.' + BODY_CLASS + ' .card-episode__footer { display: block !important; width: 100% !important; padding: 0 !important; margin: 0 !important; border: none !important; }',
-      'body.' + BODY_CLASS + ' .card-episode__footer .card__imgbox { width: 100% !important; max-width: none !important; height: auto !important; margin: 0 !important; border-radius: 0 !important; display: block !important; }',
-      'body.' + BODY_CLASS + ' .card-episode .card__view { padding-bottom:56.25% !important; margin-bottom:0 !important; border-radius:1.35em !important; overflow:hidden !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(255,255,255,.04), 0 8px 18px rgba(0,0,0,.18) !important; transition: transform .28s cubic-bezier(.22,.61,.36,1), box-shadow .28s ease, filter .28s ease, opacity .18s ease !important; }',
-      'body.' + BODY_CLASS + ' .card-episode[data-nfx-switched="1"] .card__view { opacity:1 !important; }',
-      'body.' + BODY_CLASS + ' .card-episode.focus::after, body.' + BODY_CLASS + ' .card-episode.hover::after { display:none !important; }',
-      'body.' + BODY_CLASS + ' .card-episode.focus .card__view { transform: translateY(-.03em) scale(1.03) !important; filter: saturate(1.06) brightness(1.02) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 0 0 2px rgba(86,141,255,.92), 0 18px 42px rgba(0,0,0,.26), 0 8px 20px rgba(0,0,0,.14) !important; }',
-      'body.' + BODY_CLASS + ' .card-episode.hover .card__view { transform: translateY(-.015em) scale(1.015) !important; filter: saturate(1.02) brightness(1.01) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 10px 24px rgba(0,0,0,.16) !important; }',
+      'body.' + BODY_CLASS + ' .card-episode { width:17.6em !important; flex:0 0 auto !important; margin:0 !important; padding:0 !important; background:transparent !important; border:0 !important; outline:0 !important; box-shadow:none !important; transform:none !important; transform-origin:center center !important; overflow:visible !important; }',
+      'body.' + BODY_CLASS + ' .card-episode.focus, body.' + BODY_CLASS + ' .card-episode.hover, body.' + BODY_CLASS + ' .card-episode.focus .card-episode__body, body.' + BODY_CLASS + ' .card-episode.hover .card-episode__body { border:0 !important; outline:0 !important; box-shadow:none !important; background:transparent !important; }',
+      'body.' + BODY_CLASS + ' .card-episode__body { background:transparent !important; border:0 !important; outline:0 !important; box-shadow:none !important; padding:0 !important; margin:0 !important; display:block !important; overflow:visible !important; }',
+      'body.' + BODY_CLASS + ' .card-episode .full-episode { position:relative !important; display:block !important; background:transparent !important; border:0 !important; box-shadow:none !important; padding:0 !important; margin:0 !important; overflow:visible !important; transform-origin:center center !important; transition: transform .28s cubic-bezier(.22,.61,.36,1) !important; }',
+      'body.' + BODY_CLASS + ' .card-episode .full-episode__img { position:relative !important; width:100% !important; height:0 !important; padding-bottom:56.25% !important; margin:0 !important; border-radius:1.35em !important; overflow:hidden !important; clip-path: inset(0 round 1.35em); -webkit-clip-path: inset(0 round 1.35em); box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(255,255,255,.04), 0 8px 18px rgba(0,0,0,.18) !important; transition: box-shadow .28s ease, filter .28s ease !important; }',
+      'body.' + BODY_CLASS + ' .card-episode .full-episode__img > *, body.' + BODY_CLASS + ' .card-episode .full-episode__img img { border-radius:1.35em !important; }',
+      'body.' + BODY_CLASS + ' .card-episode .full-episode__img img { position:absolute !important; top:0 !important; left:0 !important; width:100% !important; height:100% !important; object-fit:cover !important; object-position:center center !important; }',
+      'body.' + BODY_CLASS + ' .card-episode .full-episode__img::before { content:"" !important; position:absolute !important; inset:auto 0 0 0 !important; height:62% !important; background:linear-gradient(0deg, rgba(6,8,14,.92) 0%, rgba(6,8,14,.62) 36%, rgba(6,8,14,.22) 70%, rgba(6,8,14,0) 100%) !important; z-index:2 !important; pointer-events:none !important; border-radius:0 0 1.35em 1.35em !important; }',
+      'body.' + BODY_CLASS + ' .card-episode .full-episode__body { position:absolute !important; left:1.02em !important; right:1.02em !important; bottom:.9em !important; top:auto !important; z-index:3 !important; padding:0 !important; margin:0 !important; background:transparent !important; border:0 !important; display:flex !important; flex-direction:column !important; align-items:flex-start !important; text-shadow:0 2px 12px rgba(0,0,0,.6) !important; pointer-events:none !important; }',
+      'body.' + BODY_CLASS + ' .card-episode .full-episode__num { position:absolute !important; top:.72em !important; right:.82em !important; left:auto !important; bottom:auto !important; z-index:4 !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; min-width:1.9em !important; font-size: calc(.72em * var(--agnative-scale, 1)) !important; font-weight:800 !important; color:#fff !important; letter-spacing:.04em !important; line-height:1 !important; margin:0 !important; padding:.34em .66em !important; border-radius:.85em !important; background:rgba(12,14,20,.68) !important; border:1px solid rgba(255,255,255,.14) !important; backdrop-filter: blur(10px) saturate(140%) !important; -webkit-backdrop-filter: blur(10px) saturate(140%) !important; box-shadow: 0 4px 10px rgba(0,0,0,.24) !important; text-shadow:none !important; }',
+      'body.' + BODY_CLASS + ' .card-episode .full-episode__num::before { content:"EP " !important; opacity:.7 !important; font-weight:700 !important; margin-right:.04em !important; }',
+      'body.' + BODY_CLASS + ' .card-episode .nfx-episode-logo { display:block !important; max-height:2.35em !important; max-width:80% !important; margin:0 0 .32em !important; padding:0 !important; background:transparent !important; border:0 !important; border-radius:0 !important; clip-path:none !important; -webkit-clip-path:none !important; object-fit:contain !important; object-position:left center !important; filter: drop-shadow(0 2px 6px rgba(0,0,0,.55)) !important; }',
+      'body.' + BODY_CLASS + ' .card-episode .nfx-episode-title { font-size: calc(.95em * var(--agnative-scale, 1)) !important; font-weight:800 !important; color:#fff !important; line-height:1.14 !important; max-width:100% !important; overflow:hidden !important; text-overflow:ellipsis !important; white-space:nowrap !important; margin:0 0 .3em !important; padding:0 !important; letter-spacing:.005em !important; }',
+      'body.' + BODY_CLASS + ' .card-episode .full-episode__name { font-size: calc(.82em * var(--agnative-scale, 1)) !important; font-weight:700 !important; color:#fff !important; line-height:1.18 !important; max-width:100% !important; overflow:hidden !important; text-overflow:ellipsis !important; white-space:nowrap !important; margin:0 !important; padding:0 !important; }',
+      'body.' + BODY_CLASS + ' .card-episode .full-episode__date { font-size: calc(.68em * var(--agnative-scale, 1)) !important; font-weight:500 !important; color:rgba(255,255,255,.78) !important; line-height:1.2 !important; margin-top:.18em !important; padding:0 !important; letter-spacing:.01em !important; gap: .5em;}',
+      'body.' + BODY_CLASS + ' .card-episode__footer { display:none !important; }',
+      'body.' + BODY_CLASS + ' .card-episode::before, body.' + BODY_CLASS + ' .card-episode::after, body.' + BODY_CLASS + ' .card-episode__body::before, body.' + BODY_CLASS + ' .card-episode__body::after, body.' + BODY_CLASS + ' .card-episode .full-episode::before, body.' + BODY_CLASS + ' .card-episode .full-episode::after { display:none !important; content:none !important; border:0 !important; outline:0 !important; box-shadow:none !important; background:transparent !important; }',
+      'body.' + BODY_CLASS + ' .card-episode.focus .full-episode__img { filter: saturate(1.06) brightness(1.02) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 0 0 2px rgba(86,141,255,.92), 0 18px 42px rgba(0,0,0,.26), 0 8px 20px rgba(0,0,0,.14) !important; }',
+      'body.' + BODY_CLASS + ' .card-episode.hover .full-episode__img { filter: saturate(1.02) brightness(1.01) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 10px 24px rgba(0,0,0,.16) !important; }',
+      'body.' + BODY_CLASS + ':not(.' + GLARE_CLASS + ') .card-episode.focus .full-episode { transform: translateY(-.08em) scale(1.06) !important; }',
+      'body.' + BODY_CLASS + ':not(.' + GLARE_CLASS + ') .card-episode.hover .full-episode { transform: translateY(-.04em) scale(1.03) !important; }',
+      'body.' + GLARE_CLASS + ' .card, body.' + GLARE_CLASS + ' .card-episode, body.' + GLARE_CLASS + ' .full-start-new__poster { will-change: transform; transform-style: preserve-3d; }',
+      'body.' + GLARE_CLASS + ' .card__view, body.' + GLARE_CLASS + ' .full-episode__img, body.' + GLARE_CLASS + ' .full-start-new__poster { position: relative; overflow: hidden; }',
+      'body.' + GLARE_CLASS + ' .card .card__view::after, body.' + GLARE_CLASS + ' .card-episode .full-episode__img::after, body.' + GLARE_CLASS + ' .full-start-new__poster::after { content:"" !important; display:block !important; position:absolute; inset:-10%; border-radius:inherit; background: radial-gradient(ellipse at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,.20) 0%, rgba(255,255,255,.16) 12%, rgba(255,255,255,.10) 26%, rgba(255,255,255,.05) 42%, rgba(255,255,255,.02) 58%, rgba(255,255,255,0) 78%) !important; opacity:0; filter: blur(18px); transition: opacity .22s ease, transform .22s ease; pointer-events:none; z-index:8; mix-blend-mode: screen; }',
+      'body.' + GLARE_CLASS + ' .card.focus .card__view::after, body.' + GLARE_CLASS + ' .card.hover .card__view::after, body.' + GLARE_CLASS + ' .card-episode.focus .full-episode__img::after, body.' + GLARE_CLASS + ' .card-episode.hover .full-episode__img::after, body.' + GLARE_CLASS + ' .full-start-new__poster.focus::after, body.' + GLARE_CLASS + ' .full-start-new__poster.hover::after { opacity: 1 !important; }',
+      'body.' + GLARE_CLASS + ' .card.focus .card__view, body.' + GLARE_CLASS + ' .card.hover .card__view, body.' + GLARE_CLASS + ' .card-episode.focus .full-episode, body.' + GLARE_CLASS + ' .card-episode.hover .full-episode, body.' + GLARE_CLASS + ' .full-start-new__poster.focus, body.' + GLARE_CLASS + ' .full-start-new__poster.hover { transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.055) translateY(-.06em) !important; transition: transform .08s linear, box-shadow .24s ease, filter .24s ease !important; }',
       'body.' + BODY_CLASS + ' .card__vote, body.' + BODY_CLASS + ' .card__quality, body.' + BODY_CLASS + ' .card__type, body.' + BODY_CLASS + ' .card__promo-text, body.' + BODY_CLASS + ' .card__promo-title, body.' + BODY_CLASS + ' .full-person__photo, body.' + BODY_CLASS + ' .nfx-card-overlay__match { display:none !important; }',
       'body.' + BODY_CLASS + ' .card__title, body.' + BODY_CLASS + ' .card__age { display:none !important; }',
-      'body.' + BODY_CLASS + ' .nfx-card-overlay { position:absolute; left:0; right:0; bottom:0; z-index:3; display:block !important; opacity:1 !important; visibility:visible !important; border-radius:0 0 1.35em 1.35em !important; background:linear-gradient(0deg, rgba(6,8,14,.88) 0%, rgba(6,8,14,.56) 38%, rgba(6,8,14,.16) 68%, rgba(6,8,14,0) 100%) !important; padding:2.15em 1.02em .92em !important; transform: translateZ(14px); transition: transform .28s cubic-bezier(.22,.61,.36,1), opacity .24s ease; pointer-events:none; }',
+      'body.' + BODY_CLASS + ' .nfx-card-overlay { position:absolute; left:0; right:0; bottom:0; z-index:0; display:block !important; opacity:1 !important; visibility:visible !important; border-radius:0 0 1.35em 1.35em !important; background:linear-gradient(0deg, rgba(6,8,14,.88) 0%, rgba(6,8,14,.56) 38%, rgba(6,8,14,.16) 68%, rgba(6,8,14,0) 100%) !important; padding:2.15em 1.02em .92em !important; transform: translateZ(14px); transition: transform .28s cubic-bezier(.22,.61,.36,1), opacity .24s ease; pointer-events:none; }',
       'body.' + BODY_CLASS + ' .card.focus .nfx-card-overlay { transform: translateZ(18px) translateY(-.02em); }',
       'body.' + BODY_CLASS + ' .nfx-card-overlay__logo, body.' + BODY_CLASS + ' img.nfx-card-overlay__logo { display:block !important; opacity:1 !important; visibility:visible !important; max-height:2.55em !important; max-width:82% !important; margin-bottom:.28em !important; border-radius:0 !important; clip-path:none !important; -webkit-clip-path:none !important; mask-image:none !important; -webkit-mask-image:none !important; overflow:visible !important; }',
       'body.' + BODY_CLASS + ' .nfx-card-overlay__title { color:#fff; font-size:1.02em !important; line-height:1.14 !important; font-weight:800 !important; text-shadow:0 2px 12px rgba(0,0,0,.5); }',
       'body.' + BODY_CLASS + ' .nfx-card-overlay__meta { color:rgba(255,255,255,.88); font-size:.74em !important; margin-top:.2em !important; line-height:1.28 !important; white-space:normal !important; max-width:100% !important; text-shadow:0 1px 8px rgba(0,0,0,.45); }',
       'body.' + BODY_CLASS + ' .nfx-card-logo { position:absolute; top:.7em; left:.82em; z-index:4; display:inline-flex !important; opacity:1 !important; visibility:visible !important; align-items:center; justify-content:center; padding:.38em .88em; border-radius:.92em; background:rgba(12,14,20,.62); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.96); font-size:.74em; font-weight:800; letter-spacing:.05em; backdrop-filter: blur(10px) saturate(140%); -webkit-backdrop-filter: blur(10px) saturate(140%); pointer-events:none; }',
-      'body.' + BODY_CLASS + ' .nfx-card-rating { position:absolute; top:.7em; right:.82em; z-index:4; display:inline-flex; align-items:center; justify-content:center; padding:.34em .68em; border-radius:.92em; background:rgba(12,14,20,.68); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.96); font-size:.74em; font-weight:800; letter-spacing:.02em; backdrop-filter: blur(10px) saturate(140%); -webkit-backdrop-filter: blur(10px) saturate(140%); pointer-events:none; }',
-      'body.' + BODY_CLASS + ' .agnative-ep-overlay { position:absolute; left:0; right:0; bottom:0; z-index:3; display:flex; flex-direction:column; justify-content:flex-end; padding:2.15em 1.02em .92em; background:linear-gradient(0deg, rgba(6,8,14,.95) 0%, rgba(6,8,14,.6) 40%, rgba(6,8,14,0) 100%); pointer-events:none; transform: translateZ(14px); transition: transform .28s cubic-bezier(.22,.61,.36,1); }',
-      'body.' + BODY_CLASS + ' .card-episode.focus .agnative-ep-overlay { transform: translateZ(18px) translateY(-.02em); }',
-      'body.' + BODY_CLASS + ' .agnative-ep-title { color:#fff; font-size:1.02em; line-height:1.15; font-weight:800; text-shadow:0 2px 12px rgba(0,0,0,.6); display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }',
-      'body.' + BODY_CLASS + ' .agnative-ep-name { color:#fff; font-size:.85em; font-weight:700; line-height:1.2; margin-top:.1em; text-shadow:0 1px 8px rgba(0,0,0,.5); display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }',
-      'body.' + BODY_CLASS + ' .agnative-ep-date { color:rgba(255,255,255,.65); font-size:.75em; font-weight:500; margin-top:.1em; }',
-      'body.' + BODY_CLASS + ' .agnative-ep-badge { position:absolute; top:.7em; right:.82em; z-index:4; display:inline-flex; align-items:center; justify-content:center; padding:.3em .65em; border-radius:.92em; background:rgba(12,14,20,.7); color:rgba(255,255,255,.9); font-size:.7em; font-weight:800; letter-spacing:.05em; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); pointer-events:none; }',
-      'body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card, body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card-episode, body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .full-start-new__poster { will-change: transform; transform-style: preserve-3d; }',
-      'body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card__view, body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .full-start-new__poster { position: relative; overflow: hidden; }',
-      'body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card .card__view::after, body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card-episode .card__view::after, body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .full-start-new__poster::after { content:"" !important; display:block !important; position:absolute; inset:-10%; border-radius:inherit; background: radial-gradient(ellipse at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,.20) 0%, rgba(255,255,255,.16) 12%, rgba(255,255,255,.10) 26%, rgba(255,255,255,.05) 42%, rgba(255,255,255,.02) 58%, rgba(255,255,255,0) 78%) !important; opacity:0; filter: blur(18px); transition: opacity .22s ease, transform .22s ease; pointer-events:none; z-index:8; mix-blend-mode: screen; }',
-      'body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card.focus .card__view::after, body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card.hover .card__view::after, body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card-episode.focus .card__view::after, body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card-episode.hover .card__view::after, body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .full-start-new__poster.focus::after, body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .full-start-new__poster.hover::after { opacity: 1 !important; }',
-      'body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card.focus .card__view, body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .full-start-new__poster.focus { transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.055) translateY(-.06em) !important; }',
-      'body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card.hover .card__view, body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .full-start-new__poster.hover { transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.03) translateY(-.03em) !important; }',
-      'body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card-episode.focus .card__view { transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.03) translateY(-.03em) !important; }',
-      'body.' + BODY_CLASS + '.' + GLARE_CLASS + ' .card-episode.hover .card__view { transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.015) translateY(-.015em) !important; }'
+      'body.' + BODY_CLASS + ' { --agnative-scale: 1; --agnative-category-scale: 1; }',
+      'body.' + BODY_CLASS + '[' + FONT_SIZE_ATTR + '="xs"] { --agnative-scale: .85; }',
+      'body.' + BODY_CLASS + '[' + FONT_SIZE_ATTR + '="sm"] { --agnative-scale: .92; }',
+      'body.' + BODY_CLASS + '[' + FONT_SIZE_ATTR + '="md"] { --agnative-scale: 1; }',
+      'body.' + BODY_CLASS + '[' + FONT_SIZE_ATTR + '="lg"] { --agnative-scale: 1.12; }',
+      'body.' + BODY_CLASS + '[' + FONT_SIZE_ATTR + '="xl"] { --agnative-scale: 1.24; }',
+      'body.' + BODY_CLASS + '[' + CATEGORY_SIZE_ATTR + '="xs"] { --agnative-category-scale: .78; }',
+      'body.' + BODY_CLASS + '[' + CATEGORY_SIZE_ATTR + '="sm"] { --agnative-category-scale: .9; }',
+      'body.' + BODY_CLASS + '[' + CATEGORY_SIZE_ATTR + '="md"] { --agnative-category-scale: 1; }',
+      'body.' + BODY_CLASS + '[' + CATEGORY_SIZE_ATTR + '="lg"] { --agnative-category-scale: 1.18; }',
+      'body.' + BODY_CLASS + '[' + CATEGORY_SIZE_ATTR + '="xl"] { --agnative-category-scale: 1.4; }',
+      'body.' + BODY_CLASS + ' .agnative-topnav-shell__item.selector { font-size: calc(.85em * var(--agnative-scale, 1)) !important; }',
+      'body.' + BODY_CLASS + ' .agnative-topnav-clock { font-size: calc(.88em * var(--agnative-scale, 1)) !important; }',
+      'body.' + BODY_CLASS + ' .items-line__title { font-size: calc(1em * var(--agnative-scale, 1) * var(--agnative-category-scale, 1)) !important; }',
+      'body.' + BODY_CLASS + ' .items-line__more.selector { font-size: calc(.72em * var(--agnative-scale, 1) * var(--agnative-category-scale, 1)) !important; }',
+      'body.' + BODY_CLASS + ' .nfx-card-overlay__title { font-size: calc(1em * var(--agnative-scale, 1)) !important; }',
+      'body.' + BODY_CLASS + ' .nfx-card-overlay__meta { font-size: calc(.72em * var(--agnative-scale, 1)) !important; }',
+      'body.' + BODY_CLASS + ' .nfx-card-logo { font-size: calc(.72em * var(--agnative-scale, 1)) !important; }',
+      'body.' + BODY_CLASS + ' .nfx-card-rating { position:absolute; top:.7em; right:.82em; z-index:4; display:inline-flex; align-items:center; justify-content:center; padding:.32em .66em; border-radius:.85em; background:rgba(12,14,20,.68); border:1px solid rgba(255,255,255,.14); color:#ffd13d; font-size: calc(.72em * var(--agnative-scale, 1)); font-weight:800; letter-spacing:.02em; backdrop-filter: blur(10px) saturate(140%); -webkit-backdrop-filter: blur(10px) saturate(140%); pointer-events:none; box-shadow: 0 4px 10px rgba(0,0,0,.24); }',
+      'body.' + BODY_CLASS + '[' + RATING_STYLE_ATTR + '="color"] .nfx-card-rating { color:#ffd13d !important; background:rgba(12,14,20,.68) !important; border-color:rgba(255,255,255,.14) !important; }',
+      'body.' + BODY_CLASS + '[' + RATING_STYLE_ATTR + '="mono"] .nfx-card-rating { color:rgba(255,255,255,.96) !important; background:rgba(255,255,255,.12) !important; border-color:rgba(255,255,255,.18) !important; }',
+      'body.' + BODY_CLASS + '[' + BADGE_ATTR + '="off"] .nfx-card-logo { display:none !important; }',
+      'body.' + BODY_CLASS + '[' + RATING_ATTR + '="off"] .nfx-card-rating { display:none !important; }',
+      'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .card .card__view { padding-bottom:140% !important; }',
+      'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .card__img, body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .card__image { object-position:center center !important; }',
+      'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .nfx-card-overlay { display:block !important; background:linear-gradient(0deg, rgba(4,5,10,1) 0%, rgba(4,5,10,.98) 18%, rgba(4,5,10,.88) 36%, rgba(4,5,10,.6) 58%, rgba(4,5,10,.2) 78%, rgba(4,5,10,0) 100%) !important; padding:5em 1em 1em !important; border-radius:0 0 1.35em 1.35em !important; }',
+      'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .nfx-card-rating { display:inline-flex !important; }',
+      'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .nfx-card-logo { display:inline-flex !important; }',
+      'body.' + BODY_CLASS + '[' + BADGE_ATTR + '="off"][' + BACKDROP_ATTR + '="off"] .nfx-card-logo { display:none !important; }',
+      'body.' + BODY_CLASS + '[' + RATING_ATTR + '="off"][' + BACKDROP_ATTR + '="off"] .nfx-card-rating { display:none !important; }',
+      'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .nfx-card-overlay__logo { max-height:2.2em !important; max-width:78% !important; margin-bottom:.24em !important; }',
+      'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .nfx-card-overlay__title { font-size: calc(.95em * var(--agnative-scale, 1)) !important; font-weight:800 !important; line-height:1.16 !important; white-space:normal !important; display:-webkit-box !important; -webkit-line-clamp:2 !important; -webkit-box-orient:vertical !important; overflow:hidden !important; }',
+      'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .nfx-card-overlay__meta { font-size: calc(.68em * var(--agnative-scale, 1)) !important; margin-top:.18em !important; opacity:.85 !important; white-space:normal !important; }',
+      'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .card__title { display:none !important; }',
+      'body.' + BODY_CLASS + ' .community-watches-line-title,',
+      'body.' + BODY_CLASS + ' .community-watches__title,',
+      'body.' + BODY_CLASS + ' .community-watches .items-line__title,',
+      'body.' + BODY_CLASS + ' .community-watches__line-title {',
+      '  font-size: calc(1em * var(--agnative-scale, 1) * var(--agnative-category-scale, 1)) !important;',
+      '  line-height: 1.2 !important;',
+      '  font-weight: 700 !important;',
+      '  letter-spacing: .01em !important;',
+      '  margin: 0 !important;',
+      '}',
+      '@media (max-width: 767px) {',
+      '  body.' + BODY_CLASS + ' .agnative-topnav-shell__items { display: none !important; }',
+      '  body.' + BODY_CLASS + ' .agnative-topnav-shell__item--icon[data-role="search"],',
+      '  body.' + BODY_CLASS + ' .agnative-topnav-shell__item--icon[data-role="favorite"],',
+      '  body.' + BODY_CLASS + ' .agnative-topnav-shell__item--icon[data-role="settings"],',
+      '  body.' + BODY_CLASS + ' .agnative-topnav-right__profile[data-role="profile"] { display: none !important; }',
+      '  body.' + BODY_CLASS + ' .agnative-topnav-shell__right { margin-left: 0 !important; padding-left: 0 !important; }',
+      '  body.' + BODY_CLASS + ' .agnative-topnav-shell__inner { padding: .18em .22em !important; }',
+      '}'
     ].join('\n');
     if (document.body) document.body.appendChild(style);
     else document.head.appendChild(style);
@@ -1242,16 +1558,27 @@
     var entered = false;
     entered = triggerSelectorEvent(node, 'hover:focus') || entered;
     entered = triggerSelectorEvent(node, 'hover:enter') || entered;
-
     if (entered) return true;
+    clickNode(node);
+    return true;
+  }
 
-    // Fallback for edge cases where selector handlers are unavailable.
+  function normalizeTopnavAction(action) {
+    var value = String(action || '').trim().toLowerCase();
+    if (!value) return '';
+    if (value === 'release' || value === 'releases') return 'relise';
+    if (value === 'bookmarks') return 'favorite';
+    if (value === 'schedule') return 'timetable';
+    if (value === 'collection' || value === 'collections') return 'catalog';
+    return value;
+  }
+
+  function clickNode(node) {
+    if (!node) return;
     try {
       if (typeof node.click === 'function') node.click();
       else node.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-      return true;
     } catch (e) { }
-    return false;
   }
 
   function getMenuItem(action) {
@@ -1446,6 +1773,18 @@
     return false;
   }
 
+  function consumeEvent(e) {
+    if (!e) return false;
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
+    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+    return false;
+  }
+
+  function markSwallowClick(ms) {
+    swallowClickUntil = Date.now() + (typeof ms === 'number' ? ms : 260);
+  }
+
   function bindControlPanelOutsideClose() {
     if (controlPanelDocCloseBound || !document || !document.addEventListener) return;
     controlPanelDocCloseBound = true;
@@ -1453,7 +1792,6 @@
       var target = e && e.target;
       if (!target) return;
 
-      // When settings drawer is open, first outside click must only close it.
       if (document.body && document.body.classList.contains('settings--open')) {
         if (!(target.closest && target.closest('.settings'))) {
           try {
@@ -1469,7 +1807,7 @@
 
       if (!controlPanelOpen) return;
       if (target.closest && target.closest('.agnative-control-panel')) return;
-      if (target.closest && target.closest('.agnative-topnav-shell__clock')) return;
+      if (target.closest && target.closest('.agnative-topnav-clock')) return;
       closeControlPanel(true);
       markSwallowClick(280);
       consumeEvent(e);
@@ -1505,6 +1843,7 @@
   }
 
   function ensureControlPanel(head) {
+    if (!controlPanelEnabled()) return null;
     if (!head) return null;
     var panel = qs('.agnative-control-panel', head);
     if (!panel) {
@@ -1581,6 +1920,10 @@
   }
 
   function triggerClockActions(head) {
+    if (!controlPanelEnabled()) {
+      closeControlPanel(false);
+      return false;
+    }
     if (controlPanelOpen) return closeControlPanel(true);
     return openControlPanel(head);
   }
@@ -1626,8 +1969,8 @@
       setTimeout(function () { busy = false; }, 180);
       if (e && e.preventDefault) e.preventDefault();
       if (e && e.stopPropagation) e.stopPropagation();
-      if (sourceNode && triggerSelectorEnter(sourceNode)) return false;
-      if (actionName && triggerMenuAction(actionName)) return false;
+      if (actionName && triggerMenuAction(actionName)) return;
+      if (sourceNode) clickNode(sourceNode);
       return false;
     }
     btn.addEventListener('click', run);
@@ -1650,69 +1993,100 @@
     }
   }
 
-  function syncTopnavWithHeadController(head) {
-    if (!head || !window.Lampa || !Lampa.Controller || !window.$) return;
-    if (typeof Lampa.Controller.enabled !== 'function' || typeof Lampa.Controller.collectionSet !== 'function') return;
-
+  function registerTopnavController(shell) {
+    if (!shell || !window.Lampa || !Lampa.Controller || !window.$) return;
     try {
-      var enabled = Lampa.Controller.enabled();
-      if (!enabled || enabled.name !== 'head') return;
-
-      var view = $(head);
-      var target = qs('.agnative-topnav-shell__item.focus', head) ||
-        qs('.agnative-topnav-shell__item.is-active', head) ||
-        qs('.agnative-topnav-shell__item.selector', head);
-
-      Lampa.Controller.collectionSet(view, false, true);
-      if (typeof Lampa.Controller.collectionFocus === 'function') {
-        Lampa.Controller.collectionFocus(target || false, view, true);
-      }
+      Lampa.Controller.collectionSet($(shell));
     } catch (e) { }
   }
 
+  function ensureRightDock(head) {
+    if (!head) return null;
+    var dock = qs('.agnative-topnav-rightdock', head);
+    if (!dock) {
+      dock = document.createElement('div');
+      dock.className = 'agnative-topnav-rightdock';
+      head.appendChild(dock);
+    }
+    return dock;
+  }
+
+  function ensureClock(head) {
+    if (!head) return null;
+    var dock = ensureRightDock(head) || head;
+    var clock = qs('#' + CLOCK_ID, dock) || qs('#' + CLOCK_ID, head);
+    if (!clock) {
+      clock = document.createElement('div');
+      clock.id = CLOCK_ID;
+      clock.className = 'agnative-topnav-clock selector';
+      clock.setAttribute('data-selector', 'true');
+      clock.setAttribute('tabindex', '0');
+      bindAction(clock, function () { triggerClockActions(head); });
+    }
+    if (clock.parentNode !== dock) dock.appendChild(clock);
+    return clock;
+  }
+
+  function ensureProfileButton(head) {
+    if (!head) return null;
+    var dock = ensureRightDock(head) || head;
+    var profileBtn = qs('.agnative-topnav-right__profile[data-role="profile"]', dock) || qs('.agnative-topnav-right__profile[data-role="profile"]', head);
+    if (!profileBtn) {
+      profileBtn = document.createElement('div');
+      profileBtn.className = 'agnative-topnav-shell__item agnative-topnav-right__profile selector';
+      profileBtn.setAttribute('data-role', 'profile');
+      profileBtn.setAttribute('data-selector', 'true');
+      profileBtn.setAttribute('tabindex', '0');
+      bindAction(profileBtn, triggerProfile);
+    }
+    profileBtn.innerHTML = getProfileButtonHtml();
+    if (profileBtn.parentNode !== dock) dock.appendChild(profileBtn);
+    return profileBtn;
+  }
+
   function updateClock() {
-    var clocks = qsa('.agnative-topnav-shell__clock-time, .agnative-topnav-right__clock-time');
-    if (!clocks.length) return;
+    var clock = document.getElementById(CLOCK_ID);
+    if (!clock) return;
     var d = new Date();
-    var value = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-    clocks.forEach(function (clock) {
-      clock.textContent = value;
-    });
+    var text = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    if (clockSecondsEnabled()) text += ':' + String(d.getSeconds()).padStart(2, '0');
+    clock.textContent = text;
   }
 
   function startClock() {
     updateClock();
     if (clockTimer) return;
-    clockTimer = setInterval(updateClock, 1000 * 20);
+    var period = clockSecondsEnabled() ? 1000 : 1000 * 20;
+    clockTimer = setInterval(updateClock, period);
+  }
+
+  function restartClock() {
+    if (clockTimer) {
+      clearInterval(clockTimer);
+      clockTimer = null;
+    }
+    startClock();
   }
 
   function patchTopnav() {
     var head = qs('.head__body') || qs('.head');
     if (!head) return false;
 
-    closeControlPanel(false);
-    var legacyClock = document.getElementById(CLOCK_ID);
-    if (legacyClock) legacyClock.remove();
-
+    ensureClock(head);
+    ensureProfileButton(head);
     startClock();
 
     var shell = qs('.agnative-topnav-shell', head);
     if (!shell) {
       shell = document.createElement('div');
       shell.className = 'agnative-topnav-shell';
-      shell.innerHTML = '<div class="agnative-topnav-shell__inner"><div class="agnative-topnav-shell__items"></div></div>';
+      shell.innerHTML = '<div class="agnative-topnav-shell__inner"><div class="agnative-topnav-shell__items"></div><div class="agnative-topnav-shell__right"></div></div>';
       head.appendChild(shell);
     }
 
     var itemsWrap = qs('.agnative-topnav-shell__items', shell);
-    if (!itemsWrap) return false;
-
-    var rightWrap = qs('.agnative-topnav-right', shell);
-    if (!rightWrap) {
-      rightWrap = document.createElement('div');
-      rightWrap.className = 'agnative-topnav-right';
-      shell.appendChild(rightWrap);
-    }
+    var rightWrap = qs('.agnative-topnav-shell__right', shell);
+    if (!itemsWrap || !rightWrap) return false;
 
     itemsWrap.innerHTML = '';
     rightWrap.innerHTML = '';
@@ -1729,10 +2103,15 @@
       itemsWrap.appendChild(btn);
     });
 
-    [
+    var iconItems = [
       { role: 'search', svg: iconSearch(), handler: triggerSearch },
       { role: 'favorite', svg: iconFavorite(), handler: triggerFavorite }
-    ].forEach(function (def) {
+    ];
+    if (!controlPanelEnabled()) {
+      iconItems.push({ role: 'settings', svg: iconSettings(), handler: triggerSettings });
+    }
+
+    iconItems.forEach(function (def) {
       var btn = document.createElement('div');
       btn.className = 'agnative-topnav-shell__item agnative-topnav-shell__item--icon selector';
       btn.setAttribute('data-role', def.role);
@@ -1740,30 +2119,10 @@
       btn.setAttribute('tabindex', '0');
       btn.innerHTML = def.svg;
       bindAction(btn, def.handler);
-      itemsWrap.appendChild(btn);
+      rightWrap.appendChild(btn);
     });
 
-    var clockBtn = document.createElement('div');
-    clockBtn.className = 'agnative-topnav-shell__item agnative-topnav-shell__clock agnative-topnav-right__clock selector';
-    clockBtn.setAttribute('data-role', 'control');
-    clockBtn.setAttribute('data-selector', 'true');
-    clockBtn.setAttribute('tabindex', '0');
-    clockBtn.innerHTML = '<span class="agnative-topnav-right__clock-time"></span>';
-    bindAction(clockBtn, function () { triggerClockActions(head); });
-    rightWrap.appendChild(clockBtn);
-
-    var profileBtn = document.createElement('div');
-    profileBtn.className = 'agnative-topnav-shell__item agnative-topnav-right__profile selector';
-    profileBtn.setAttribute('data-role', 'profile');
-    profileBtn.setAttribute('data-selector', 'true');
-    profileBtn.setAttribute('tabindex', '0');
-    profileBtn.innerHTML = getProfileButtonHtml();
-    bindAction(profileBtn, triggerProfile);
-    rightWrap.appendChild(profileBtn);
-
-    updateClock();
-
-    syncTopnavWithHeadController(head);
+    registerTopnavController(shell);
 
     qsa('.agnative-topnav-shell__item[data-action]', shell).forEach(function (btn) {
       btn.classList.remove('is-active');
@@ -1778,7 +2137,8 @@
 
   function fetchLogo(id, type, callback) {
     if (!id) return callback(null);
-    var cacheKey = type + '/' + id + '/' + getLogoLang();
+    var lang = getLogoLang();
+    var cacheKey = type + '/' + id + '/' + lang;
 
     if (cacheKey in logoCache) return callback(logoCache[cacheKey]);
 
@@ -1789,24 +2149,19 @@
 
     logoPending[cacheKey] = [callback];
 
-    var logoLang = getLogoLang();
-    var preferredLanguages = [logoLang];
-    if (logoLang !== 'en') preferredLanguages.push('en');
-
-    var includeImageLanguage = preferredLanguages.concat(['null']).join(',');
+    var langs = [lang];
+    if (lang !== 'en') langs.push('en');
+    langs.push('null');
 
     var url = 'https://api.themoviedb.org/3/' + type + '/' + id +
-      '/images?api_key=' + TMDB_KEY + '&include_image_language=' + includeImageLanguage;
+      '/images?api_key=' + TMDB_KEY + '&include_image_language=' + langs.join(',');
 
     fetch(url).then(function (r) { return r.json(); }).then(function (data) {
       var logo = null;
       if (data.logos && data.logos.length) {
-        var picked = null;
-        preferredLanguages.some(function (lang) {
-          picked = data.logos.find(function (l) { return l.iso_639_1 === lang; }) || null;
-          return !!picked;
-        });
-        if (!picked) picked = data.logos.find(function (l) { return l.iso_639_1 === null || typeof l.iso_639_1 === 'undefined'; }) || data.logos[0];
+        var preferred = data.logos.filter(function (l) { return l.iso_639_1 === lang; });
+        var english = data.logos.filter(function (l) { return l.iso_639_1 === 'en'; });
+        var picked = preferred[0] || english[0] || data.logos[0];
         if (picked && picked.file_path) {
           logo = {
             path: picked.file_path,
@@ -1831,26 +2186,52 @@
     return Lampa.TMDB.image('t/p/w300' + logoPath);
   }
 
+  function fetchCleanPoster(id, type, callback) {
+    var cacheKey = 'poster/' + type + '/' + id;
+    if (cacheKey in posterCache) return callback(posterCache[cacheKey]);
+    if (posterPending[cacheKey]) { posterPending[cacheKey].push(callback); return; }
+    posterPending[cacheKey] = [callback];
+
+    var url = 'https://api.themoviedb.org/3/' + type + '/' + id +
+      '/images?api_key=' + TMDB_KEY + '&include_image_language=null';
+
+    fetch(url).then(function (r) { return r.json(); }).then(function (data) {
+      var path = null;
+      if (data.posters && data.posters.length) {
+        var neutrals = data.posters.filter(function (p) { return !p.iso_639_1; });
+        var picked = neutrals[0] || data.posters[0];
+        if (picked && picked.file_path) path = picked.file_path;
+      }
+      posterCache[cacheKey] = path;
+      var cbs = posterPending[cacheKey] || [];
+      delete posterPending[cacheKey];
+      for (var i = 0; i < cbs.length; i++) cbs[i](path);
+    }).catch(function () {
+      posterCache[cacheKey] = null;
+      var cbs = posterPending[cacheKey] || [];
+      delete posterPending[cacheKey];
+      for (var i = 0; i < cbs.length; i++) cbs[i](null);
+    });
+  }
+
   function switchCardToBackdrop(cardEl) {
     if (cardEl.getAttribute('data-nfx-switched')) return;
     cardEl.setAttribute('data-nfx-switched', '1');
 
-    // On mobile, keep poster images (portrait cards)
-    if (isMobile()) return;
+    var data = extractCardData(cardEl);
+    if (!data) return;
 
-    var data = extractCardData(cardEl) || {};
-    var isEpisode = cardEl.classList.contains('card-episode');
-
-    var view = cardEl.querySelector('.card__view');
-
-    if (!view || view.querySelector('.nfx-card-overlay') || view.querySelector('.agnative-ep-overlay')) return;
-
-
-    var domTitle = cardEl.querySelector('.card__title');
-    var title = data.title || data.name || (domTitle ? domTitle.textContent.trim() : '');
+    var useBackdrop = backdropEnabled();
 
     var imgEl = cardEl.querySelector('.card__img');
-    if (imgEl && data.backdrop_path) {
+    if (imgEl && data.backdrop_path && useBackdrop && !isMobile()) {
+      if (imgEl.tagName === 'IMG') {
+        if (!imgEl.hasAttribute('data-nfx-original-src')) {
+          imgEl.setAttribute('data-nfx-original-src', imgEl.getAttribute('src') || '');
+        }
+      } else if (!imgEl.hasAttribute('data-nfx-original-bg')) {
+        imgEl.setAttribute('data-nfx-original-bg', imgEl.style.backgroundImage || '');
+      }
       var backdropUrl = Lampa.TMDB.image('t/p/w500' + data.backdrop_path);
       if (imgEl.tagName === 'IMG') {
         imgEl.src = backdropUrl;
@@ -1863,97 +2244,144 @@
       }
     }
 
-    if (isEpisode) {
-      var epNum = '';
-      var epName = '';
-      var epDate = '';
+    var view = cardEl.querySelector('.card__view');
+    if (!view || view.querySelector('.nfx-card-overlay')) return;
 
-      var epNumEl = cardEl.querySelector('.full-episode__num');
-      var epNameEl = cardEl.querySelector('.full-episode__name');
-      var epDateEl = cardEl.querySelector('.full-episode__date');
+    var title = data.title || data.name || '';
+    if (!title) {
+      var titleEl = cardEl.querySelector('.card__title');
+      if (titleEl) title = titleEl.textContent.trim();
+    }
 
-      if (epNumEl) epNum = epNumEl.textContent.trim();
-      if (epNameEl) epName = epNameEl.textContent.trim();
-      if (epDateEl) epDate = epDateEl.textContent.trim();
+    var vote = data.vote_average ? parseFloat(data.vote_average) : 0;
+    var year = '';
+    if (data.release_date) year = data.release_date.substring(0, 4);
+    else if (data.first_air_date) year = data.first_air_date.substring(0, 4);
 
-      if (epNum) {
-        var badge = document.createElement('div');
-        badge.className = 'agnative-ep-badge';
-        badge.textContent = /^\d+$/.test(epNum) ? 'EP' + epNum : epNum;
-        view.appendChild(badge);
+    var overlay = document.createElement('div');
+    overlay.className = 'nfx-card-overlay';
+
+    var metaParts = [];
+    if (vote > 0) metaParts.push('<span class="nfx-card-overlay__match">' + Math.round(vote * 10) + '%</span>');
+    if (year) metaParts.push('<span>' + year + '</span>');
+    var genreNames = getGenreNames(data);
+    if (genreNames.length) metaParts.push('<span>' + escapeHtml(genreNames.slice(0, 2).join(', ')) + '</span>');
+    var metaHtml = metaParts.length ? '<div class="nfx-card-overlay__meta">' + metaParts.join('<span style="opacity:0.4"> · </span>') + '</div>' : '';
+
+    var titleHtml = title ? '<div class="nfx-card-overlay__title">' + escapeHtml(title) + '</div>' : '';
+    overlay.innerHTML = titleHtml + metaHtml;
+    view.appendChild(overlay);
+
+    var tmdbType = data.name ? 'tv' : 'movie';
+    fetchLogo(data.id, tmdbType, function (logo) {
+      if (!logo) return;
+      var titleDiv = overlay.querySelector('.nfx-card-overlay__title');
+      if (titleDiv) {
+        var img = document.createElement('img');
+        img.className = 'nfx-card-overlay__logo';
+        img.src = logoImgUrl(logo.path);
+        img.alt = title;
+        img.loading = 'lazy';
+        img.onerror = function () { img.style.display = 'none'; };
+        titleDiv.replaceWith(img);
       }
+    });
 
-      var epOverlay = document.createElement('div');
-      epOverlay.className = 'agnative-ep-overlay';
+    if (badgeEnabled()) {
+      var badge = document.createElement('div');
+      badge.className = 'nfx-card-logo';
+      badge.textContent = data.name ? t('badge_tv') : t('badge_movie');
+      view.appendChild(badge);
+    }
 
-      var titleHtml = title ? '<div class="agnative-ep-title">' + escapeHtml(title) + '</div>' : '';
-      var nameHtml = epName ? '<div class="agnative-ep-name">' + escapeHtml(epName) + '</div>' : '';
-      var dateHtml = epDate ? '<div class="agnative-ep-date">' + escapeHtml(epDate) + '</div>' : '';
+    if (ratingEnabled() && vote > 0) {
+      var rating = document.createElement('div');
+      rating.className = 'nfx-card-rating';
+      rating.textContent = vote.toFixed(1);
+      view.appendChild(rating);
+    }
 
-      epOverlay.innerHTML = titleHtml + nameHtml + dateHtml;
-      view.appendChild(epOverlay);
+    if (!useBackdrop && data.id && imgEl) {
+      fetchCleanPoster(data.id, tmdbType, function (posterPath) {
+        if (!posterPath) return;
+        var url = Lampa.TMDB.image('t/p/w500' + posterPath);
+        if (imgEl.tagName === 'IMG') {
+          imgEl.src = url;
+        } else {
+          imgEl.style.backgroundImage = 'url(' + url + ')';
+          imgEl.style.backgroundSize = 'cover';
+          imgEl.style.backgroundPosition = 'center';
+        }
+      });
+    }
+  }
 
-    } else {
-      var vote = data.vote_average ? parseFloat(data.vote_average) : 0;
-      var year = '';
-      if (data.release_date) year = data.release_date.substring(0, 4);
-      else if (data.first_air_date) year = data.first_air_date.substring(0, 4);
-      else if (cardEl.querySelector('.card__age')) year = cardEl.querySelector('.card__age').textContent.trim();
-
-      // Overlay with logo/title + meta
-      var overlay = document.createElement('div');
-      overlay.className = 'nfx-card-overlay';
-
-      // Build meta line
-      var metaParts = [];
-      if (vote > 0) metaParts.push('<span class="nfx-card-overlay__match">' + Math.round(vote * 10) + '%</span>');
-      if (year) metaParts.push('<span>' + year + '</span>');
-      var genreNames = getGenreNames(data);
-      if (genreNames.length) metaParts.push('<span>' + escapeHtml(genreNames.slice(0, 2).join(', ')) + '</span>');
-
-      var metaHtml = metaParts.length ? '<div class="nfx-card-overlay__meta">' + metaParts.join('<span style="opacity:0.4"> · </span>') + '</div>' : '';
-      var titleHtml = title ? '<div class="nfx-card-overlay__title">' + escapeHtml(title) + '</div>' : '';
-
-      overlay.innerHTML = titleHtml + metaHtml;
-      view.appendChild(overlay);
-
-      if (data.id) {
-        var tmdbType = data.name ? 'tv' : 'movie';
-        fetchLogo(data.id, tmdbType, function (logo) {
-          if (!logo) return;
-          var titleDiv = overlay.querySelector('.nfx-card-overlay__title');
-          if (titleDiv) {
-            var img = document.createElement('img');
-            img.className = 'nfx-card-overlay__logo';
-            img.src = logoImgUrl(logo.path);
-            img.alt = title;
-            img.loading = 'lazy';
-            img.onerror = function () { img.style.display = 'none'; };
-            titleDiv.replaceWith(img);
-          }
-        });
+  function extractEpisodeShowId(cardEl, data) {
+    if (data) {
+      if (data.serial && data.serial.id) return { id: data.serial.id, name: data.serial.name || data.serial.original_name || '' };
+      if (data.show && data.show.id) return { id: data.show.id, name: data.show.name || data.show.original_name || '' };
+      if (data.show_id) return { id: data.show_id, name: data.show_name || '' };
+      if (data.tv_id) return { id: data.tv_id, name: data.tv_name || '' };
+      if (data.source_id) return { id: data.source_id, name: data.source_name || '' };
+      if (data.id && (data.name || data.original_name) && (data.first_air_date || data.episode_run_time || data.number_of_seasons)) {
+        return { id: data.id, name: data.name || data.original_name };
       }
+    }
+    if (cardEl) {
+      var titleEl = cardEl.querySelector('.card-episode__footer .card__title');
+      if (titleEl) return { id: null, name: titleEl.textContent.trim() };
+    }
+    return null;
+  }
 
-      if (shouldShowBadge()) {
-        var logoBadge = document.createElement('div');
-        logoBadge.className = 'nfx-card-logo';
-        logoBadge.textContent = data.name ? t('badge_tv') : t('badge_movie');
-        view.appendChild(logoBadge);
-      }
+  function switchEpisodeCardToBackdrop(cardEl) {
+    if (!cardEl || cardEl.getAttribute('data-nfx-ep-switched')) return;
+    cardEl.setAttribute('data-nfx-ep-switched', '1');
+    if (isMobile()) return;
 
-      if (ratingEnabled() && vote > 0) {
-        var rating = document.createElement('div');
-        rating.className = 'nfx-card-rating';
-        rating.textContent = vote.toFixed(1);
-        view.appendChild(rating);
-      }
+    var body = cardEl.querySelector('.full-episode__body');
+    if (!body) return;
+
+    var fullEp = cardEl.querySelector('.full-episode');
+    var numEl = cardEl.querySelector('.full-episode__num');
+    if (fullEp && numEl && numEl.parentNode !== fullEp) {
+      fullEp.appendChild(numEl);
+    }
+
+    var data = extractCardData(cardEl);
+    var showInfo = extractEpisodeShowId(cardEl, data);
+
+    if (body.querySelector('.nfx-episode-title') || body.querySelector('.nfx-episode-logo')) return;
+
+    var titleEl = document.createElement('div');
+    titleEl.className = 'nfx-episode-title';
+    titleEl.textContent = (showInfo && showInfo.name) ? showInfo.name : '';
+    if (titleEl.textContent) body.insertBefore(titleEl, body.firstChild);
+
+    if (showInfo && showInfo.id) {
+      fetchLogo(showInfo.id, 'tv', function (logo) {
+        if (!logo) return;
+        var host = cardEl.querySelector('.full-episode__body');
+        if (!host) return;
+        var existing = host.querySelector('.nfx-episode-title');
+        var img = document.createElement('img');
+        img.className = 'nfx-episode-logo';
+        img.src = logoImgUrl(logo.path);
+        img.alt = showInfo.name || '';
+        img.loading = 'lazy';
+        img.onerror = function () { img.style.display = 'none'; };
+        if (existing) existing.replaceWith(img);
+        else host.insertBefore(img, host.firstChild);
+      });
     }
   }
 
   function processCards(container) {
     if (!container) return;
-    var cards = container.querySelectorAll('.card, .card-episode');
+    var cards = container.querySelectorAll('.card');
     for (var i = 0; i < cards.length; i++) switchCardToBackdrop(cards[i]);
+    var eps = container.querySelectorAll('.card-episode');
+    for (var j = 0; j < eps.length; j++) switchEpisodeCardToBackdrop(eps[j]);
   }
 
   function observeCards() {
@@ -1964,11 +2392,15 @@
         for (var j = 0; j < added.length; j++) {
           var node = added[j];
           if (node.nodeType !== 1) continue;
-          if (node.classList && (node.classList.contains('card') || node.classList.contains('card-episode'))) {
+          if (node.classList && node.classList.contains('card')) {
             switchCardToBackdrop(node);
+          } else if (node.classList && node.classList.contains('card-episode')) {
+            switchEpisodeCardToBackdrop(node);
           } else if (node.querySelectorAll) {
-            var cards = node.querySelectorAll('.card, .card-episode');
+            var cards = node.querySelectorAll('.card');
             for (var k = 0; k < cards.length; k++) switchCardToBackdrop(cards[k]);
+            var eps = node.querySelectorAll('.card-episode');
+            for (var m = 0; m < eps.length; m++) switchEpisodeCardToBackdrop(eps[m]);
           }
         }
       }
@@ -1980,31 +2412,80 @@
     window.__AGNATIVE_TOPNAV_GLARE_RUNTIME__ = true;
     if (!document.body) return;
 
-    document.body.addEventListener('mousemove', function (e) {
-      if (!glareEnabled()) return;
-      var card = e.target.closest('.card, .card-episode, .full-start-new__poster');
-      if (!card) return;
+    var GLARE_SEL = '.card, .card-episode, .full-start-new__poster';
+    var activeCard = null;
+    var activeRect = null;
+    var lastClientX = 0;
+    var lastClientY = 0;
+    var rafScheduled = false;
+    var glareOn = glareEnabled();
 
-      var rect = card.getBoundingClientRect();
-      var x = e.clientX - rect.left;
-      var y = e.clientY - rect.top;
-      var xPct = (x / rect.width) * 2 - 1;
-      var yPct = (y / rect.height) * 2 - 1;
+    if (window.Lampa && Lampa.Storage && typeof Lampa.Storage.listener === 'function' && Lampa.Storage.listener.follow) {
+      try {
+        Lampa.Storage.listener.follow('change', function (e) {
+          if (e && e.name === GLARE_KEY) glareOn = glareEnabled();
+        });
+      } catch (err) { }
+    }
 
-      card.style.setProperty('--gx', x + 'px');
-      card.style.setProperty('--gy', y + 'px');
-      card.style.setProperty('--rx', (yPct * -7) + 'deg');
-      card.style.setProperty('--ry', (xPct * 7) + 'deg');
+    function flushGlare() {
+      rafScheduled = false;
+      if (!activeCard || !activeRect) return;
+      var x = lastClientX - activeRect.left;
+      var y = lastClientY - activeRect.top;
+      var w = activeRect.width || 1;
+      var h = activeRect.height || 1;
+      var xPct = (x / w) * 2 - 1;
+      var yPct = (y / h) * 2 - 1;
+      var s = activeCard.style;
+      s.setProperty('--gx', x + 'px');
+      s.setProperty('--gy', y + 'px');
+      s.setProperty('--rx', (yPct * -7) + 'deg');
+      s.setProperty('--ry', (xPct * 7) + 'deg');
+    }
+
+    function setActiveCard(card) {
+      if (card === activeCard) return;
+      activeCard = card;
+      activeRect = card ? card.getBoundingClientRect() : null;
+    }
+
+    document.body.addEventListener('mouseover', function (e) {
+      if (!glareOn) { activeCard = null; activeRect = null; return; }
+      var card = e.target.closest ? e.target.closest(GLARE_SEL) : null;
+      setActiveCard(card);
     });
 
-    document.body.addEventListener('mouseleave', function (e) {
-      var card = e.target.closest('.card, .card-episode, .full-start-new__poster');
-      if (!card) return;
-      card.style.setProperty('--rx', '0deg');
-      card.style.setProperty('--ry', '0deg');
-      card.style.setProperty('--gx', '50%');
-      card.style.setProperty('--gy', '50%');
+    document.body.addEventListener('mousemove', function (e) {
+      if (!activeCard) return;
+      lastClientX = e.clientX;
+      lastClientY = e.clientY;
+      if (!rafScheduled) {
+        rafScheduled = true;
+        requestAnimationFrame(flushGlare);
+      }
+    });
+
+    window.addEventListener('scroll', function () {
+      if (activeCard) activeRect = activeCard.getBoundingClientRect();
     }, true);
+
+    window.addEventListener('resize', function () {
+      if (activeCard) activeRect = activeCard.getBoundingClientRect();
+    });
+
+    document.body.addEventListener('mouseout', function (e) {
+      var card = e.target.closest ? e.target.closest(GLARE_SEL) : null;
+      if (!card) return;
+      var related = e.relatedTarget;
+      if (related && card.contains(related)) return;
+      var s = card.style;
+      s.setProperty('--rx', '0deg');
+      s.setProperty('--ry', '0deg');
+      s.setProperty('--gx', '50%');
+      s.setProperty('--gy', '50%');
+      if (activeCard === card) { activeCard = null; activeRect = null; }
+    });
   }
 
   function safePatch() {
@@ -2015,6 +2496,8 @@
     }
     injectStyle();
     if (document.body) document.body.classList.add(BODY_CLASS);
+    syncFontSize();
+    syncCardFlags();
 
     var content = qs('.activity--active .scroll__content') || qs('.scroll__content');
     patchTopnav();
@@ -2040,28 +2523,33 @@
 
     injectStyle();
     if (document.body) document.body.classList.add(BODY_CLASS);
-    bindInputModeListeners();
-    setInputMode('mouse');
     syncGlareClass();
+    syncFontSize();
+    syncCardFlags();
     observeCards();
     initGlareRuntime();
     processCards(document.body);
     schedulePatch();
-    setTimeout(function () { injectStyle(); }, 900);
+    setTimeout(function () { injectStyle(); }, 1000);
+    setTimeout(function () { injectStyle(); }, 3000);
     setTimeout(function () {
       var actBody = qs('.activity--active .activity__body') || qs('.activity__body');
       if (actBody) {
         processCards(actBody);
       }
     }, 600);
-    setTimeout(function () { schedulePatch(); }, 420);
+
+    schedulePatch();
+    setTimeout(function () { schedulePatch(); }, 400);
+    setTimeout(function () { schedulePatch(); }, 1200);
   }
 
   function bootPlugin() {
     registerSettings();
     startPlugin();
-    setTimeout(function () { schedulePatch(); }, 350);
-    requestPluginReinit(950);
+    setTimeout(function () { startPlugin(); }, 250);
+    setTimeout(function () { startPlugin(); }, 900);
+    setTimeout(function () { startPlugin(); }, 1800);
   }
 
   if (window.appready) bootPlugin();
