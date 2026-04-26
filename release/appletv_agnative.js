@@ -3008,7 +3008,7 @@
         });
       }
 
-      if (badgeEnabled()) {
+      if (badgeEnabled() && (data.title || data.name)) {
         var badge = document.createElement('div');
         badge.className = 'nfx-card-logo';
         badge.textContent = data.name ? t('badge_tv') : t('badge_movie');
