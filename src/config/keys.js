@@ -33,5 +33,7 @@ export const AGNATIVE_KEYS = {
   CACHE_SIZE_KEY: 'appletv_agnative_cache_size',
   POSTER_QUALITY_KEY: 'appletv_agnative_poster_quality',
   PERF_ATTR: 'data-agnative-perf',
-  FLEX_GAP_ATTR: 'data-agnative-flex-gap'
+  FLEX_GAP_ATTR: 'data-agnative-flex-gap',
+  OVERLAY_ALIGN_KEY: 'appletv_agnative_overlay_align',
+  OVERLAY_ALIGN_ATTR: 'data-agnative-overlay-align'
 };

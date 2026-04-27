@@ -45,7 +45,9 @@
     CACHE_SIZE_KEY: 'appletv_agnative_cache_size',
     POSTER_QUALITY_KEY: 'appletv_agnative_poster_quality',
     PERF_ATTR: 'data-agnative-perf',
-    FLEX_GAP_ATTR: 'data-agnative-flex-gap'
+    FLEX_GAP_ATTR: 'data-agnative-flex-gap',
+    OVERLAY_ALIGN_KEY: 'appletv_agnative_overlay_align',
+    OVERLAY_ALIGN_ATTR: 'data-agnative-overlay-align'
   };
 
   const ru = {
@@ -100,7 +102,12 @@
     val_perf_low: 'Слабое устройство',
     val_perf_ultra: 'Очень слабое устройство',
     set_poster_quality_name: 'Качество постеров',
-    set_poster_quality_desc: 'Разрешение изображений постеров с TMDB'
+    set_poster_quality_desc: 'Разрешение изображений постеров с TMDB',
+    set_overlay_align_name: 'Выравнивание подписи карточки',
+    set_overlay_align_desc: 'Горизонтальное выравнивание названия и метаданных на карточке',
+    val_overlay_align_start: 'По левому краю',
+    val_overlay_align_center: 'По центру',
+    val_overlay_align_end: 'По правому краю'
   };
 
   const en = {
@@ -155,7 +162,12 @@
     val_perf_low: 'Weak device',
     val_perf_ultra: 'Very weak device',
     set_poster_quality_name: 'Poster quality',
-    set_poster_quality_desc: 'Resolution of poster images from TMDB'
+    set_poster_quality_desc: 'Resolution of poster images from TMDB',
+    set_overlay_align_name: 'Card overlay alignment',
+    set_overlay_align_desc: 'Horizontal alignment of title and metadata on the card',
+    val_overlay_align_start: 'Left',
+    val_overlay_align_center: 'Center',
+    val_overlay_align_end: 'Right'
   };
 
   const uk = {
@@ -210,7 +222,12 @@
     val_perf_low: 'Слабкий пристрій',
     val_perf_ultra: 'Дуже слабкий пристрій',
     set_poster_quality_name: 'Якість постерів',
-    set_poster_quality_desc: 'Роздільна здатність зображень постерів з TMDB'
+    set_poster_quality_desc: 'Роздільна здатність зображень постерів з TMDB',
+    set_overlay_align_name: 'Вирівнювання підпису картки',
+    set_overlay_align_desc: 'Горизонтальне вирівнювання назви та метаданих на картці',
+    val_overlay_align_start: 'Ліворуч',
+    val_overlay_align_center: 'По центру',
+    val_overlay_align_end: 'Праворуч'
   };
 
   const GENRE_MAP_LOCALIZED = {
@@ -496,7 +513,9 @@
       CARD_SIZE_ATTR,
       LOGO_SIZE_ATTR,
       PERF_ATTR,
-      FLEX_GAP_ATTR
+      FLEX_GAP_ATTR,
+      OVERLAY_ALIGN_KEY,
+      OVERLAY_ALIGN_ATTR
     } = AGNATIVE_KEYS;
 
     var scheduled = false;
@@ -883,6 +902,19 @@
       document.body.setAttribute(FLEX_GAP_ATTR, detectFlexGapSupport() ? 'yes' : 'no');
     }
 
+    function getOverlayAlign() {
+      try {
+        if (!window.Lampa || !Lampa.Storage) return 'start';
+        var v = Lampa.Storage.get(OVERLAY_ALIGN_KEY, 'start') || 'start';
+        return (v === 'center' || v === 'end') ? v : 'start';
+      } catch (e) { return 'start'; }
+    }
+
+    function syncOverlayAlign() {
+      if (!document.body) return;
+      document.body.setAttribute(OVERLAY_ALIGN_ATTR, getOverlayAlign());
+    }
+
     function restoreOriginalImg(cardEl) {
       var img = cardEl.querySelector('.card__img');
       if (!img) return;
@@ -931,6 +963,7 @@
         Lampa.Storage.set(PERF_MODE_KEY, 'auto');
         Lampa.Storage.set(LOGO_SIZE_KEY, 'md');
         Lampa.Storage.set(POSTER_QUALITY_KEY, 'w500');
+        Lampa.Storage.set(OVERLAY_ALIGN_KEY, 'start');
         Lampa.Storage.set(TOPNAV_ITEMS_KEY, ['main', 'movie', 'tv', 'cartoon']);
         logoCache = {};
         posterCache = {};
@@ -940,6 +973,7 @@
         syncLogoSize();
         syncCardFlags();
         syncPerfMode();
+        syncOverlayAlign();
         resetCardSwitches();
         setTimeout(function () { schedulePatch(); }, 80);
         try {
@@ -1378,6 +1412,27 @@
           onChange: function (value) {
             if (value === 'off') closeControlPanel(true);
             setTimeout(function () { schedulePatch(); }, 80);
+          }
+        });
+
+        Lampa.SettingsApi.addParam({
+          component: SETTINGS_COMPONENT,
+          param: {
+            name: OVERLAY_ALIGN_KEY,
+            type: 'select',
+            values: {
+              start: t('val_overlay_align_start'),
+              center: t('val_overlay_align_center'),
+              end: t('val_overlay_align_end')
+            },
+            default: 'start'
+          },
+          field: {
+            name: t('set_overlay_align_name'),
+            description: t('set_overlay_align_desc')
+          },
+          onChange: function () {
+            syncOverlayAlign();
           }
         });
 
@@ -2045,7 +2100,16 @@
         'body.' + GLARE_CLASS + ' .card.focus .card__view, body.' + GLARE_CLASS + ' .card.hover .card__view, body.' + GLARE_CLASS + ' .card-episode.focus .full-episode, body.' + GLARE_CLASS + ' .card-episode.hover .full-episode, body.' + GLARE_CLASS + ' .full-start-new__poster.focus, body.' + GLARE_CLASS + ' .full-start-new__poster.hover { transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.055) translateY(-.06em) !important; transition: transform .08s linear, box-shadow .24s ease, filter .24s ease !important; }',
         'body.' + BODY_CLASS + ' .card__vote, body.' + BODY_CLASS + ' .card__quality, body.' + BODY_CLASS + ' .card__type, body.' + BODY_CLASS + ' .card__promo-text, body.' + BODY_CLASS + ' .card__promo-title, body.' + BODY_CLASS + ' .full-person__photo, body.' + BODY_CLASS + ' .nfx-card-overlay__match { display:none !important; }',
         'body.' + BODY_CLASS + ' .card__title, body.' + BODY_CLASS + ' .card__age { display:none !important; }',
-        'body.' + BODY_CLASS + ' .nfx-card-overlay { position:absolute; left:0; right:0; bottom:0; z-index:0; display:block !important; opacity:1 !important; visibility:visible !important; border-radius:0 0 1.35em 1.35em !important; background:linear-gradient(0deg, rgba(6,8,14,.88) 0%, rgba(6,8,14,.56) 38%, rgba(6,8,14,.16) 68%, rgba(6,8,14,0) 100%) !important; padding:2.15em 1.02em .92em !important; transform: translateZ(14px); transition: transform .28s cubic-bezier(.22,.61,.36,1), opacity .24s ease; pointer-events:none; }',
+        'body.' + BODY_CLASS + ' .nfx-card-overlay { position:absolute; left:0; right:0; bottom:0; z-index:0; display:flex !important; flex-direction:column; justify-content:center; align-items:flex-start; opacity:1 !important; visibility:visible !important; border-radius:0 0 1.35em 1.35em !important; background:linear-gradient(0deg, rgba(6,8,14,.88) 0%, rgba(6,8,14,.56) 38%, rgba(6,8,14,.16) 68%, rgba(6,8,14,0) 100%) !important; padding:2.15em 1.02em .92em !important; transform: translateZ(14px); transition: transform .28s cubic-bezier(.22,.61,.36,1), opacity .24s ease; pointer-events:none; }',
+        'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="start"] .nfx-card-overlay { align-items:flex-start !important; }',
+        'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="start"] .nfx-card-overlay__title,',
+        'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="start"] .nfx-card-overlay__meta { text-align:left !important; }',
+        'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="center"] .nfx-card-overlay { align-items:center !important; }',
+        'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="center"] .nfx-card-overlay__title,',
+        'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="center"] .nfx-card-overlay__meta { text-align:center !important; }',
+        'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="end"] .nfx-card-overlay { align-items:flex-end !important; }',
+        'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="end"] .nfx-card-overlay__title,',
+        'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="end"] .nfx-card-overlay__meta { text-align:right !important; }',
         'body.' + BODY_CLASS + ' .card.focus .nfx-card-overlay { transform: translateZ(18px) translateY(-.02em); }',
         'body.' + BODY_CLASS + ' .nfx-card-overlay__logo, body.' + BODY_CLASS + ' img.nfx-card-overlay__logo { display:block !important; opacity:1 !important; visibility:visible !important; max-height:2.55em !important; max-width:82% !important; margin-bottom:.28em !important; border-radius:0 !important; clip-path:none !important; -webkit-clip-path:none !important; mask-image:none !important; -webkit-mask-image:none !important; overflow:visible !important; }',
         'body.' + BODY_CLASS + ' .nfx-card-overlay__title { color:#fff; font-size:1.02em !important; line-height:1.14 !important; font-weight:800 !important; text-shadow:0 2px 12px rgba(0,0,0,.5); white-space:normal !important; display:-webkit-box !important; -webkit-line-clamp:2 !important; -webkit-box-orient:vertical !important; overflow:hidden !important; }',
@@ -2076,7 +2140,7 @@
         'body.' + BODY_CLASS + '[' + RATING_ATTR + '="off"] .nfx-card-rating { display:none !important; }',
         'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .card .card__view { padding-bottom:140% !important; }',
         'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .card__img, body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .card__image { object-position:center center !important; }',
-        'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .nfx-card-overlay { display:block !important; background:linear-gradient(0deg, rgba(4,5,10,1) 0%, rgba(4,5,10,.98) 18%, rgba(4,5,10,.88) 36%, rgba(4,5,10,.6) 58%, rgba(4,5,10,.2) 78%, rgba(4,5,10,0) 100%) !important; padding:5em 1em 1em !important; border-radius:0 0 1.35em 1.35em !important; }',
+        'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .nfx-card-overlay { display:flex !important; background:linear-gradient(0deg, rgba(4,5,10,1) 0%, rgba(4,5,10,.98) 18%, rgba(4,5,10,.88) 36%, rgba(4,5,10,.6) 58%, rgba(4,5,10,.2) 78%, rgba(4,5,10,0) 100%) !important; padding:5em 1em 1em !important; border-radius:0 0 1.35em 1.35em !important; }',
         'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .nfx-card-rating { display:inline-flex !important; }',
         'body.' + BODY_CLASS + '[' + BACKDROP_ATTR + '="off"] .nfx-card-logo { display:inline-flex !important; }',
         'body.' + BODY_CLASS + '[' + BADGE_ATTR + '="off"][' + BACKDROP_ATTR + '="off"] .nfx-card-logo { display:none !important; }',
@@ -3330,6 +3394,7 @@
       syncCardFlags();
       syncPerfMode();
       syncFlexGapFlag();
+      syncOverlayAlign();
       observeCards();
       initGlareRuntime();
       processCards(document.body);

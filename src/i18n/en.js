@@ -50,5 +50,10 @@ export const en = {
   val_perf_low: 'Weak device',
   val_perf_ultra: 'Very weak device',
   set_poster_quality_name: 'Poster quality',
-  set_poster_quality_desc: 'Resolution of poster images from TMDB'
+  set_poster_quality_desc: 'Resolution of poster images from TMDB',
+  set_overlay_align_name: 'Card overlay alignment',
+  set_overlay_align_desc: 'Horizontal alignment of title and metadata on the card',
+  val_overlay_align_start: 'Left',
+  val_overlay_align_center: 'Center',
+  val_overlay_align_end: 'Right'
 };

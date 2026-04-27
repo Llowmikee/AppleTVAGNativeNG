@@ -50,5 +50,10 @@ export const uk = {
   val_perf_low: 'Слабкий пристрій',
   val_perf_ultra: 'Дуже слабкий пристрій',
   set_poster_quality_name: 'Якість постерів',
-  set_poster_quality_desc: 'Роздільна здатність зображень постерів з TMDB'
+  set_poster_quality_desc: 'Роздільна здатність зображень постерів з TMDB',
+  set_overlay_align_name: 'Вирівнювання підпису картки',
+  set_overlay_align_desc: 'Горизонтальне вирівнювання назви та метаданих на картці',
+  val_overlay_align_start: 'Ліворуч',
+  val_overlay_align_center: 'По центру',
+  val_overlay_align_end: 'Праворуч'
 };
