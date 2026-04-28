@@ -656,6 +656,23 @@ import { metaGet, metaSet, prune, clearAll, imgLoad, imgPreload } from './tmdb/p
       Lampa.SettingsApi.addParam({
         component: SETTINGS_COMPONENT,
         param: {
+          name: GLARE_KEY,
+          type: 'select',
+          values: { on: langText('extensions_enable', t('val_on')), off: langText('extensions_disable', t('val_off')) },
+          default: 'on'
+        },
+        field: {
+          name: t('set_glare_name'),
+          description: t('set_glare_desc')
+        },
+        onChange: function () {
+          syncGlareClass();
+        }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: {
           name: UI_LANG_KEY,
           type: 'select',
           values: {
@@ -677,72 +694,38 @@ import { metaGet, metaSet, prune, clearAll, imgLoad, imgPreload } from './tmdb/p
 
       Lampa.SettingsApi.addParam({
         component: SETTINGS_COMPONENT,
-        param: {
-          name: LOGO_LANG_KEY,
-          type: 'select',
-          values: {
-            auto: t('val_auto'),
-            ru: langText('filter_lang_ru', t('val_ru')),
-            en: langText('filter_lang_en', t('val_en')),
-            uk: langText('filter_lang_uk', t('val_uk'))
-          },
-          default: 'auto'
-        },
+        param: { name: 'agnative_open_topnav_settings', type: 'button' },
         field: {
-          name: t('set_logo_lang_name'),
-          description: t('set_logo_lang_desc')
+          name: t('set_topnav_name'),
+          description: t('set_topnav_desc')
         },
         onChange: function () {
-          logoCache = {};
-          titledBackdropCache = {};
-          clearAll();
+          openTopnavSettingsSection();
+        }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: { type: 'title' },
+        field: { name: t('set_section_cards') }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: {
+          name: BACKDROP_KEY,
+          type: 'select',
+          values: { on: langText('extensions_enable', t('val_on')), off: langText('extensions_disable', t('val_off')) },
+          default: 'on'
+        },
+        field: {
+          name: t('set_backdrop_name'),
+          description: t('set_backdrop_desc')
+        },
+        onChange: function () {
+          syncCardFlags();
+          resetCardSwitches();
           setTimeout(function () { schedulePatch(); }, 80);
-        }
-      });
-
-      Lampa.SettingsApi.addParam({
-        component: SETTINGS_COMPONENT,
-        param: {
-          name: FONT_SIZE_KEY,
-          type: 'select',
-          values: {
-            xs: t('val_size_xs'),
-            sm: t('val_size_sm'),
-            md: t('val_size_md'),
-            lg: t('val_size_lg'),
-            xl: t('val_size_xl')
-          },
-          default: 'md'
-        },
-        field: {
-          name: t('set_font_size_name'),
-          description: t('set_font_size_desc')
-        },
-        onChange: function () {
-          syncFontSize();
-        }
-      });
-
-      Lampa.SettingsApi.addParam({
-        component: SETTINGS_COMPONENT,
-        param: {
-          name: CATEGORY_SIZE_KEY,
-          type: 'select',
-          values: {
-            xs: t('val_size_xs'),
-            sm: t('val_size_sm'),
-            md: t('val_size_md'),
-            lg: t('val_size_lg'),
-            xl: t('val_size_xl')
-          },
-          default: 'md'
-        },
-        field: {
-          name: t('set_category_size_name'),
-          description: t('set_category_size_desc')
-        },
-        onChange: function () {
-          syncFontSize();
         }
       });
 
@@ -766,29 +749,6 @@ import { metaGet, metaSet, prune, clearAll, imgLoad, imgPreload } from './tmdb/p
         },
         onChange: function () {
           syncCardSize();
-        }
-      });
-
-      Lampa.SettingsApi.addParam({
-        component: SETTINGS_COMPONENT,
-        param: {
-          name: LOGO_SIZE_KEY,
-          type: 'select',
-          values: {
-            xs: t('val_size_xs'),
-            sm: t('val_size_sm'),
-            md: t('val_size_md'),
-            lg: t('val_size_lg'),
-            xl: t('val_size_xl')
-          },
-          default: 'md'
-        },
-        field: {
-          name: t('set_logo_size_name'),
-          description: t('set_logo_size_desc')
-        },
-        onChange: function () {
-          syncLogoSize();
         }
       });
 
@@ -847,42 +807,69 @@ import { metaGet, metaSet, prune, clearAll, imgLoad, imgPreload } from './tmdb/p
       Lampa.SettingsApi.addParam({
         component: SETTINGS_COMPONENT,
         param: {
-          name: CACHE_SIZE_KEY,
+          name: LOGO_LANG_KEY,
           type: 'select',
           values: {
-            '50': '50 MB',
-            '100': '100 MB',
-            '200': '200 MB',
-            '500': '500 MB',
-            'unlimited': t('val_unlimited')
+            auto: t('val_auto'),
+            ru: langText('filter_lang_ru', t('val_ru')),
+            en: langText('filter_lang_en', t('val_en')),
+            uk: langText('filter_lang_uk', t('val_uk'))
           },
-          default: '100'
+          default: 'auto'
         },
         field: {
-          name: t('set_cache_size_name'),
-          description: t('set_cache_size_desc')
+          name: t('set_logo_lang_name'),
+          description: t('set_logo_lang_desc')
         },
         onChange: function () {
-          prune(getCacheMaxBytes());
+          logoCache = {};
+          titledBackdropCache = {};
+          clearAll();
+          setTimeout(function () { schedulePatch(); }, 80);
         }
       });
 
       Lampa.SettingsApi.addParam({
         component: SETTINGS_COMPONENT,
         param: {
-          name: BACKDROP_KEY,
+          name: LOGO_SIZE_KEY,
           type: 'select',
-          values: { on: langText('extensions_enable', t('val_on')), off: langText('extensions_disable', t('val_off')) },
-          default: 'on'
+          values: {
+            xs: t('val_size_xs'),
+            sm: t('val_size_sm'),
+            md: t('val_size_md'),
+            lg: t('val_size_lg'),
+            xl: t('val_size_xl')
+          },
+          default: 'md'
         },
         field: {
-          name: t('set_backdrop_name'),
-          description: t('set_backdrop_desc')
+          name: t('set_logo_size_name'),
+          description: t('set_logo_size_desc')
         },
         onChange: function () {
-          syncCardFlags();
-          resetCardSwitches();
-          setTimeout(function () { schedulePatch(); }, 80);
+          syncLogoSize();
+        }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: {
+          name: OVERLAY_ALIGN_KEY,
+          type: 'select',
+          values: {
+            start: t('val_overlay_align_start'),
+            center: t('val_overlay_align_center'),
+            end: t('val_overlay_align_end')
+          },
+          default: 'start'
+        },
+        field: {
+          name: t('set_overlay_align_name'),
+          description: t('set_overlay_align_desc')
+        },
+        onChange: function () {
+          syncOverlayAlign();
         }
       });
 
@@ -947,19 +934,60 @@ import { metaGet, metaSet, prune, clearAll, imgLoad, imgPreload } from './tmdb/p
 
       Lampa.SettingsApi.addParam({
         component: SETTINGS_COMPONENT,
+        param: { type: 'title' },
+        field: { name: t('set_section_text') }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
         param: {
-          name: GLARE_KEY,
+          name: FONT_SIZE_KEY,
           type: 'select',
-          values: { on: langText('extensions_enable', t('val_on')), off: langText('extensions_disable', t('val_off')) },
-          default: 'on'
+          values: {
+            xs: t('val_size_xs'),
+            sm: t('val_size_sm'),
+            md: t('val_size_md'),
+            lg: t('val_size_lg'),
+            xl: t('val_size_xl')
+          },
+          default: 'md'
         },
         field: {
-          name: t('set_glare_name'),
-          description: t('set_glare_desc')
+          name: t('set_font_size_name'),
+          description: t('set_font_size_desc')
         },
         onChange: function () {
-          syncGlareClass();
+          syncFontSize();
         }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: {
+          name: CATEGORY_SIZE_KEY,
+          type: 'select',
+          values: {
+            xs: t('val_size_xs'),
+            sm: t('val_size_sm'),
+            md: t('val_size_md'),
+            lg: t('val_size_lg'),
+            xl: t('val_size_xl')
+          },
+          default: 'md'
+        },
+        field: {
+          name: t('set_category_size_name'),
+          description: t('set_category_size_desc')
+        },
+        onChange: function () {
+          syncFontSize();
+        }
+      });
+
+      Lampa.SettingsApi.addParam({
+        component: SETTINGS_COMPONENT,
+        param: { type: 'title' },
+        field: { name: t('set_section_clock') }
       });
 
       Lampa.SettingsApi.addParam({
@@ -999,34 +1027,30 @@ import { metaGet, metaSet, prune, clearAll, imgLoad, imgPreload } from './tmdb/p
 
       Lampa.SettingsApi.addParam({
         component: SETTINGS_COMPONENT,
-        param: {
-          name: OVERLAY_ALIGN_KEY,
-          type: 'select',
-          values: {
-            start: t('val_overlay_align_start'),
-            center: t('val_overlay_align_center'),
-            end: t('val_overlay_align_end')
-          },
-          default: 'start'
-        },
-        field: {
-          name: t('set_overlay_align_name'),
-          description: t('set_overlay_align_desc')
-        },
-        onChange: function () {
-          syncOverlayAlign();
-        }
+        param: { type: 'title' },
+        field: { name: t('set_section_data') }
       });
 
       Lampa.SettingsApi.addParam({
         component: SETTINGS_COMPONENT,
-        param: { name: 'agnative_open_topnav_settings', type: 'button' },
+        param: {
+          name: CACHE_SIZE_KEY,
+          type: 'select',
+          values: {
+            '50': '50 MB',
+            '100': '100 MB',
+            '200': '200 MB',
+            '500': '500 MB',
+            'unlimited': t('val_unlimited')
+          },
+          default: '100'
+        },
         field: {
-          name: t('set_topnav_name'),
-          description: t('set_topnav_desc')
+          name: t('set_cache_size_name'),
+          description: t('set_cache_size_desc')
         },
         onChange: function () {
-          openTopnavSettingsSection();
+          prune(getCacheMaxBytes());
         }
       });
 
@@ -1437,6 +1461,11 @@ import { metaGet, metaSet, prune, clearAll, imgLoad, imgPreload } from './tmdb/p
       '  display: none !important;',
       '  content: none !important;',
       '}',
+
+      'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .settings-param[data-name="' + GLARE_KEY + '"],',
+      'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .settings-param[data-name="' + GLARE_KEY + '"] { display: none !important; }',
+      'body.' + BODY_CLASS + '[' + RATING_ATTR + '="off"] .settings-param[data-name="' + RATING_STYLE_KEY + '"] { display: none !important; }',
+      'body.' + BODY_CLASS + '[' + CARD_IMAGE_MODE_ATTR + '="poster"] .settings-param[data-name="' + LOGO_SIZE_KEY + '"] { display: none !important; }',
       'body.' + BODY_CLASS + ' .wrap__content.layer--height.layer--width::after,',
       'body.' + BODY_CLASS + ' .wrap__content.layer--height.layer--width > *::before,',
       'body.' + BODY_CLASS + ' .wrap__content.layer--height.layer--width > *::after,',
