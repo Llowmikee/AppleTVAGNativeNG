@@ -565,6 +565,17 @@
     var controlPanelOutsideHandler = null;
     var controlPanelSwallowHandler = null;
     var topnavControllerReady = false;
+    var menuControllerNeutralized = false;
+    var activityPushPatched = false;
+    var activityPushOriginal = null;
+    var leftdockControllerReady = false;
+    var leftdockHoverHandler = null;
+    var leftdockHoverHideTimer = 0;
+    var controllerTogglePatched = false;
+    var controllerToggleOriginal = null;
+    var menuChangesObserver = null;
+    var menuListObservedNode = null;
+    var menuRebuildTimer = 0;
     var swallowClickUntil = 0;
     var styleSignature = '';
     var detectedPerfLevel = null;
@@ -808,12 +819,26 @@
         if (clock) clock.remove();
         var panel = document.querySelector('.agnative-control-panel');
         if (panel) panel.remove();
+        var leftdock = document.querySelector('.agnative-leftdock');
+        if (leftdock) leftdock.remove();
+        detachLeftdockHover();
+        disconnectMenuObserver();
         controlPanelOpen = false;
         unbindControlPanelOutsideClose();
         var headEl = document.querySelector('.head');
         if (headEl && headEl.__agnativeWheelBound) {
           headEl.removeEventListener('wheel', forwardWheelBelowTopnav, { passive: false });
           headEl.__agnativeWheelBound = false;
+        }
+        if (activityPushPatched && activityPushOriginal && window.Lampa && Lampa.Activity) {
+          Lampa.Activity.push = activityPushOriginal;
+          activityPushPatched = false;
+          activityPushOriginal = null;
+        }
+        if (controllerTogglePatched && controllerToggleOriginal && window.Lampa && Lampa.Controller) {
+          Lampa.Controller.toggle = controllerToggleOriginal;
+          controllerTogglePatched = false;
+          controllerToggleOriginal = null;
         }
       } catch (e) { }
     }
@@ -2386,7 +2411,84 @@
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .card-episode .full-episode__img { box-shadow: 0 2px 6px rgba(0,0,0,.4) !important; }',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .nfx-card-overlay { background: linear-gradient(0deg, rgba(6,8,14,.92) 0%, rgba(6,8,14,.4) 60%, rgba(6,8,14,0) 100%) !important; }',
 
+        'body.' + BODY_CLASS + ' .wrap__left,',
+        'body.' + BODY_CLASS + ' .menu,',
+        'body.' + BODY_CLASS + ' .menu__content,',
+        'body.' + BODY_CLASS + ' .menu .menu__list {',
+        '  width: 0 !important;',
+        '  min-width: 0 !important;',
+        '  max-width: 0 !important;',
+        '  padding: 0 !important;',
+        '  margin: 0 !important;',
+        '  border: 0 !important;',
+        '  overflow: hidden !important;',
+        '  visibility: hidden !important;',
+        '  pointer-events: none !important;',
+        '  opacity: 0 !important;',
+        '  background: transparent !important;',
+        '  background-image: none !important;',
+        '  box-shadow: none !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .wrap__left .menu__item,',
+        'body.' + BODY_CLASS + ' .menu .menu__item {',
+        '  pointer-events: none !important;',
+        '}',
+
+        'body.' + BODY_CLASS + ' .agnative-leftdock {',
+        '  position: fixed !important;',
+        '  left: 1em !important;',
+        '  top: 50% !important;',
+        '  transform: translateX(-130%) translateY(-50%) !important;',
+        '  z-index: 25 !important;',
+        '  width: max-content !important;',
+        '  max-width: 14em !important;',
+        '  max-height: 80vh !important;',
+        '  overflow-y: auto !important;',
+        '  display: inline-flex !important;',
+        '  flex-direction: column !important;',
+        '  padding: .32em !important;',
+        '  border-radius: 1.35em !important;',
+        '  background: rgba(22,24,30,.42) !important;',
+        '  border: 1px solid rgba(255,255,255,.10) !important;',
+        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 12px 32px rgba(0,0,0,.28) !important;',
+        '  backdrop-filter: blur(22px) saturate(140%) !important;',
+        '  -webkit-backdrop-filter: blur(22px) saturate(140%) !important;',
+        '  opacity: 0 !important;',
+        '  pointer-events: none !important;',
+        '  transition: transform .28s cubic-bezier(.22,.61,.36,1), opacity .2s ease !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .agnative-leftdock.is-visible {',
+        '  transform: translateX(0) translateY(-50%) !important;',
+        '  opacity: 1 !important;',
+        '  pointer-events: auto !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .agnative-leftdock__inner { display: flex; flex-direction: column; gap: .12em; }',
+        'body.' + BODY_CLASS + ' .agnative-leftdock__case { display: flex; flex-direction: column; gap: .04em; }',
+        'body.' + BODY_CLASS + ' .agnative-leftdock__split { height: 1px; margin: .3em .4em; background: rgba(255,255,255,.10); }',
+        'body.' + BODY_CLASS + ' .agnative-leftdock__item.selector {',
+        '  appearance: none; -webkit-appearance: none; border: 0; background: none;',
+        '  color: rgba(255,255,255,.92);',
+        '  min-height: 2.4em;',
+        '  display: flex; align-items: center; gap: .6em;',
+        '  padding: .35em .9em;',
+        '  border-radius: 999px;',
+        '  font-size: .82em; font-weight: 700; line-height: 1; white-space: nowrap;',
+        '  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;',
+        '  cursor: pointer;',
+        '}',
+        'body.' + BODY_CLASS + ' .agnative-leftdock__item.is-active,',
+        'body.' + BODY_CLASS + ' .agnative-leftdock__item.hover,',
+        'body.' + BODY_CLASS + ' .agnative-leftdock__item.focus {',
+        '  background: rgba(255,255,255,.16) !important;',
+        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.14) !important;',
+        '  transform: translateX(.04em) !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .agnative-leftdock__item .menu__ico { width: 1.5em; height: 1.5em; min-width: 1.5em; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; color: currentColor; }',
+        'body.' + BODY_CLASS + ' .agnative-leftdock__item .menu__ico svg { width: 1.5em; height: 1.5em; color: currentColor; fill: currentColor; }',
+        'body.' + BODY_CLASS + ' .agnative-leftdock__item .menu__text { display: inline-block; flex: 1 1 auto; }',
+
         '@media (max-width: 767px) {',
+        '  body.' + BODY_CLASS + ' .agnative-leftdock { display: none !important; }',
         '  body.' + BODY_CLASS + ' .agnative-topnav-shell { display: none !important; }',
         '  body.' + BODY_CLASS + ' .agnative-topnav-rightdock { font-size: 1.3em !important; }',
         '  body.' + BODY_CLASS + ' .head__menu-icon { font-size: 1.3em !important; }',
@@ -2938,6 +3040,46 @@
       head.addEventListener('wheel', forwardWheelBelowTopnav, { passive: false });
     }
 
+    function neutralizeMenuController() {
+      if (menuControllerNeutralized) return;
+      if (!window.Lampa || !Lampa.Controller || typeof Lampa.Controller.add !== 'function') return;
+      menuControllerNeutralized = true;
+      try {
+        Lampa.Controller.add('menu', {
+          toggle: function () {
+            try { Lampa.Controller.toggle('agnative_leftdock'); } catch (e) { }
+          },
+          update: function () { },
+          left:  function () { try { Lampa.Controller.toggle('agnative_leftdock'); } catch (e) { } },
+          right: function () { try { Lampa.Controller.toggle('content'); }          catch (e) { } },
+          up:    function () { try { Lampa.Controller.toggle('agnative_leftdock'); } catch (e) { } },
+          down:  function () { try { Lampa.Controller.toggle('content'); }          catch (e) { } },
+          back:  function () { try { Lampa.Controller.toggle('content'); }          catch (e) { } }
+        });
+      } catch (e) {
+        menuControllerNeutralized = false;
+      }
+    }
+
+    function patchActivityPushForMenu() {
+      if (activityPushPatched) return;
+      if (!window.Lampa || !Lampa.Activity || typeof Lampa.Activity.push !== 'function') return;
+      activityPushPatched = true;
+      try {
+        activityPushOriginal = Lampa.Activity.push.bind(Lampa.Activity);
+        Lampa.Activity.push = function (params) {
+          if (params && params.component === 'menu') {
+            try { Lampa.Controller.toggle('agnative_leftdock'); } catch (e) { }
+            return;
+          }
+          return activityPushOriginal(params);
+        };
+      } catch (e) {
+        activityPushPatched = false;
+        activityPushOriginal = null;
+      }
+    }
+
     function registerTopnavController(shell) {
       if (!shell || !window.Lampa || !Lampa.Controller || !window.$) return;
       if (topnavControllerReady || typeof Lampa.Controller.add !== 'function') return;
@@ -2957,7 +3099,7 @@
           update: function () { },
           left: function () {
             if (window.Navigator && Navigator.canmove && !Navigator.canmove('left')) {
-              try { Lampa.Controller.toggle('menu'); } catch (e) { }
+              try { Lampa.Controller.toggle('agnative_leftdock'); } catch (e) { }
               return;
             }
             if (window.Navigator && Navigator.move) Navigator.move('left');
@@ -2974,11 +3116,246 @@
             try { Lampa.Controller.toggle('content'); } catch (e) { }
           },
           back: function () {
-            try { Lampa.Controller.toggle('menu'); } catch (e) { }
+            try { Lampa.Controller.toggle('agnative_leftdock'); } catch (e) { }
           }
         });
       } catch (e) {
         topnavControllerReady = false;
+      }
+    }
+
+    function showLeftdock() {
+      var dock = qs('.agnative-leftdock');
+      if (!dock) return;
+      dock.classList.add('is-visible');
+      if (leftdockHoverHideTimer) {
+        clearTimeout(leftdockHoverHideTimer);
+        leftdockHoverHideTimer = 0;
+      }
+    }
+
+    function hideLeftdock(immediate, force) {
+      var dock = qs('.agnative-leftdock');
+      if (!dock) return;
+      if (!force && window.Lampa && Lampa.Controller && typeof Lampa.Controller.enabled === 'function') {
+        var enabled = Lampa.Controller.enabled();
+        if (enabled && enabled.name === 'agnative_leftdock') return;
+      }
+      if (immediate) {
+        if (leftdockHoverHideTimer) {
+          clearTimeout(leftdockHoverHideTimer);
+          leftdockHoverHideTimer = 0;
+        }
+        dock.classList.remove('is-visible');
+        return;
+      }
+      if (leftdockHoverHideTimer) clearTimeout(leftdockHoverHideTimer);
+      leftdockHoverHideTimer = setTimeout(function () {
+        dock.classList.remove('is-visible');
+        leftdockHoverHideTimer = 0;
+      }, 220);
+    }
+
+    function observeMenuChanges() {
+      var menuList = qs('.menu .menu__list');
+      if (!menuList) return;
+      if (menuListObservedNode === menuList && menuChangesObserver) return;
+      if (menuChangesObserver) {
+        menuChangesObserver.disconnect();
+        menuChangesObserver = null;
+      }
+      menuListObservedNode = menuList;
+      if (typeof MutationObserver !== 'function') return;
+      menuChangesObserver = new MutationObserver(function () {
+        if (menuRebuildTimer) clearTimeout(menuRebuildTimer);
+        menuRebuildTimer = setTimeout(function () {
+          menuRebuildTimer = 0;
+          buildLeftdock();
+          syncLeftdockActive();
+        }, 80);
+      });
+      menuChangesObserver.observe(menuList, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class']
+      });
+    }
+
+    function disconnectMenuObserver() {
+      if (menuChangesObserver) {
+        menuChangesObserver.disconnect();
+        menuChangesObserver = null;
+      }
+      menuListObservedNode = null;
+      if (menuRebuildTimer) {
+        clearTimeout(menuRebuildTimer);
+        menuRebuildTimer = 0;
+      }
+    }
+
+    function patchControllerToggleForLeftdock() {
+      if (controllerTogglePatched) return;
+      if (!window.Lampa || !Lampa.Controller || typeof Lampa.Controller.toggle !== 'function') return;
+      controllerTogglePatched = true;
+      try {
+        controllerToggleOriginal = Lampa.Controller.toggle.bind(Lampa.Controller);
+        Lampa.Controller.toggle = function (name) {
+          if (name && name !== 'agnative_leftdock') hideLeftdock(true, true);
+          return controllerToggleOriginal(name);
+        };
+      } catch (e) {
+        controllerTogglePatched = false;
+        controllerToggleOriginal = null;
+      }
+    }
+
+    function attachLeftdockHover() {
+      if (leftdockHoverHandler) return;
+      leftdockHoverHandler = function (e) {
+        var dock = qs('.agnative-leftdock');
+        if (!dock) return;
+        var rect = dock.getBoundingClientRect();
+        var inEdge = e.clientX <= 60;
+        var inDock = e.clientX >= rect.left - 8 && e.clientX <= rect.right + 8
+                  && e.clientY >= rect.top - 8 && e.clientY <= rect.bottom + 8;
+        if (inEdge || inDock) {
+          showLeftdock();
+        } else {
+          hideLeftdock(false);
+        }
+      };
+      document.addEventListener('mousemove', leftdockHoverHandler);
+    }
+
+    function detachLeftdockHover() {
+      if (!leftdockHoverHandler) return;
+      document.removeEventListener('mousemove', leftdockHoverHandler);
+      leftdockHoverHandler = null;
+      if (leftdockHoverHideTimer) {
+        clearTimeout(leftdockHoverHideTimer);
+        leftdockHoverHideTimer = 0;
+      }
+    }
+
+    function buildLeftdock() {
+      if (!document.body) return null;
+      var dock = qs('.agnative-leftdock');
+      if (!dock) {
+        dock = document.createElement('div');
+        dock.className = 'agnative-leftdock';
+        document.body.appendChild(dock);
+      }
+
+      var sourceMenu = qs('.menu');
+      if (!sourceMenu) return dock;
+
+      var inner = document.createElement('div');
+      inner.className = 'agnative-leftdock__inner';
+
+      Array.prototype.slice.call(sourceMenu.children).forEach(function (child) {
+        if (!child || !child.classList) return;
+        if (child.classList.contains('menu__case')) {
+          var caseEl = document.createElement('div');
+          caseEl.className = 'agnative-leftdock__case';
+          qsa('.menu__item.selector', child).forEach(function (item) {
+            if (item.classList.contains('hidden')) return;
+            var btn = document.createElement('div');
+            btn.className = 'agnative-leftdock__item selector';
+            btn.setAttribute('data-selector', 'true');
+            btn.setAttribute('tabindex', '0');
+            var action = item.getAttribute('data-action');
+            if (action) btn.setAttribute('data-action', action);
+            btn.innerHTML = item.innerHTML;
+            (function (sourceItem) {
+              bindAction(btn, function () { triggerSelectorEnter(sourceItem); });
+            })(item);
+            caseEl.appendChild(btn);
+          });
+          if (caseEl.children.length) inner.appendChild(caseEl);
+        } else if (child.classList.contains('menu__split')) {
+          var split = document.createElement('div');
+          split.className = 'agnative-leftdock__split';
+          inner.appendChild(split);
+        }
+      });
+
+      dock.innerHTML = '';
+      dock.appendChild(inner);
+
+      registerLeftdockController(dock);
+      bindLeftdockAutoScroll(dock);
+      syncLeftdockActive();
+      return dock;
+    }
+
+    function bindLeftdockAutoScroll(dock) {
+      if (!dock || dock.__agnativeAutoScrollBound || !window.$) return;
+      dock.__agnativeAutoScrollBound = true;
+      try {
+        $(dock).on('hover:focus', '.agnative-leftdock__item', function () {
+          var item = this;
+          if (!item) return;
+          var dockRect = dock.getBoundingClientRect();
+          var itemRect = item.getBoundingClientRect();
+          var pad = 6;
+          if (itemRect.top < dockRect.top + pad) {
+            dock.scrollTop -= (dockRect.top + pad - itemRect.top);
+          } else if (itemRect.bottom > dockRect.bottom - pad) {
+            dock.scrollTop += (itemRect.bottom - (dockRect.bottom - pad));
+          }
+        });
+      } catch (e) { }
+    }
+
+    function syncLeftdockActive() {
+      var dock = qs('.agnative-leftdock');
+      if (!dock) return;
+      qsa('.agnative-leftdock__item[data-action]', dock).forEach(function (btn) {
+        btn.classList.remove('is-active');
+        var source = getMenuItem(btn.getAttribute('data-action'));
+        if (source && (source.classList.contains('active') || source.classList.contains('focus') || source.classList.contains('hover'))) {
+          btn.classList.add('is-active');
+        }
+      });
+    }
+
+    function registerLeftdockController(dock) {
+      if (leftdockControllerReady) return;
+      if (!dock || !window.Lampa || !Lampa.Controller || typeof Lampa.Controller.add !== 'function' || !window.$) return;
+      leftdockControllerReady = true;
+      try {
+        Lampa.Controller.add('agnative_leftdock', {
+          toggle: function () {
+            var d = qs('.agnative-leftdock');
+            if (!d) return;
+            showLeftdock();
+            var view = $(d);
+            var current = qs('.agnative-leftdock__item.is-active', d)
+              || qs('.agnative-leftdock__item.selector', d);
+            Lampa.Controller.collectionSet(view);
+            Lampa.Controller.collectionFocus(current || false, view, true);
+          },
+          update: function () { },
+          gone: function () {
+            hideLeftdock(true, true);
+          },
+          up: function () {
+            if (window.Navigator && Navigator.move) Navigator.move('up');
+          },
+          down: function () {
+            if (window.Navigator && Navigator.move) Navigator.move('down');
+          },
+          left: function () { },
+          right: function () {
+            try { Lampa.Controller.toggle('content'); } catch (e) { }
+          },
+          back: function () {
+            try { Lampa.Controller.toggle('content'); } catch (e) { }
+          }
+        });
+      } catch (e) {
+        leftdockControllerReady = false;
       }
     }
 
@@ -3669,6 +4046,9 @@
 
       var content = qs('.activity--active .scroll__content') || qs('.scroll__content');
       patchTopnav();
+      buildLeftdock();
+      syncLeftdockActive();
+      observeMenuChanges();
       if (!content) return;
       processCards(content);
     }
@@ -3700,6 +4080,10 @@
       syncOverlayAlign();
       observeCards();
       initGlareRuntime();
+      neutralizeMenuController();
+      patchActivityPushForMenu();
+      patchControllerToggleForLeftdock();
+      attachLeftdockHover();
       processCards(document.body);
       schedulePatch();
     }
