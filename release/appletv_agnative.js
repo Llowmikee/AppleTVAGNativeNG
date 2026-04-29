@@ -55,7 +55,7 @@
   const ru = {
     nav_feed: 'Лента',
     badge_movie: 'ФИЛЬМ', badge_tv: 'СЕРИАЛ',
-    set_about_desc: 'Версия 0.3.13  Авторы: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
+    set_about_desc: 'Версия 0.3.14  Авторы: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
     set_main_title: 'Основные настройки',
     set_enable_name: 'AppleTV AgNative',
     set_enable_desc: 'Включает и выключает плагин',
@@ -123,7 +123,7 @@
   const en = {
     nav_feed: 'Feed',
     badge_movie: 'MOVIE', badge_tv: 'TV SHOW',
-    set_about_desc: 'Version 0.3.13  Authors: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
+    set_about_desc: 'Version 0.3.14  Authors: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
     set_main_title: 'Main settings',
     set_enable_name: 'AppleTV AgNative',
     set_enable_desc: 'Enables and disables the plugin',
@@ -191,7 +191,7 @@
   const uk = {
     nav_feed: 'Стрічка',
     badge_movie: 'ФІЛЬМ', badge_tv: 'СЕРІАЛ',
-    set_about_desc: 'Версія 0.3.13  Автори: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
+    set_about_desc: 'Версія 0.3.14  Автори: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
     set_main_title: 'Основні налаштування',
     set_enable_name: 'AppleTV AgNative',
     set_enable_desc: 'Вмикає та вимикає плагін',
