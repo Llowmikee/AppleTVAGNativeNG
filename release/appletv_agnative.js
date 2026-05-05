@@ -49,7 +49,11 @@
     OVERLAY_ALIGN_KEY: 'appletv_agnative_overlay_align',
     OVERLAY_ALIGN_ATTR: 'data-agnative-overlay-align',
     CARD_IMAGE_MODE_KEY: 'appletv_agnative_card_image_mode',
-    CARD_IMAGE_MODE_ATTR: 'data-agnative-card-image-mode'
+    CARD_IMAGE_MODE_ATTR: 'data-agnative-card-image-mode',
+    HERO_KEY: 'appletv_agnative_hero',
+    HERO_LOGO_SIZE_KEY: 'appletv_agnative_hero_logo_size',
+    HERO_BG_OFFSET_KEY: 'appletv_agnative_hero_bg_offset',
+    BETA_COMPONENT: 'appletv_agnative_beta'
   };
 
   const ru = {
@@ -117,7 +121,16 @@
     set_card_image_mode_name: 'Тип изображения карточки',
     set_card_image_mode_desc: 'Бекдроп + логотип или постер без логотипа',
     val_card_image_backdrop: 'Бекдроп + Логотип',
-    val_card_image_poster: 'Постер'
+    val_card_image_poster: 'Постер',
+    set_hero_name: 'Hero-баннер',
+    set_hero_desc: 'Большой баннер на главном экране с автопрокруткой',
+    set_hero_logo_name: 'Размер лого Hero',
+    set_hero_logo_desc: 'Размер логотипа фильма/сериала в баннере',
+    set_hero_bg_offset_name: 'Смещение бекдропа',
+    set_hero_bg_offset_desc: 'Насколько опустить изображение бекдропа вниз',
+    set_beta_name: 'Бета-возможности',
+    set_beta_desc: 'Экспериментальные функции',
+    hero_btn_watch: 'Смотреть'
   };
 
   const en = {
@@ -185,7 +198,16 @@
     set_card_image_mode_name: 'Card image type',
     set_card_image_mode_desc: 'Backdrop + logo or poster without logo',
     val_card_image_backdrop: 'Backdrop + Logo',
-    val_card_image_poster: 'Poster'
+    val_card_image_poster: 'Poster',
+    set_hero_name: 'Hero banner',
+    set_hero_desc: 'Large banner on the main screen with auto-rotation',
+    set_hero_logo_name: 'Hero logo size',
+    set_hero_logo_desc: 'Size of the movie/show logo in the hero banner',
+    set_hero_bg_offset_name: 'Backdrop offset',
+    set_hero_bg_offset_desc: 'How far to shift the backdrop image down',
+    set_beta_name: 'Beta features',
+    set_beta_desc: 'Experimental features',
+    hero_btn_watch: 'Watch'
   };
 
   const uk = {
@@ -253,7 +275,16 @@
     set_card_image_mode_name: 'Тип зображення картки',
     set_card_image_mode_desc: 'Бекдроп + логотип або постер без логотипу',
     val_card_image_backdrop: 'Бекдроп + Логотип',
-    val_card_image_poster: 'Постер'
+    val_card_image_poster: 'Постер',
+    set_hero_name: 'Hero-банер',
+    set_hero_desc: 'Великий банер на головному екрані з автопрокруткою',
+    set_hero_logo_name: 'Розмір лого Hero',
+    set_hero_logo_desc: 'Розмір логотипу фільму/серіалу у банері',
+    set_hero_bg_offset_name: 'Зміщення бекдропу',
+    set_hero_bg_offset_desc: 'Наскільки опустити зображення бекдропу вниз',
+    set_beta_name: 'Бета-можливості',
+    set_beta_desc: 'Експериментальні функції',
+    hero_btn_watch: 'Дивитися'
   };
 
   const GENRE_MAP_LOCALIZED = {
@@ -543,7 +574,11 @@
       OVERLAY_ALIGN_KEY,
       OVERLAY_ALIGN_ATTR,
       CARD_IMAGE_MODE_KEY,
-      CARD_IMAGE_MODE_ATTR
+      CARD_IMAGE_MODE_ATTR,
+      HERO_KEY,
+      HERO_LOGO_SIZE_KEY,
+      HERO_BG_OFFSET_KEY,
+      BETA_COMPONENT
     } = AGNATIVE_KEYS;
 
     var scheduled = false;
@@ -583,6 +618,11 @@
     var detectedPerfLevel = null;
     var flexGapSupport = null;
     var cardPatchTimer = 0;
+    var heroElement = null;
+    var heroItems = [];
+    var heroIndex = 0;
+    var heroTimer = null;
+    var HERO_CLASS = 'agnative-hero';
 
     function qs(sel, root) {
       return (root || document).querySelector(sel);
@@ -598,6 +638,15 @@
         return Lampa.Storage.get(ENABLE_KEY, 'on') !== 'off';
       } catch (e) {
         return true;
+      }
+    }
+
+    function heroEnabled() {
+      try {
+        if (!window.Lampa || !Lampa.Storage) return false;
+        return Lampa.Storage.get(HERO_KEY, 'off') === 'on';
+      } catch (e) {
+        return false;
       }
     }
 
@@ -842,6 +891,7 @@
           controllerTogglePatched = false;
           controllerToggleOriginal = null;
         }
+        removeHero();
       } catch (e) { }
     }
 
@@ -866,6 +916,17 @@
             Lampa.Settings.create(SETTINGS_COMPONENT);
             setTimeout(function () { startPlugin(); }, 50);
             setTimeout(function () { schedulePatch(); }, 120);
+          }
+        });
+      }, 0);
+    }
+
+    function openBetaSettingsSection() {
+      if (!window.Lampa || !Lampa.Settings || !Lampa.Settings.create) return;
+      setTimeout(function () {
+        Lampa.Settings.create(BETA_COMPONENT, {
+          onBack: function () {
+            Lampa.Settings.create(SETTINGS_COMPONENT);
           }
         });
       }, 0);
@@ -1048,6 +1109,8 @@
         Lampa.Storage.set(POSTER_QUALITY_KEY, 'w500');
         Lampa.Storage.set(OVERLAY_ALIGN_KEY, 'start');
         Lampa.Storage.set(CARD_IMAGE_MODE_KEY, 'backdrop');
+        Lampa.Storage.set(HERO_KEY, 'off');
+        Lampa.Storage.set(HERO_LOGO_SIZE_KEY, 'md');
         Lampa.Storage.set(TOPNAV_ITEMS_KEY, ['main', 'movie', 'tv', 'cartoon']);
         logoCache = {};
         titledBackdropCache = {};
@@ -1110,6 +1173,7 @@
         if (Lampa.Template && Lampa.Template.add) {
           Lampa.Template.add('settings_' + SETTINGS_COMPONENT, '<div></div>');
           Lampa.Template.add('settings_' + TOPNAV_SETTINGS_COMPONENT, '<div></div>');
+          Lampa.Template.add('settings_' + BETA_COMPONENT, '<div></div>');
         }
 
         Lampa.SettingsApi.addComponent({
@@ -1620,6 +1684,79 @@
             }
           });
         });
+
+        // ── Beta features button inside Agnative ───────────────────────────────
+        Lampa.SettingsApi.addParam({
+          component: SETTINGS_COMPONENT,
+          param: { name: 'agnative_open_beta_settings', type: 'button' },
+          field: {
+            name: t('set_beta_name'),
+            description: t('set_beta_desc')
+          },
+          onChange: function () {
+            openBetaSettingsSection();
+          }
+        });
+
+        Lampa.SettingsApi.addParam({
+          component: BETA_COMPONENT,
+          param: {
+            name: HERO_KEY,
+            type: 'select',
+            values: { on: langText('extensions_enable', t('val_on')), off: langText('extensions_disable', t('val_off')) },
+            default: 'off'
+          },
+          field: {
+            name: t('set_hero_name'),
+            description: t('set_hero_desc')
+          },
+          onChange: function () {
+            if (heroEnabled()) {
+              setTimeout(function () { schedulePatch(); }, 80);
+            } else {
+              removeHero();
+            }
+          }
+        });
+
+        Lampa.SettingsApi.addParam({
+          component: BETA_COMPONENT,
+          param: {
+            name: HERO_LOGO_SIZE_KEY,
+            type: 'select',
+            values: { xs: 'XS', sm: 'S', md: 'M', lg: 'L', xl: 'XL' },
+            default: 'md'
+          },
+          field: {
+            name: t('set_hero_logo_name'),
+            description: t('set_hero_logo_desc')
+          },
+          onChange: function () {
+            var size = Lampa.Storage.get(HERO_LOGO_SIZE_KEY, 'md') || 'md';
+            var hero = document.querySelector('.' + HERO_CLASS);
+            if (hero) hero.setAttribute('data-hero-logo', size);
+          }
+        });
+
+        Lampa.SettingsApi.addParam({
+          component: BETA_COMPONENT,
+          param: {
+            name: HERO_BG_OFFSET_KEY,
+            type: 'select',
+            values: { '0': t('val_off'), sm: 'S', md: 'M', lg: 'L', xl: 'XL' },
+            default: '0'
+          },
+          field: {
+            name: t('set_hero_bg_offset_name'),
+            description: t('set_hero_bg_offset_desc')
+          },
+          onChange: function () {
+            var offset = Lampa.Storage.get(HERO_BG_OFFSET_KEY, '0') || '0';
+            var hero = document.querySelector('.' + HERO_CLASS);
+            if (hero) hero.setAttribute('data-hero-bg', offset === '0' ? '' : offset);
+          }
+        });
+
       } catch (e) { }
     }
 
@@ -1643,9 +1780,29 @@
                 var body = render.find ? (render.find('.activity__body')[0] || render[0]) : render[0];
                 if (!body) return;
                 processCards(body);
+                if (heroEnabled()) {
+                  var component = e.component ||
+                    (e.object && e.object.component) ||
+                    (e.object && e.object.data && e.object.data.component) ||
+                    (e.object && e.object.activity && e.object.activity.component);
+                  if (!component) {
+                    // fallback: check if this is the main screen by absence of specific components
+                    try { component = e.object && e.object.data && e.object.data.url === '' ? 'main' : ''; } catch (ex) {}
+                  }
+                  if (component === 'main' || component === 'main_menu' || component === 'Lampa.Main') {
+                    removeHero();
+                    setTimeout(function () { tryInsertHero(body); }, 200);
+                  } else if (!component) {
+                    // try anyway — tryInsertHero is safe if no .items-line found
+                    setTimeout(function () { tryInsertHero(body); }, 200);
+                  }
+                }
               } catch (err) { }
             }, 500);
             schedulePatch();
+          }
+          if ((e.type === 'destroy' || e.type === 'stop') && heroEnabled()) {
+            removeHero();
           }
         });
       }
@@ -1735,6 +1892,32 @@
               removePluginUi();
             }
           }
+
+          if (e.name === HERO_KEY) {
+            if (heroEnabled()) {
+              setTimeout(function () { schedulePatch(); }, 80);
+            } else {
+              removeHero();
+            }
+            return;
+          }
+
+          if (e.name === HERO_LOGO_SIZE_KEY) {
+            var size = Lampa.Storage.get(HERO_LOGO_SIZE_KEY, 'md') || 'md';
+            var heroEl = document.querySelector('.' + HERO_CLASS);
+            if (heroEl) heroEl.setAttribute('data-hero-logo', size);
+            return;
+          }
+
+          if (e.name === HERO_BG_OFFSET_KEY) {
+            var offset = Lampa.Storage.get(HERO_BG_OFFSET_KEY, '0') || '0';
+            var heroBgEl = document.querySelector('.' + HERO_CLASS);
+            if (heroBgEl) {
+              if (offset && offset !== '0') heroBgEl.setAttribute('data-hero-bg', offset);
+              else heroBgEl.removeAttribute('data-hero-bg');
+            }
+            return;
+          }
         });
       }
     }
@@ -1751,15 +1934,26 @@
 
     function extractCardData(cardEl) {
       if (!cardEl) return null;
-      try {
-        if (cardEl.card_data) return cardEl.card_data;
-      } catch (e) { }
+      try { if (cardEl.card_data) return cardEl.card_data; } catch (e) {}
+      try { if (cardEl._card_data) return cardEl._card_data; } catch (e) {}
+      try { if (cardEl.__data__) return cardEl.__data__; } catch (e) {}
+      try { if (cardEl._data) return cardEl._data; } catch (e) {}
       try {
         if (window.$) {
-          var data = $(cardEl).data('card') || $(cardEl).data('json');
-          if (data) return data;
+          var d1 = $(cardEl).data('card') || $(cardEl).data('json') || $(cardEl).data('item');
+          if (d1) return d1;
         }
-      } catch (e) { }
+      } catch (e) {}
+      try {
+        // Lampa stores card data on the element via .data property (Vue-like)
+        if (cardEl.__vue__ && cardEl.__vue__.$props && cardEl.__vue__.$props.card) return cardEl.__vue__.$props.card;
+        if (cardEl.__vue__ && cardEl.__vue__.card) return cardEl.__vue__.card;
+      } catch (e) {}
+      try {
+        // Try to read from data-json attribute
+        var attr = cardEl.getAttribute('data-json') || cardEl.getAttribute('data-card');
+        if (attr) return JSON.parse(attr);
+      } catch (e) {}
       return null;
     }
 
@@ -1885,6 +2079,16 @@
         '  backdrop-filter: blur(18px) saturate(132%) !important;',
         '  -webkit-backdrop-filter: blur(18px) saturate(132%) !important;',
         '}',
+        'body.' + BODY_CLASS + ' .selectbox__content.layer--height,',
+        'body.' + BODY_CLASS + ' .settings-input__content.layer--height {',
+        '  background: rgba(26,29,34,.9) !important;',
+        '  background-image: none !important;',
+        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 22px 54px rgba(0,0,0,.34) !important;',
+        '  border: 1px solid rgba(255,255,255,.06) !important;',
+        '  filter: none !important;',
+        '  backdrop-filter: blur(20px) saturate(136%) !important;',
+        '  -webkit-backdrop-filter: blur(20px) saturate(136%) !important;',
+        '}',
         'body.' + BODY_CLASS + ' .wrap__left,',
         'body.' + BODY_CLASS + ' .menu,',
         'body.' + BODY_CLASS + ' .menu__content,',
@@ -1934,149 +2138,190 @@
         '}',
         'body.' + BODY_CLASS + ' .settings__body {',
         '  min-height: 0;',
+        '  padding-top: .14em !important;',
+        '  padding-bottom: .14em !important;',
         '}',
-        'body.' + BODY_CLASS + ' .settings-param,',
-        'body.' + BODY_CLASS + ' .settings-folder {',
-        '  background: rgba(255,255,255,.05) !important;',
-        '  border-radius: 1.05em !important;',
-        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.05) !important;',
-        '  border: 1px solid rgba(255,255,255,.06) !important;',
-        '  padding: .78em 1.1em !important;',
-        '  margin: 0 0 .32em !important;',
-        '  transition: background .18s ease, box-shadow .18s ease !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-param:last-child,',
-        'body.' + BODY_CLASS + ' .settings-folder:last-child {',
-        '  margin-bottom: 0 !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings__body [data-parent] {',
-        '  margin-bottom: .32em !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings__body [data-parent]:last-child {',
-        '  margin-bottom: 0 !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-param-title {',
-        '  padding: .9em 1.1em .3em !important;',
-        '  margin: 0 !important;',
-        '  background: transparent !important;',
-        '  border: 0 !important;',
+        'body.' + BODY_CLASS + ' .settings-param {',
+        '  min-height: 2.8em !important;',
+        '  display: grid !important;',
+        '  grid-template-columns: minmax(0, 1fr) auto !important;',
+        '  align-items: center !important;',
+        '  column-gap: .4em !important;',
+        '  row-gap: .1em !important;',
+        '  padding: .46em 1em !important;',
+        '  background: none !important;',
+        '  border-radius: 999px !important;',
         '  box-shadow: none !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-param-title > span {',
-        '  font-size: .82em !important;',
-        '  font-weight: 700 !important;',
-        '  letter-spacing: .06em !important;',
-        '  text-transform: uppercase !important;',
-        '  color: rgba(255,255,255,.38) !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-param-text {',
-        '  padding: .5em 1.1em !important;',
-        '  font-size: .92em !important;',
-        '  color: rgba(255,255,255,.55) !important;',
-        '  line-height: 1.5 !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-param__name {',
+        '  border: 0 !important;',
+        '  color: rgba(255,255,255,.92) !important;',
         '  font-size: 1em !important;',
-        '  font-weight: 600 !important;',
-        '  color: rgba(255,255,255,.95) !important;',
-        '  margin-bottom: .2em !important;',
-        '  line-height: 1.3 !important;',
-        '  position: relative !important; z-index: 1 !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-param__value {',
-        '  font-size: .88em !important;',
-        '  color: rgba(255,255,255,.52) !important;',
-        '  line-height: 1.25 !important;',
-        '  position: relative !important; z-index: 1 !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-param--button .settings-param__name {',
-        '  margin-bottom: 0 !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-param__descr {',
-        '  font-size: .82em !important;',
-        '  color: rgba(255,255,255,.38) !important;',
-        '  opacity: 1 !important;',
-        '  margin-top: .55em !important;',
-        '  line-height: 1.45 !important;',
-        '  position: relative !important; z-index: 1 !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-param__label {',
-        '  font-size: .75em !important;',
-        '  background: rgba(255,255,255,.92) !important;',
-        '  color: #1a1c20 !important;',
-        '  border-radius: .4em !important;',
-        '  padding: .15em .55em !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-param__status {',
-        '  left: .5em !important;',
-        '  top: .5em !important;',
-        '  transform: none !important;',
+        '  font-weight: 700 !important;',
+        '  line-height: 1.15 !important;',
+        '  transition: background .2s ease, transform .2s ease, box-shadow .2s ease !important;',
+        '  cursor: pointer !important;',
         '}',
         'body.' + BODY_CLASS + ' .settings-folder {',
+        '  min-height: 2.8em !important;',
         '  display: flex !important;',
         '  align-items: center !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-folder__icon {',
-        '  flex-shrink: 0 !important;',
-        '  margin-right: .85em !important;',
-        '  width: 1.7em !important;',
-        '  height: 1.7em !important;',
-        '  display: flex !important;',
-        '  align-items: center !important;',
-        '  justify-content: center !important;',
-        '  color: rgba(255,255,255,.75) !important;',
-        '  position: relative !important; z-index: 1 !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-folder__icon > * {',
-        '  width: 1.5em !important;',
-        '  height: 1.5em !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-folder__name {',
+        '  justify-content: flex-start !important;',
+        '  gap: .4em !important;',
+        '  padding: .46em 1em !important;',
+        '  background: none !important;',
+        '  border-radius: 999px !important;',
+        '  box-shadow: none !important;',
+        '  border: 0 !important;',
+        '  color: rgba(255,255,255,.92) !important;',
         '  font-size: 1em !important;',
-        '  font-weight: 600 !important;',
-        '  color: rgba(255,255,255,.95) !important;',
-        '  line-height: 1.3 !important;',
-        '  position: relative !important; z-index: 1 !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-folder__descr {',
-        '  font-size: .82em !important;',
-        '  color: rgba(255,255,255,.42) !important;',
-        '  margin-top: .18em !important;',
-        '  line-height: 1.35 !important;',
-        '  position: relative !important; z-index: 1 !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-param.focus,',
-        'body.' + BODY_CLASS + ' .settings-folder.focus,',
-        'body.' + BODY_CLASS + ' .settings-param.hover,',
-        'body.' + BODY_CLASS + ' .settings-folder.hover {',
-        '  background: rgba(255,255,255,.12) !important;',
-        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 0 0 1px rgba(255,255,255,.10) !important;',
-        '  border-color: rgba(255,255,255,.14) !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-param.focus .settings-param__value {',
-        '  color: rgba(255,255,255,.72) !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-folder.focus::before,',
-        'body.' + BODY_CLASS + ' .settings-folder.focus::after,',
-        'body.' + BODY_CLASS + ' .settings-param.focus::before,',
-        'body.' + BODY_CLASS + ' .settings-param.focus::after {',
-        '  display: none !important;',
-        '  content: none !important;',
+        '  font-weight: 700 !important;',
+        '  line-height: 1.15 !important;',
+        '  transition: background .2s ease, transform .2s ease, box-shadow .2s ease !important;',
+        '  cursor: pointer !important;',
         '}',
         'body.' + BODY_CLASS + ' .selectbox-item {',
-        '  border-radius: 1em !important;',
+        '  min-height: 2.8em !important;',
+        '  display: flex !important;',
+        '  align-items: center !important;',
+        '  gap: .4em !important;',
+        '  padding: .46em .9em !important;',
+        '  background: rgba(255,255,255,.03) !important;',
+        '  border-radius: 999px !important;',
+        '  box-shadow: none !important;',
+        '  border: 0 !important;',
+        '  color: rgba(255,255,255,.92) !important;',
+        '  font-size: 1em !important;',
+        '  transition: background .2s ease, transform .2s ease, box-shadow .2s ease !important;',
         '}',
+        'body.' + BODY_CLASS + ' .settings-param + .settings-param,',
+        'body.' + BODY_CLASS + ' .settings-folder + .settings-folder,',
+        'body.' + BODY_CLASS + ' .settings-folder + .settings-param,',
+        
+        'body.' + BODY_CLASS + ' .settings-param + .settings-folder {',
+        '  margin-top: .08em !important;',
+        '}',
+        
+        'body.' + BODY_CLASS + ' .settings-param__name,',
+        'body.' + BODY_CLASS + ' .settings-folder__name {',
+        '  grid-column: 1 !important;',
+        '  min-width: 0 !important;',
+        '  font-size: .92em !important;',
+        '  font-weight: 600 !important;',
+        '  line-height: 1.15 !important;',
+        '  color: rgba(255,255,255,.95) !important;',
+        '  white-space: normal !important;',
+        '  word-break: break-word !important;',
+        '  align-self: center !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .settings-folder__name {',
+        '  grid-column: auto !important;',
+        '  flex: 1 1 auto !important;',
+        '  width: 100% !important;',
+        '  margin: 0 !important;',
+        '  padding: 0 !important;',
+        '  font-size: .94em !important;',
+        '  font-weight: 600 !important;',
+        '  line-height: 1.15 !important;',
+        '  text-align: left !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .settings-param__value {',
+        '  grid-column: 2 !important;',
+        '  grid-row: 1 !important;',
+        '  justify-self: end !important;',
+        '  align-self: center !important;',
+        '  white-space: nowrap !important;',
+        '  font-size: .82em !important;',
+        '  font-weight: 500 !important;',
+        '  line-height: 1.1 !important;',
+        '  color: rgba(180,210,255,.72) !important;',
+        '  background: rgba(86,141,255,.12) !important;',
+        '  border-radius: .5em !important;',
+        '  padding: .14em .5em !important;',
+        '  max-width: 8em !important;',
+        '  overflow: hidden !important;',
+        '  text-overflow: ellipsis !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .settings-param__descr {',
+        '  display: block !important;',
+        '  grid-column: 1 / -1 !important;',
+        '  grid-row: 2 !important;',
+        '  margin-top: .06em !important;',
+        '  padding-left: 0 !important;',
+        '  font-size: .72em !important;',
+        '  line-height: 1.15 !important;',
+        '  color: rgba(255,255,255,.42) !important;',
+        '  white-space: normal !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .settings-folder__descr {',
+        '  display: none !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .settings-folder > :not(.settings-folder__name):not(.settings-folder__descr) {',
+        '  display: none !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .settings-param svg,',
+        'body.' + BODY_CLASS + ' .settings-param .menu__ico,',
+        'body.' + BODY_CLASS + ' .settings-folder svg,',
+        'body.' + BODY_CLASS + ' .settings-folder .menu__ico {',
+        '  width: 1.5em !important;',
+        '  height: 1.5em !important;',
+        '  min-width: 1.5em !important;',
+        '  flex: 0 0 auto !important;',
+        '  color: currentColor !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .settings-folder svg,',
+        'body.' + BODY_CLASS + ' .settings-folder .menu__ico {',
+        '  display: none !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .settings-param .menu__ico {',
+        '  display: inline-flex !important;',
+        '  align-items: center !important;',
+        '  justify-content: center !important;',
+        '  margin-right: .3em !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .settings-param > div,',
+        'body.' + BODY_CLASS + ' .settings-folder > div {',
+        '  min-width: 0 !important;',
+        '}',
+        
+        
+        'body.' + BODY_CLASS + ' .settings-param__name,',
+        'body.' + BODY_CLASS + ' .settings-folder__name,',
+        'body.' + BODY_CLASS + ' .settings-param__value,',
+        'body.' + BODY_CLASS + ' .settings-param__descr,',
+        'body.' + BODY_CLASS + ' .settings-folder__descr,',
         'body.' + BODY_CLASS + ' .selectbox-item__title,',
         'body.' + BODY_CLASS + ' .selectbox-item__subtitle {',
         '  position: relative !important;',
         '  z-index: 1 !important;',
         '}',
-        'body.' + BODY_CLASS + ' .selectbox-item.focus,',
-        'body.' + BODY_CLASS + ' .selectbox-item.hover {',
-        '  background: rgba(255,255,255,.14) !important;',
-        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 0 0 1px rgba(255,255,255,.09) !important;',
-        '  border-color: rgba(255,255,255,.12) !important;',
+
+        'body.' + BODY_CLASS + ' .application .settings-param__name,',
+        'body.' + BODY_CLASS + ' .applecation .settings-param__name {',
+        '  font-size: .92em !important;',
+        '  font-weight: 600 !important;',
+        '  line-height: 1.15 !important;',
         '}',
+        'body.' + BODY_CLASS + ' .application .settings-param__value,',
+        'body.' + BODY_CLASS + ' .applecation .settings-param__value {',
+        '  font-size: .82em !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .application .settings-param__descr,',
+        'body.' + BODY_CLASS + ' .applecation .settings-param__descr {',
+        '  font-size: .72em !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .settings-param.focus,',
+        'body.' + BODY_CLASS + ' .settings-folder.focus,',
+        'body.' + BODY_CLASS + ' .selectbox-item.focus,',
+        'body.' + BODY_CLASS + ' .settings-param.hover,',
+        'body.' + BODY_CLASS + ' .settings-folder.hover,',
+        'body.' + BODY_CLASS + ' .selectbox-item.hover {',
+        '  background: rgba(255,255,255,.16) !important;',
+        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.14) !important;',
+        '  transform: translateX(.04em) !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .settings-folder.focus::before,',
+        'body.' + BODY_CLASS + ' .settings-folder.focus::after,',
+        'body.' + BODY_CLASS + ' .settings-param.focus::before,',
+        'body.' + BODY_CLASS + ' .settings-param.focus::after,',
         'body.' + BODY_CLASS + ' .selectbox-item.focus::before,',
         'body.' + BODY_CLASS + ' .selectbox-item.focus::after {',
         '  display: none !important;',
@@ -2405,13 +2650,13 @@
         '  letter-spacing: .01em !important;',
         '  margin: 0 !important;',
         '}',
-        'body.' + BODY_CLASS + ' .navigation-bar { position: fixed !important; left: 50% !important; bottom: .8em !important; transform: translateX(-50%) !important; z-index: 10 !important; width: 100% !important; max-width: calc(100vw - 2em) !important; font-size: 1.15em !important; padding: 0 1.2em .7em 1.2em !important; }',
+        'body.' + BODY_CLASS + ' .navigation-bar { position: fixed !important; left: 50% !important; bottom: 1.2em !important; transform: translateX(-50%) !important; z-index: 30 !important; width: 100% !important; max-width: calc(100vw - 2em) !important; font-size: 1.15em !important; padding: 0 1.5em 1em 1.5em !important; z-index: 10 !important;}',
         'body.' + BODY_CLASS + '.orientation--landscape .navigation-bar { width: auto !important; left: auto !important; transform: translateX(0) !important; height: 85% !important; top: 15% !important; }',
-        'body.' + BODY_CLASS + ' .navigation-bar__body { width: 100% !important; height: 2.8em !important; box-sizing: border-box !important; display: flex !important; align-items: center !important; justify-content: space-around !important; padding: .18em .32em !important; border-radius: 999px !important; background: rgba(22,24,30,.82) !important; border: 1px solid rgba(255,255,255,.12) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 8px 24px rgba(0,0,0,.28) !important; backdrop-filter: blur(22px) saturate(145%) !important; -webkit-backdrop-filter: blur(22px) saturate(145%) !important; font-size: 1.4em !important; }',
+        'body.' + BODY_CLASS + ' .navigation-bar__body { width: 100% !important; height: 3.6em !important; box-sizing: border-box !important; display: flex !important; align-items: center !important; justify-content: space-around !important; padding: .28em .38em !important; border-radius: 999px !important; background: rgba(22,24,30,.82) !important; border: 1px solid rgba(255,255,255,.12) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 12px 32px rgba(0,0,0,.28) !important; backdrop-filter: blur(22px) saturate(145%) !important; -webkit-backdrop-filter: blur(22px) saturate(145%) !important; font-size: 1.6em !important; }',
         'body.' + BODY_CLASS + '.orientation--landscape .navigation-bar__body { width: auto !important; height: auto !important; min-width: 3em !important;}',
         'body.' + BODY_CLASS + ' .navigation-bar__item { width: 100% !important; height: 100% !important; appearance: none !important; -webkit-appearance: none !important; border: 0 !important; background: none !important; color: rgba(255,255,255,.88) !important; flex: 1 !important; display: inline-flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; padding: 0 !important; border-radius: 999px !important; font-size: 1em !important; font-weight: 700 !important; line-height: 1 !important; white-space: nowrap !important; transition: background .2s ease, transform .2s ease, box-shadow .2s ease, color .2s ease !important; cursor: pointer !important; }',
-        'body.' + BODY_CLASS + ' .navigation-bar__icon { width: 1.2em !important; height: 1.2em !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: inherit !important; }',
-        'body.' + BODY_CLASS + ' .navigation-bar__icon svg { width: 1.2em !important; height: 1.2em !important; stroke-width: 2 !important; }',
+        'body.' + BODY_CLASS + ' .navigation-bar__icon { width: 1.48em !important; height: 1.48em !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; color: inherit !important; }',
+        'body.' + BODY_CLASS + ' .navigation-bar__icon svg { width: 1.48em !important; height: 1.48em !important; stroke-width: 2 !important; }',
         'body.' + BODY_CLASS + ' .navigation-bar__label { display: none !important; }',
         'body.' + BODY_CLASS + ' .navigation-bar__item.is-active, body.' + BODY_CLASS + ' .navigation-bar__item.hover, body.' + BODY_CLASS + ' .navigation-bar__item.focus, body.' + BODY_CLASS + ' .navigation-bar__item:hover, body.' + BODY_CLASS + ' .navigation-bar__item:focus { background: rgba(255,255,255,.16) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.14) !important; color: rgba(255,255,255,.98) !important; transform: translateY(-.04em) !important; }',
 
@@ -2440,6 +2685,7 @@
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .navigation-bar__body,',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .settings__content.layer--height,',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .selectbox__content.layer--height,',
+        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .settings-input__content.layer--height,',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .nfx-card-logo,',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .nfx-card-rating,',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .card-episode .full-episode__num { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }',
@@ -2451,7 +2697,8 @@
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .agnative-control-panel { background: rgba(40,48,62,.95) !important; }',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .navigation-bar__body { background: rgba(22,24,30,.94) !important; }',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .settings__content.layer--height { background: rgba(28,30,34,.96) !important; }',
-        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .selectbox__content.layer--height { background: rgba(26,29,34,.97) !important; }',
+        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .selectbox__content.layer--height,',
+        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .settings-input__content.layer--height { background: rgba(26,29,34,.97) !important; }',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .nfx-card-logo,',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .nfx-card-rating,',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .card-episode .full-episode__num { background: rgba(12,14,20,.88) !important; }',
@@ -2493,7 +2740,8 @@
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .agnative-control-panel { background: rgba(28,30,34,.98) !important; box-shadow: 0 4px 10px rgba(0,0,0,.4) !important; }',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .navigation-bar__body { background: rgba(22,24,30,.98) !important; box-shadow: 0 4px 10px rgba(0,0,0,.35) !important; }',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .settings__content.layer--height,',
-        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .selectbox__content.layer--height { background: rgba(22,24,30,.98) !important; box-shadow: none !important; }',
+        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .selectbox__content.layer--height,',
+        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .settings-input__content.layer--height { background: rgba(22,24,30,.98) !important; box-shadow: none !important; }',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .nfx-card-logo,',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .nfx-card-rating,',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .card-episode .full-episode__num { background: rgba(12,14,20,.94) !important; box-shadow: none !important; }',
@@ -2543,7 +2791,7 @@
         '  box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 12px 32px rgba(0,0,0,.28) !important;',
         '  backdrop-filter: blur(22px) saturate(140%) !important;',
         '  -webkit-backdrop-filter: blur(22px) saturate(140%) !important;',
-        '  font-size: calc(clamp(0.92rem, 0.5rem + 1.4vmin, 1.7rem) * var(--agnative-scale, 1)) !important;',
+        '  font-size: calc(clamp(0.95rem, 1.7vmin, 1.4rem) * var(--agnative-scale, 1)) !important;',
         '  opacity: 0 !important;',
         '  pointer-events: none !important;',
         '  transition: transform .28s cubic-bezier(.22,.61,.36,1), opacity .2s ease !important;',
@@ -2627,12 +2875,16 @@
         '  background: transparent !important;',
         '  z-index: 30 !important;',
         '  pointer-events: none !important;',
-        '  font-size: calc(clamp(0.62rem, 0.34rem + 1.45vmin, 2.05rem) * var(--agnative-scale, 1)) !important;',
+        '  font-size: calc(clamp(1.05rem, 1.9vmin, 1.55rem) * var(--agnative-scale, 1)) !important;',
+        '  font-family: inherit !important;',
         '}',
         'body.' + BODY_CLASS + ' .settings__layer {',
         '  position: absolute !important;',
         '  top: 0 !important; right: 0 !important; bottom: 0 !important; left: 0 !important;',
         '  background: rgba(0,0,0,.28) !important;',
+        '  filter: none !important;',
+        '  backdrop-filter: none !important;',
+        '  -webkit-backdrop-filter: none !important;',
         '  pointer-events: auto !important;',
         '  z-index: 1 !important;',
         '  cursor: pointer !important;',
@@ -2640,17 +2892,17 @@
         'body.' + BODY_CLASS + ' .settings__content,',
         'body.' + BODY_CLASS + ' .settings__content.layer--height {',
         '  position: absolute !important;',
-        '  top: 5vh !important;',
-        '  bottom: 5vh !important;',
+        '  top: 18vh !important;',
+        '  bottom: 18vh !important;',
         '  right: 1em !important;',
         '  left: auto !important;',
-        '  width: min(32em, 42vw) !important;',
-        '  min-width: 18em !important;',
+        '  width: clamp(21em, 30vw, 27em) !important;',
         '  max-width: calc(100vw - 2em) !important;',
         '  height: auto !important;',
-        '  max-height: none !important;',
+        '  max-height: 64vh !important;',
+        '  overflow: hidden !important;',
         '  margin: 0 !important;',
-        '  padding: 1.1em 1em .9em !important;',
+        '  padding: .32em !important;',
         '  border-radius: 1.35em !important;',
         '  background: rgba(22,24,30,.42) !important;',
         '  background-image: none !important;',
@@ -2666,6 +2918,7 @@
         '  transition: transform .28s cubic-bezier(.22,.61,.36,1), opacity .2s ease !important;',
         '  display: flex !important;',
         '  flex-direction: column !important;',
+        '  font-size: calc(clamp(1.05rem, 1.9vmin, 1.55rem) * var(--agnative-scale, 1)) !important;',
         '}',
         'body.' + BODY_CLASS + '.settings--open .settings__content,',
         'body.' + BODY_CLASS + '.settings--open .settings__content.layer--height {',
@@ -2675,106 +2928,22 @@
         'body.' + BODY_CLASS + ' .settings__body {',
         '  flex: 1 1 auto !important;',
         '  min-height: 0 !important;',
-        '  height: auto !important;',
+        '  height: 0 !important;',
         '  max-height: none !important;',
         '  overflow-y: auto !important;',
-        '  padding-right: .15em !important;',
+        '  width: 100% !important;',
+        '  box-sizing: border-box !important;',
+        '  padding-left: 1.15em !important;',
+        '  padding-right: 1.15em !important;',
         '  padding-top: .35em !important;',
         '  padding-bottom: .35em !important;',
         '  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.6em, #000 calc(100% - 1.6em), transparent 100%) !important;',
         '  mask-image: linear-gradient(to bottom, transparent 0, #000 1.6em, #000 calc(100% - 1.6em), transparent 100%) !important;',
         '}',
-        'body.' + BODY_CLASS + ' .settings__title,',
-        'body.' + BODY_CLASS + ' .settings__head {',
-        '  flex: 0 0 auto !important;',
-        '  margin-bottom: .6em !important;',
-        '}',
+        'body.' + BODY_CLASS + ' .settings__title { display: none !important; }',
+        'body.' + BODY_CLASS + ' .settings__head { display: none !important; }',
         '@keyframes agnativeSettingsLayerIn { from { opacity: 0; } to { opacity: 1; } }',
         'body.' + BODY_CLASS + '.settings--open .settings__layer { animation: agnativeSettingsLayerIn .25s ease both; }',
-
-        'body.' + BODY_CLASS + ' .settings-input {',
-        '  position: fixed !important;',
-        '  top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;',
-        '  display: flex !important;',
-        '  z-index: 50 !important;',
-        '  background: transparent !important;',
-        '  backdrop-filter: none !important;',
-        '  -webkit-backdrop-filter: none !important;',
-        '  font-size: calc(clamp(0.62rem, 0.34rem + 1.45vmin, 2.05rem) * var(--agnative-scale, 1)) !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-input__content,',
-        'body.' + BODY_CLASS + ' .settings-input__content.layer--height {',
-        '  width: 100% !important;',
-        '  flex-shrink: 0 !important;',
-        '  display: flex !important;',
-        '  flex-direction: column !important;',
-        '  justify-content: center !important;',
-        '  padding: 1.5em !important;',
-        '  box-sizing: border-box !important;',
-        '  background: rgba(22,24,30,.92) !important;',
-        '  background-image: none !important;',
-        '  backdrop-filter: blur(24px) saturate(140%) !important;',
-        '  -webkit-backdrop-filter: blur(24px) saturate(140%) !important;',
-        '  filter: none !important;',
-        '  border: 0 !important;',
-        '  border-radius: 0 !important;',
-        '  box-shadow: none !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-input__title {',
-        '  font-size: 2.2em !important;',
-        '  font-weight: 300 !important;',
-        '  margin-bottom: 0.7em !important;',
-        '  color: rgba(255,255,255,.96) !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-input__input {',
-        '  font-size: 2.1em !important;',
-        '  margin-bottom: 1em !important;',
-        '  min-height: 2.3em !important;',
-        '  border-bottom: 2px solid rgba(255,255,255,.08) !important;',
-        '  padding: 0.6em 0 !important;',
-        '  color: rgba(255,255,255,.95) !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-input__links {',
-        '  margin-top: 1em !important;',
-        '  background: rgba(221,221,221,.06) !important;',
-        '  border-radius: 10em !important;',
-        '  padding: 0.7em 1em !important;',
-        '  font-size: 1.2em !important;',
-        '  text-align: center !important;',
-        '  color: rgba(255,255,255,.65) !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-input--free {',
-        '  background: rgba(22,24,30,.94) !important;',
-        '  backdrop-filter: blur(20px) saturate(140%) !important;',
-        '  -webkit-backdrop-filter: blur(20px) saturate(140%) !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-input--free .settings-input__content,',
-        'body.' + BODY_CLASS + ' .settings-input--free .settings-input__content.layer--height {',
-        '  margin: 0 auto !important;',
-        '  background: transparent !important;',
-        '  box-shadow: none !important;',
-        '  border: 0 !important;',
-        '  backdrop-filter: none !important;',
-        '  -webkit-backdrop-filter: none !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .settings-input--focus .settings-input__content,',
-        'body.' + BODY_CLASS + ' .settings-input--align-top .settings-input__content { justify-content: flex-start !important; }',
-        'body.' + BODY_CLASS + ' .settings-input--align-center .settings-input__content { justify-content: center !important; }',
-        'body.' + BODY_CLASS + ' .settings-input--align-bottom .settings-input__content { justify-content: flex-end !important; }',
-        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .settings-input__content,',
-        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .settings-input__content,',
-        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .settings-input__content.layer--height,',
-        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .settings-input__content.layer--height {',
-        '  backdrop-filter: none !important;',
-        '  -webkit-backdrop-filter: none !important;',
-        '  background: rgba(22,24,30,.99) !important;',
-        '}',
-        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .settings-input--free,',
-        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .settings-input--free {',
-        '  backdrop-filter: none !important;',
-        '  -webkit-backdrop-filter: none !important;',
-        '  background: rgba(22,24,30,.99) !important;',
-        '}',
 
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .settings__content,',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .settings__content.layer--height {',
@@ -2804,7 +2973,7 @@
         '  background: transparent !important;',
         '  z-index: 35 !important;',
         '  pointer-events: none !important;',
-        '  font-size: calc(clamp(0.62rem, 0.34rem + 1.45vmin, 2.05rem) * var(--agnative-scale, 1)) !important;',
+        '  font-size: calc(clamp(0.95rem, 1.7vmin, 1.4rem) * var(--agnative-scale, 1)) !important;',
         '}',
         'body.' + BODY_CLASS + ' .selectbox.animate {',
         '  display: block !important;',
@@ -2823,13 +2992,12 @@
         '@keyframes agnativeSelectboxLayerIn { from { opacity: 0; } to { opacity: 1; } }',
         'body.' + BODY_CLASS + ' .selectbox__content,',
         'body.' + BODY_CLASS + ' .selectbox__content.layer--height {',
-        '  position: absolute !important;',
+        '  position: fixed !important;',
         '  top: 5vh !important;',
         '  bottom: 5vh !important;',
         '  right: 1em !important;',
         '  left: auto !important;',
-        '  width: min(32em, 42vw) !important;',
-        '  min-width: 18em !important;',
+        '  width: 32em !important;',
         '  max-width: calc(100vw - 2em) !important;',
         '  height: auto !important;',
         '  max-height: none !important;',
@@ -2876,7 +3044,7 @@
         '  min-height: 0 !important;',
         '  height: auto !important;',
         '  max-height: none !important;',
-        '  overflow-y: auto !important;',
+        '  overflow: hidden !important;',
         '  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.6em, #000 calc(100% - 1.6em), transparent 100%) !important;',
         '  mask-image: linear-gradient(to bottom, transparent 0, #000 1.6em, #000 calc(100% - 1.6em), transparent 100%) !important;',
         '  padding: .35em .15em !important;',
@@ -2894,74 +3062,89 @@
         'body.' + BODY_CLASS + ' .selectbox-item.selector:last-child { margin-bottom: 0 !important; }',
         'body.' + BODY_CLASS + ' .selectbox-item.focus,',
         'body.' + BODY_CLASS + ' .selectbox-item.hover {',
-        '  background: rgba(255,255,255,.14) !important;',
-        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,255,255,.09) !important;',
+        '  background: rgba(255,255,255,.18) !important;',
+        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 0 0 1px rgba(255,255,255,.10) !important;',
         '  transform: translateY(-.02em) !important;',
         '}',
         'body.' + BODY_CLASS + ' .selectbox-item.selected {',
-        '  background: rgba(255,255,255,.10) !important;',
-        '  border-color: rgba(255,255,255,.22) !important;',
-        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.08) !important;',
+        '  background: rgba(86,141,255,.22) !important;',
+        '  border-color: rgba(86,141,255,.55) !important;',
+        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.10) !important;',
         '}',
         'body.' + BODY_CLASS + ' .selectbox-item.selected.focus,',
         'body.' + BODY_CLASS + ' .selectbox-item.selected.hover {',
-        '  background: rgba(255,255,255,.20) !important;',
-        '  border-color: rgba(255,255,255,.35) !important;',
-        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 0 1px rgba(255,255,255,.14) !important;',
+        '  background: rgba(86,141,255,.36) !important;',
+        '  border-color: rgba(86,141,255,.85) !important;',
+        '  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 0 0 1px rgba(86,141,255,.4) !important;',
         '}',
         'body.' + BODY_CLASS + ' .selectbox-item__title {',
-        '  font-size: .98em !important;',
+        '  font-size: .92em !important;',
         '  font-weight: 600 !important;',
         '  line-height: 1.25 !important;',
         '  color: inherit !important;',
         '  flex: 1 1 auto !important;',
+        '  min-width: 0 !important;',
+        '  position: static !important;',
+        '  display: block !important;',
+        '  width: auto !important;',
         '}',
         'body.' + BODY_CLASS + ' .selectbox-item--checkbox {',
-        '  padding-right: 3.2em !important;',
+        '  display: flex !important;',
+        '  flex-direction: row !important;',
+        '  align-items: center !important;',
+        '  gap: .6em !important;',
+        '  position: relative !important;',
         '}',
         'body.' + BODY_CLASS + ' .selectbox-item__checkbox {',
-        '  position: absolute !important;',
-        '  top: 50% !important;',
-        '  right: .9em !important;',
-        '  transform: translateY(-50%) !important;',
+        '  position: relative !important;',
+        '  display: flex !important;',
+        '  align-items: center !important;',
+        '  justify-content: center !important;',
+        '  flex: 0 0 1.1em !important;',
         '  width: 1.1em !important;',
         '  height: 1.1em !important;',
+        '  min-width: 1.1em !important;',
+        '  max-width: 1.1em !important;',
         '  border-radius: .28em !important;',
-        '  border: 2px solid rgba(255,255,255,.28) !important;',
-        '  background: transparent !important;',
-        '  transition: border-color .15s ease, background .15s ease !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .selectbox-item.selected .selectbox-item__checkbox {',
-        '  border-color: rgba(255,255,255,.75) !important;',
-        '  background: rgba(255,255,255,.18) !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .selectbox-item.selected .selectbox-item__checkbox::after {',
-        '  content: "" !important;',
-        '  position: absolute !important;',
-        '  left: .22em !important; top: .04em !important;',
-        '  width: .35em !important; height: .6em !important;',
-        '  border: 2px solid rgba(255,255,255,.92) !important;',
-        '  border-top: none !important; border-left: none !important;',
-        '  transform: rotate(44deg) !important;',
-        '}',
-        'body.' + BODY_CLASS + ' .selectbox-item.selected:not(.nomark):not(.selectbox-item--checkbox)::after,',
-        'body.' + BODY_CLASS + ' .selectbox-item.picked:not(.selectbox-item--checkbox)::after {',
-        '  content: "" !important;',
-        '  display: block !important;',
-        '  width: .55em !important;',
-        '  height: 1.1em !important;',
-        '  border-right: .18em solid rgba(255,255,255,.82) !important;',
-        '  border-bottom: .18em solid rgba(255,255,255,.82) !important;',
-        '  position: absolute !important;',
-        '  top: 50% !important;',
-        '  right: 1em !important;',
-        '  transform: rotate(45deg) translateY(-60%) !important;',
-        '  margin-top: 0 !important;',
+        '  border: 1.5px solid rgba(255,255,255,.3) !important;',
+        '  background: rgba(255,255,255,.05) !important;',
+        '  margin: 0 -0.3em 0 auto !important;',
+        '  padding: 0 !important;',
+        '  top: auto !important;',
+        '  left: auto !important;',
+        '  transform: none !important;',
+        '  order: 1 !important;',
+        '  overflow: visible !important;',
         '  z-index: 2 !important;',
         '}',
-        'body.' + BODY_CLASS + ' .selectbox-item.selected:not(.nomark):not(.selectbox-item--checkbox),',
-        'body.' + BODY_CLASS + ' .selectbox-item.picked:not(.selectbox-item--checkbox) {',
-        '  padding-right: 2.8em !important;',
+        'body.' + BODY_CLASS + ' .selectbox-item.selected .selectbox-item__checkbox,',
+        'body.' + BODY_CLASS + ' .selectbox-item--checked .selectbox-item__checkbox {',
+        '  background: rgba(86,141,255,.82) !important;',
+        '  border-color: rgba(86,141,255,1) !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .selectbox-item__checkbox::after {',
+        '  content: "" !important;',
+        '  display: block !important;',
+        '  position: absolute !important;',
+        '  top: 50% !important;',
+        '  left: 50% !important;',
+        '  z-index: 99 !important;',
+        '  width: .52em !important;',
+        '  height: .28em !important;',
+        '  border: 0 !important;',
+        '  border-left: 2px solid rgba(255,255,255,.95) !important;',
+        '  border-bottom: 2px solid rgba(255,255,255,.95) !important;',
+        '  transform: translate(-50%, -60%) rotate(-45deg) !important;',
+        '  opacity: 0 !important;',
+        '  box-shadow: none !important;',
+        '  background: transparent !important;',
+        '  margin: 0 !important;',
+        '  padding: 0 !important;',
+        '  pointer-events: none !important;',
+        '}',
+        'body.' + BODY_CLASS + ' .selectbox-item.selected .selectbox-item__checkbox::after,',
+        'body.' + BODY_CLASS + ' .selectbox-item--checked .selectbox-item__checkbox::after {',
+        '  opacity: 1 !important;',
         '}',
 
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="low"] .selectbox__content,',
@@ -2978,7 +3161,54 @@
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .selectbox-item.selector { transition: none !important; }',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .selectbox-item.focus,',
         'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .selectbox-item.hover { transform: none !important; }',
-        'body.' + BODY_CLASS + '[' + PERF_ATTR + '="ultra"] .selectbox-item__checkbox { transition: none !important; }',
+
+        '@keyframes agnativeHeroFadeUp { from { opacity:0; transform:translateY(1.2em); } to { opacity:1; transform:translateY(0); } }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + ' { position:relative !important; overflow:hidden !important; min-height:42em !important; height:82vh !important; max-height:82vh !important; margin-top:-3.2em !important; padding-top:3.2em !important; margin-bottom:0 !important; display:flex !important; align-items:flex-end !important; z-index:1 !important; background:transparent !important; -webkit-mask-image:linear-gradient(to bottom, black 0%, black 55%, transparent 100%) !important; mask-image:linear-gradient(to bottom, black 0%, black 55%, transparent 100%) !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '::before { content:none !important; display:none !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '::after { content:none !important; display:none !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__bg { position:absolute !important; top:0 !important; left:0 !important; width:100% !important; height:100% !important; z-index:0 !important; background-repeat:no-repeat !important; background-size:cover !important; background-position:center center !important; filter:saturate(1.08) brightness(.92) contrast(1.02) !important; opacity:0 !important; visibility:hidden !important; pointer-events:none !important; transition:opacity 1.2s ease, top .4s ease, transform 10s ease-out !important; will-change:opacity,transform; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '[data-hero-bg=sm] .' + HERO_CLASS + '__bg { top:4em !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '[data-hero-bg=md] .' + HERO_CLASS + '__bg { top:8em !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '[data-hero-bg=lg] .' + HERO_CLASS + '__bg { top:14em !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '[data-hero-bg=xl] .' + HERO_CLASS + '__bg { top:20em !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__bg::before, body.' + BODY_CLASS + ' .' + HERO_CLASS + '__bg::after { content:none !important; display:none !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__bg--active { opacity:1 !important; visibility:visible !important; transform:scale(1.04) !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__bg--fade { opacity:0 !important; visibility:hidden !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__vignette { display:none !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__content { position:relative !important; z-index:3 !important; width:52% !important; max-width:52% !important; min-width:24em !important; padding:0 4.4% 0 !important; transform:translateY(-7.2em) !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__content > * { opacity:0; transform:translateY(1.2em); animation:agnativeHeroFadeUp .6s ease forwards; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__content > *:nth-child(2) { animation-delay:.12s; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__content > *:nth-child(3) { animation-delay:.24s; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__content > *:nth-child(4) { animation-delay:.36s; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__content > *:nth-child(5) { animation-delay:.48s; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__content > *:nth-child(6) { animation-delay:.60s; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__title { font-size:clamp(2em, 3.2vw, 3.2em) !important; font-weight:800 !important; letter-spacing:-.04em !important; line-height:.96 !important; margin-bottom:.18em !important; text-shadow:0 10px 30px rgba(0,0,0,.42) !important; color:#fff !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__title-logo { width:50% !important; height:auto !important; max-height:none !important; margin-bottom:.46em !important; filter:drop-shadow(0 10px 24px rgba(0,0,0,.36)) !important; object-fit:contain !important; object-position:left bottom !important; display:block !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '[data-hero-logo=xs] .' + HERO_CLASS + '__title-logo { width:15% !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '[data-hero-logo=sm] .' + HERO_CLASS + '__title-logo { width:30% !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '[data-hero-logo=lg] .' + HERO_CLASS + '__title-logo { width:75% !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '[data-hero-logo=xl] .' + HERO_CLASS + '__title-logo { width:100% !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__meta { display:flex !important; align-items:center !important; gap:.9em !important; flex-wrap:wrap !important; margin-bottom:.52em !important; font-size:.82em !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__year { color:rgba(255,255,255,.72) !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__badge { border:1px solid rgba(255,255,255,.12) !important; border-radius:999px !important; padding:.16em .66em !important; font-size:.74em !important; background:rgba(255,255,255,.06) !important; color:rgba(255,255,255,.88) !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__genres { font-size:.76em !important; color:rgba(255,255,255,.58) !important; margin-bottom:.34em !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__overview { width:100% !important; max-width:100% !important; font-size:.88em !important; line-height:1.46 !important; color:rgba(255,255,255,.84) !important; margin-bottom:.82em !important; text-shadow:0 2px 10px rgba(0,0,0,.22) !important; display:-webkit-box !important; -webkit-line-clamp:3 !important; -webkit-box-orient:vertical !important; overflow:hidden !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__buttons { display:flex !important; flex-wrap:wrap !important; gap:.6em !important; margin-top:.8em !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__btn { display:inline-flex !important; align-items:center !important; justify-content:center !important; height:3.2em !important; min-height:3.2em !important; width:auto !important; max-width:3.2em !important; min-width:3.2em !important; padding:0 !important; background:rgba(255,255,255,.1) !important; border:1px solid rgba(255,255,255,.18) !important; border-radius:2em !important; color:#fff !important; backdrop-filter:blur(14px) saturate(1.25) !important; -webkit-backdrop-filter:blur(14px) saturate(1.25) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.12) !important; overflow:hidden !important; cursor:pointer !important; transition:max-width .15s ease-out, padding .15s ease-out, transform .15s ease-out, background .15s ease, border-color .15s ease !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__btn.focus, body.' + BODY_CLASS + ' .' + HERO_CLASS + '__btn.hover { max-width:16em !important; padding:0 1.4em !important; background:rgba(255,255,255,.22) !important; border-color:rgba(255,255,255,.35) !important; transform:scale(1.05) !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__btn--play { max-width:16em !important; padding:0 1.4em !important; background:rgba(255,255,255,.22) !important; border-color:rgba(255,255,255,.35) !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__btn > span { display:inline-block !important; visibility:visible !important; opacity:0 !important; max-width:0 !important; font-size:.95em !important; font-weight:600 !important; color:#fff !important; margin-left:0 !important; white-space:nowrap !important; overflow:hidden !important; transition:max-width .15s ease-out, opacity .15s ease-out, margin .15s ease-out !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__btn.focus > span, body.' + BODY_CLASS + ' .' + HERO_CLASS + '__btn.hover > span { opacity:1 !important; max-width:12em !important; margin-left:.6em !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__btn--play > span { opacity:1 !important; max-width:12em !important; margin-left:.6em !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__btn > svg { width:1.3em !important; height:1.3em !important; min-width:1.3em !important; fill:currentColor !important; color:#fff !important; flex:0 0 auto !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__btn::before, body.' + BODY_CLASS + ' .' + HERO_CLASS + '__btn::after { content:none !important; display:none !important; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__indicators { position:absolute; right:4%; bottom:3em; z-index:3; display:flex; gap:3px; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__dot { width:12px; height:2px; background:rgba(255,255,255,.3); transition:all .4s ease; cursor:pointer; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + '__dot--on { background:#fff; width:24px; }',
+        'body.' + BODY_CLASS + ' .' + HERO_CLASS + ' ~ * { position:relative !important; z-index:2 !important; }',
+        'body.' + BODY_CLASS + '.agnative-hero-active .head { background:transparent !important; background-color:transparent !important; background-image:none !important; box-shadow:none !important; }',
+        'body.' + BODY_CLASS + '.agnative-hero-active .head::before, body.' + BODY_CLASS + '.agnative-hero-active .head::after { display:none !important; content:none !important; }',
+        'body.' + BODY_CLASS + '.agnative-hero-active .head__gradient { display:none !important; }',
 
         '@media (max-width: 767px) {',
         '  body.' + BODY_CLASS + ' .agnative-topnav-shell { display: none !important; }',
@@ -2987,55 +3217,18 @@
         '  body.' + BODY_CLASS + ' .head__navigator { position: absolute !important; top: 0 !important; left: 1em !important; font-size: 1.3em !important; }',
         '  body.' + BODY_CLASS + ' .activity.layer--width.activity--active { padding-top: 2em !important; }',
         '  body.' + BODY_CLASS + ' .head__navigator:empty { display: none !important; }',
-        '  body.' + BODY_CLASS + ' .settings__content { top: .75em !important; bottom: .75em !important; right: .5em !important; width: calc(100vw - 1em) !important; max-width: calc(100vw - 1em) !important; }',
-        '  body.' + BODY_CLASS + ' .selectbox__content,',
-        '  body.' + BODY_CLASS + ' .selectbox__content.layer--height { top: .75em !important; bottom: .75em !important; right: .5em !important; width: calc(100vw - 1em) !important; max-width: calc(100vw - 1em) !important; }',
-        '  body.' + BODY_CLASS + ' .settings-input__content,',
-        '  body.' + BODY_CLASS + ' .settings-input__content.layer--height { width: 100% !important; }',
-        '  body.' + BODY_CLASS + ' .settings-input__links { display: none !important; }',
-        '  body.' + BODY_CLASS + ' .selectbox-item.selector { padding: .65em .85em !important; }',
-        '}',
-        '@media (max-width: 480px) {',
+        '  body.' + BODY_CLASS + ' .settings { top: 0 !important; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; max-width: 100% !important; }',
         '  body.' + BODY_CLASS + ' .settings__content,',
-        '  body.' + BODY_CLASS + ' .settings__content.layer--height {',
-        '    width: 100% !important;',
-        '    max-width: 100% !important;',
-        '    left: 0 !important;',
-        '    right: 0 !important;',
-        '    top: unset !important;',
-        '    bottom: 0 !important;',
-        '    height: auto !important;',
-        '    max-height: 92vh !important;',
-        '    border-radius: 1.8em 1.8em 0 0 !important;',
-        '    transform: translate3d(0, 100%, 0) !important;',
-        '    transition: none !important;',
-        '    opacity: 1 !important;',
-        '  }',
-        '  body.' + BODY_CLASS + '.settings--open .settings__content,',
-        '  body.' + BODY_CLASS + '.settings--open .settings__content.layer--height {',
-        '    transform: translate3d(0, 0, 0) !important;',
-        '  }',
+        '  body.' + BODY_CLASS + ' .settings__content.layer--height { top: 36vh !important; bottom: .5em !important; left: .5em !important; right: .5em !important; width: calc(100vw - 1em) !important; max-width: calc(100vw - 1em) !important; max-height: none !important; padding: .32em !important; border-radius: 1.15em !important; font-size: calc(clamp(0.95rem, 1.6vmin, 1.3rem) * var(--agnative-scale, 1)) !important; }',
+        '  body.' + BODY_CLASS + ' .settings__body { padding-top: .15em !important; padding-bottom: 0 !important; margin-bottom: -.2em !important; mask-image: none !important; -webkit-mask-image: none !important; }',
         '  body.' + BODY_CLASS + ' .selectbox__content,',
-        '  body.' + BODY_CLASS + ' .selectbox__content.layer--height {',
-        '    width: 100% !important;',
-        '    max-width: 100% !important;',
-        '    left: 0 !important;',
-        '    right: 0 !important;',
-        '    top: unset !important;',
-        '    bottom: 0 !important;',
-        '    height: auto !important;',
-        '    max-height: 92vh !important;',
-        '    border-radius: 1.8em 1.8em 0 0 !important;',
-        '    transform: translate3d(0, 100%, 0) !important;',
-        '    animation: none !important;',
-        '  }',
-        '  body.selectbox--open body.' + BODY_CLASS + ' .selectbox__content,',
-        '  body.' + BODY_CLASS + ' .selectbox.animate .selectbox__content,',
-        '  body.' + BODY_CLASS + ' .selectbox.animate .selectbox__content.layer--height {',
-        '    transform: translate3d(0, 0, 0) !important;',
-        '    animation: none !important;',
-        '  }',
-        '  body.' + BODY_CLASS + ' .settings__body { font-size: 1.1em !important; }',
+        '  body.' + BODY_CLASS + ' .selectbox__content.layer--height { top: 1em !important; bottom: 1em !important; width: calc(100vw - 1em) !important; max-width: calc(100vw - 1em) !important; }',
+        '  body.' + BODY_CLASS + ' .' + HERO_CLASS + ' { min-height:56vh !important; max-height:65vh !important; height:auto !important; margin-top:1em !important; }',
+        '  body.' + BODY_CLASS + ' .' + HERO_CLASS + '__content { max-width:92% !important; width:92% !important; min-width:0 !important; padding:0 4% 1.5em !important; transform:translateY(-4em) !important; }',
+        '  body.' + BODY_CLASS + ' .' + HERO_CLASS + '__title { font-size:1.6em !important; }',
+        '  body.' + BODY_CLASS + ' .' + HERO_CLASS + '__title-logo { width:60% !important; }',
+        '  body.' + BODY_CLASS + ' .' + HERO_CLASS + '__overview { font-size:.78em !important; -webkit-line-clamp:2 !important; margin-bottom:.5em !important; }',
+        '  body.' + BODY_CLASS + ' .' + HERO_CLASS + '__meta { font-size:.75em !important; }',
         '}'
       ].join('\n');
       if (style.textContent !== text) style.textContent = text;
@@ -4160,6 +4353,241 @@
       return true;
     }
 
+    // ─── Hero banner ───────────────────────────────────────────────────────────
+
+    function buildHeroContent(item) {
+      var title = (item.name || item.title || '').trim();
+      var year  = (item.first_air_date || item.release_date || '').slice(0, 4);
+      var vote  = parseFloat(item.vote_average) || 0;
+      var genres = [];
+      try {
+        if (Array.isArray(item.genres) && item.genres.length) {
+          genres = item.genres.slice(0, 3).map(function (g) { return g.name || g; });
+        } else if (item.genre_ids && window.Lampa && Lampa.Utils && Lampa.Utils.genre) {
+          item.genre_ids.slice(0, 3).forEach(function (id) {
+            var g = Lampa.Utils.genre(id); if (g) genres.push(g);
+          });
+        }
+      } catch (e) {}
+      var overview = (item.overview || '').trim();
+
+      var html = '';
+      var metaParts = [];
+      if (year) metaParts.push('<span class="' + HERO_CLASS + '__year">' + year + '</span>');
+      if (vote > 0) metaParts.push('<span class="' + HERO_CLASS + '__badge">★ ' + vote.toFixed(1) + '</span>');
+      if (metaParts.length) html += '<div class="' + HERO_CLASS + '__meta">' + metaParts.join('') + '</div>';
+      if (genres.length) html += '<div class="' + HERO_CLASS + '__genres">' + escapeHtml(genres.join(' · ')) + '</div>';
+      html += '<div class="' + HERO_CLASS + '__title">' + escapeHtml(title) + '</div>';
+      if (overview) html += '<div class="' + HERO_CLASS + '__overview">' + escapeHtml(overview) + '</div>';
+
+      html += '<div class="' + HERO_CLASS + '__buttons">' +
+        '<div class="' + HERO_CLASS + '__btn ' + HERO_CLASS + '__btn--play selector" tabindex="0">' +
+        '<svg viewBox="0 0 24 24"><path d="M6 4l15 8-15 8z"/></svg>' +
+        '<span>' + t('hero_btn_watch') + '</span></div>' +
+        '</div>';
+
+      return html;
+    }
+
+    function buildHero(items) {
+      if (!items || !items.length) return null;
+      heroItems = items;
+      heroIndex = 0;
+
+      var div = document.createElement('div');
+      div.className = HERO_CLASS;
+      var heroLogoSize = 'md';
+      try { heroLogoSize = Lampa.Storage.get(HERO_LOGO_SIZE_KEY, 'md') || 'md'; } catch (e) {}
+      div.setAttribute('data-hero-logo', heroLogoSize);
+      var heroBgOffset = '0';
+      try { heroBgOffset = Lampa.Storage.get(HERO_BG_OFFSET_KEY, '0') || '0'; } catch (e) {}
+      if (heroBgOffset && heroBgOffset !== '0') div.setAttribute('data-hero-bg', heroBgOffset);
+
+      var bgHtml = '';
+      for (var b = 0; b < items.length; b++) {
+        var bp = items[b].backdrop_path;
+        var bgUrl = bp ? ('https://image.tmdb.org/t/p/original' + bp) : '';
+        bgHtml += '<div class="' + HERO_CLASS + '__bg' + (b === 0 ? ' ' + HERO_CLASS + '__bg--active' : '') + '"' +
+          (bgUrl ? ' style="background-image:url(' + bgUrl + ')"' : '') + '></div>';
+      }
+      bgHtml += '<div class="' + HERO_CLASS + '__vignette"></div>';
+
+      var indHtml = '';
+      if (items.length > 1) {
+        indHtml = '<div class="' + HERO_CLASS + '__indicators">';
+        for (var d = 0; d < items.length; d++) {
+          indHtml += '<div class="' + HERO_CLASS + '__dot' + (d === 0 ? ' ' + HERO_CLASS + '__dot--on' : '') + '" data-idx="' + d + '"></div>';
+        }
+        indHtml += '</div>';
+      }
+
+      div.innerHTML = bgHtml +
+        '<div class="' + HERO_CLASS + '__content">' + buildHeroContent(items[0]) + '</div>' +
+        indHtml;
+
+      loadHeroLogo(div, items[0]);
+      setupHeroClicks(div, items[0]);
+      if (items.length > 1) startHeroRotation(div);
+
+      return div;
+    }
+
+    function loadHeroLogo(heroDiv, item) {
+      var titleDiv = heroDiv.querySelector('.' + HERO_CLASS + '__title');
+      if (!titleDiv) return;
+      var tmdbId   = item.id;
+      var tmdbType = item.name ? 'tv' : 'movie';
+      fetchLogo(parseInt(tmdbId, 10), tmdbType, function (logo) {
+        if (!logo) return;
+        if (!titleDiv.parentElement) return;
+        var img = document.createElement('img');
+        img.className = HERO_CLASS + '__title-logo';
+        img.alt = titleDiv.textContent;
+        var logoUrl = logoImgUrl(logo.path);
+        imgLoad(logoUrl, function (src) {
+          img.onload  = function () { if (src !== logoUrl) URL.revokeObjectURL(src); };
+          img.onerror = function () { if (src !== logoUrl) URL.revokeObjectURL(src); img.style.display = 'none'; titleDiv.style.display = ''; };
+          img.src = src;
+        });
+        titleDiv.style.display = 'none';
+        titleDiv.parentElement.insertBefore(img, titleDiv);
+      });
+    }
+
+    function setupHeroClicks(heroDiv, item) {
+      function currentCard() { return heroItems[heroIndex] || item; }
+      function openCard() {
+        var cur = currentCard();
+        if (!cur || !window.Lampa || !Lampa.Activity) return;
+        Lampa.Activity.push({ url: '', component: 'full', id: cur.id, method: cur.name ? 'tv' : 'movie', card: cur });
+      }
+      var playBtn = heroDiv.querySelector('.' + HERO_CLASS + '__btn--play');
+      if (playBtn) {
+        playBtn.addEventListener('click', openCard);
+        playBtn.addEventListener('mouseenter', function () { playBtn.classList.add('hover'); });
+        playBtn.addEventListener('mouseleave', function () { playBtn.classList.remove('hover'); });
+      }
+      var dots = heroDiv.querySelectorAll('.' + HERO_CLASS + '__dot');
+      for (var i = 0; i < dots.length; i++) {
+        (function (dot, idx) {
+          dot.addEventListener('click', function () { rotateHero(heroDiv, idx); });
+        })(dots[i], i);
+      }
+    }
+
+    function rotateHero(heroDiv, idx) {
+      var bgs  = heroDiv.querySelectorAll('.' + HERO_CLASS + '__bg');
+      var dots = heroDiv.querySelectorAll('.' + HERO_CLASS + '__dot');
+      var content = heroDiv.querySelector('.' + HERO_CLASS + '__content');
+      if (!bgs.length || idx === heroIndex) return;
+
+      bgs[heroIndex].classList.remove(HERO_CLASS + '__bg--active');
+      bgs[heroIndex].classList.add(HERO_CLASS + '__bg--fade');
+      heroIndex = idx;
+      bgs[heroIndex].classList.add(HERO_CLASS + '__bg--active');
+      bgs[heroIndex].classList.remove(HERO_CLASS + '__bg--fade');
+
+      for (var j = 0; j < dots.length; j++) dots[j].classList.toggle(HERO_CLASS + '__dot--on', j === idx);
+
+      if (content && heroItems[idx]) {
+        content.innerHTML = buildHeroContent(heroItems[idx]);
+        loadHeroLogo(heroDiv, heroItems[idx]);
+        setupHeroClicks(heroDiv, heroItems[idx]);
+      }
+    }
+
+    function startHeroRotation(heroDiv) {
+      if (heroTimer) clearInterval(heroTimer);
+      heroTimer = setInterval(function () {
+        if (!heroDiv.isConnected) { clearInterval(heroTimer); heroTimer = null; return; }
+        var next = (heroIndex + 1) % heroItems.length;
+        rotateHero(heroDiv, next);
+      }, 7000);
+    }
+
+    function tryInsertHero(container) {
+      if (!heroEnabled()) return;
+      var existing = document.querySelector('.' + HERO_CLASS);
+      if (existing) return;
+
+      // Try to find the active activity container if not found in passed container
+      var searchIn = container;
+      if (!searchIn.querySelector('.items-line')) {
+        searchIn = document.querySelector('.activity--active .activity__body') ||
+                   document.querySelector('.activity--active') ||
+                   document.querySelector('.scroll__body') ||
+                   document.querySelector('.scroll__content') ||
+                   container;
+      }
+
+      var firstLine = searchIn.querySelector('.items-line');
+      if (!firstLine) return;
+      var cards = firstLine.querySelectorAll('.card');
+      var items = [];
+      for (var i = 0; i < cards.length && items.length < 6; i++) {
+        var d = extractCardData(cards[i]);
+        if (d && d.backdrop_path) items.push(d);
+      }
+      if (!items.length) return;
+
+      var hero = buildHero(items);
+      if (!hero) return;
+      heroElement = hero;
+
+      // Insert before the first .items-line in the scroll body
+      var scrollBody = searchIn.closest('.scroll__body') || searchIn.closest('.scroll__content');
+      if (!scrollBody) scrollBody = searchIn.querySelector('.scroll__body') || searchIn.querySelector('.scroll__content');
+      if (!scrollBody) scrollBody = searchIn;
+
+      var firstChild = scrollBody.querySelector('.items-line') || scrollBody.firstChild;
+      if (firstChild) scrollBody.insertBefore(hero, firstChild);
+      else scrollBody.appendChild(hero);
+      if (document.body) document.body.classList.add('agnative-hero-active');
+
+      // Set Lampa focus to hero play button — use long delay to run after Lampa's own focus logic
+      clearTimeout(window.__agnativeHeroFocusTimer__);
+      window.__agnativeHeroFocusTimer__ = setTimeout(function () {
+        try {
+          var playBtn = hero.querySelector('.' + HERO_CLASS + '__btn--play');
+          if (!playBtn) return;
+          // Lampa uses class-based focus — remove all existing .focus first
+          var focused = document.querySelectorAll('.focus');
+          for (var fi = 0; fi < focused.length; fi++) focused[fi].classList.remove('focus');
+          playBtn.classList.add('focus');
+          try { playBtn.focus({ preventScroll: true }); } catch (e2) {}
+          // Re-assert for 1.5s in case Lampa sets focus to card after us
+          var guard = 0;
+          var assertFocus = function () {
+            guard++;
+            if (guard > 12) return; // stop after ~1.5s
+            requestAnimationFrame(function () {
+              var active = document.querySelector('.focus');
+              if (active && active !== playBtn && !active.closest('.' + HERO_CLASS)) {
+                active.classList.remove('focus');
+                playBtn.classList.add('focus');
+              }
+              setTimeout(assertFocus, 120);
+            });
+          };
+          assertFocus();
+        } catch (e) {}
+      }, 700);
+    }
+
+    function removeHero() {
+      try {
+        if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
+        var existing = document.querySelector('.' + HERO_CLASS);
+        if (existing) existing.remove();
+        heroElement = null;
+        heroItems = [];
+        heroIndex = 0;
+        if (document.body) document.body.classList.remove('agnative-hero-active');
+      } catch (e) {}
+    }
+
+    // ─── End hero banner ───────────────────────────────────────────────────────
+
     function fetchLogo(id, type, callback) {
       if (!id) return callback(null);
       var lang = getLogoLang();
@@ -4604,7 +5032,21 @@
       new MutationObserver(function (mutations) {
         for (var i = 0; i < mutations.length; i++) {
           var added = mutations[i].addedNodes;
-          for (var j = 0; j < added.length; j++) pendingNodes.push(added[j]);
+          for (var j = 0; j < added.length; j++) {
+            var node = added[j];
+            pendingNodes.push(node);
+            // Trigger hero insert when a new items-line appears (main screen loaded)
+            if (heroEnabled() && node && node.nodeType === 1) {
+              var hasLine = (node.classList && node.classList.contains('items-line')) ||
+                            (node.querySelector && node.querySelector('.items-line'));
+              if (hasLine && !document.querySelector('.' + HERO_CLASS)) {
+                clearTimeout(window.__agnativeHeroInsertTimer__);
+                window.__agnativeHeroInsertTimer__ = setTimeout(function () {
+                  tryInsertHero(document.body);
+                }, 400);
+              }
+            }
+          }
         }
         if (flushing) return;
         flushing = true;
@@ -4723,6 +5165,19 @@
     }
 
     function startPlugin() {
+      // First-run defaults: set hero to off if never configured
+      try {
+        if (window.Lampa && Lampa.Storage) {
+          var defaultsKey = 'appletv_agnative_defaults_v1';
+          if (!Lampa.Storage.get(defaultsKey)) {
+            if (!Lampa.Storage.get(HERO_KEY)) Lampa.Storage.set(HERO_KEY, 'off');
+            if (!Lampa.Storage.get(HERO_LOGO_SIZE_KEY)) Lampa.Storage.set(HERO_LOGO_SIZE_KEY, 'md');
+            if (!Lampa.Storage.get(HERO_BG_OFFSET_KEY)) Lampa.Storage.set(HERO_BG_OFFSET_KEY, '0');
+            Lampa.Storage.set(defaultsKey, '1');
+          }
+        }
+      } catch (e) {}
+
       registerSettings();
       bindRuntimeListeners();
       if (!pluginEnabled()) {
@@ -4749,6 +5204,7 @@
       watchSettingsLifecycle();
       processCards(document.body);
       schedulePatch();
+      setTimeout(function () { tryInsertHero(document.body); }, 800);
     }
 
     function bootPlugin() {

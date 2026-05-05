@@ -37,5 +37,9 @@ export const AGNATIVE_KEYS = {
   OVERLAY_ALIGN_KEY: 'appletv_agnative_overlay_align',
   OVERLAY_ALIGN_ATTR: 'data-agnative-overlay-align',
   CARD_IMAGE_MODE_KEY: 'appletv_agnative_card_image_mode',
-  CARD_IMAGE_MODE_ATTR: 'data-agnative-card-image-mode'
+  CARD_IMAGE_MODE_ATTR: 'data-agnative-card-image-mode',
+  HERO_KEY: 'appletv_agnative_hero',
+  HERO_LOGO_SIZE_KEY: 'appletv_agnative_hero_logo_size',
+  HERO_BG_OFFSET_KEY: 'appletv_agnative_hero_bg_offset',
+  BETA_COMPONENT: 'appletv_agnative_beta'
 };

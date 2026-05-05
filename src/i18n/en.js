@@ -63,5 +63,14 @@ export const en = {
   set_card_image_mode_name: 'Card image type',
   set_card_image_mode_desc: 'Backdrop + logo or poster without logo',
   val_card_image_backdrop: 'Backdrop + Logo',
-  val_card_image_poster: 'Poster'
+  val_card_image_poster: 'Poster',
+  set_hero_name: 'Hero banner',
+  set_hero_desc: 'Large banner on the main screen with auto-rotation',
+  set_hero_logo_name: 'Hero logo size',
+  set_hero_logo_desc: 'Size of the movie/show logo in the hero banner',
+  set_hero_bg_offset_name: 'Backdrop offset',
+  set_hero_bg_offset_desc: 'How far to shift the backdrop image down',
+  set_beta_name: 'Beta features',
+  set_beta_desc: 'Experimental features',
+  hero_btn_watch: 'Watch'
 };

@@ -63,5 +63,14 @@ export const ru = {
   set_card_image_mode_name: 'Тип изображения карточки',
   set_card_image_mode_desc: 'Бекдроп + логотип или постер без логотипа',
   val_card_image_backdrop: 'Бекдроп + Логотип',
-  val_card_image_poster: 'Постер'
+  val_card_image_poster: 'Постер',
+  set_hero_name: 'Hero-баннер',
+  set_hero_desc: 'Большой баннер на главном экране с автопрокруткой',
+  set_hero_logo_name: 'Размер лого Hero',
+  set_hero_logo_desc: 'Размер логотипа фильма/сериала в баннере',
+  set_hero_bg_offset_name: 'Смещение бекдропа',
+  set_hero_bg_offset_desc: 'Насколько опустить изображение бекдропа вниз',
+  set_beta_name: 'Бета-возможности',
+  set_beta_desc: 'Экспериментальные функции',
+  hero_btn_watch: 'Смотреть'
 };

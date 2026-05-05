@@ -16,5 +16,8 @@ export const AGNATIVE_DEFAULTS = {
   clockSeconds: 'off',
   controlPanel: 'off',
   perfMode: 'auto',
-  cardImageMode: 'backdrop'
+  cardImageMode: 'backdrop',
+  hero: 'off',
+  heroLogoSize: 'md',
+  heroBgOffset: '0'
 };

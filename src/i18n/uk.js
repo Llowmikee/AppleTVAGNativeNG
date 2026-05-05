@@ -63,5 +63,14 @@ export const uk = {
   set_card_image_mode_name: 'Тип зображення картки',
   set_card_image_mode_desc: 'Бекдроп + логотип або постер без логотипу',
   val_card_image_backdrop: 'Бекдроп + Логотип',
-  val_card_image_poster: 'Постер'
+  val_card_image_poster: 'Постер',
+  set_hero_name: 'Hero-банер',
+  set_hero_desc: 'Великий банер на головному екрані з автопрокруткою',
+  set_hero_logo_name: 'Розмір лого Hero',
+  set_hero_logo_desc: 'Розмір логотипу фільму/серіалу у банері',
+  set_hero_bg_offset_name: 'Зміщення бекдропу',
+  set_hero_bg_offset_desc: 'Наскільки опустити зображення бекдропу вниз',
+  set_beta_name: 'Бета-можливості',
+  set_beta_desc: 'Експериментальні функції',
+  hero_btn_watch: 'Дивитися'
 };
