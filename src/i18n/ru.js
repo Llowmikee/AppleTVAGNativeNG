@@ -63,5 +63,10 @@ export const ru = {
   set_card_image_mode_name: 'Тип изображения карточки',
   set_card_image_mode_desc: 'Бекдроп + логотип или постер без логотипа',
   val_card_image_backdrop: 'Бекдроп + Логотип',
-  val_card_image_poster: 'Постер'
+  val_card_image_poster: 'Постер',
+  set_logo_title_name: 'Название на локальном языке',
+  set_logo_title_desc: 'Показывать название на локальном языке, если логотип загружен только на английском',
+  val_logo_title_off: 'Нет',
+  val_logo_title_below: 'Да, снизу логотипа',
+  val_logo_title_above: 'Да, сверху логотипа'
 };

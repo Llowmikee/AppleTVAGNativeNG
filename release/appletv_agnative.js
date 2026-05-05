@@ -49,7 +49,8 @@
     OVERLAY_ALIGN_KEY: 'appletv_agnative_overlay_align',
     OVERLAY_ALIGN_ATTR: 'data-agnative-overlay-align',
     CARD_IMAGE_MODE_KEY: 'appletv_agnative_card_image_mode',
-    CARD_IMAGE_MODE_ATTR: 'data-agnative-card-image-mode'
+    CARD_IMAGE_MODE_ATTR: 'data-agnative-card-image-mode',
+    LOGO_TITLE_KEY: 'appletv_agnative_logo_title_fallback'
   };
 
   const ru = {
@@ -117,7 +118,12 @@
     set_card_image_mode_name: 'Тип изображения карточки',
     set_card_image_mode_desc: 'Бекдроп + логотип или постер без логотипа',
     val_card_image_backdrop: 'Бекдроп + Логотип',
-    val_card_image_poster: 'Постер'
+    val_card_image_poster: 'Постер',
+    set_logo_title_name: 'Название на локальном языке',
+    set_logo_title_desc: 'Показывать название на локальном языке, если логотип загружен только на английском',
+    val_logo_title_off: 'Нет',
+    val_logo_title_below: 'Да, снизу логотипа',
+    val_logo_title_above: 'Да, сверху логотипа'
   };
 
   const en = {
@@ -185,7 +191,12 @@
     set_card_image_mode_name: 'Card image type',
     set_card_image_mode_desc: 'Backdrop + logo or poster without logo',
     val_card_image_backdrop: 'Backdrop + Logo',
-    val_card_image_poster: 'Poster'
+    val_card_image_poster: 'Poster',
+    set_logo_title_name: 'Local language title',
+    set_logo_title_desc: 'Show title in local language when only an English logo is available',
+    val_logo_title_off: 'No',
+    val_logo_title_below: 'Yes, below logo',
+    val_logo_title_above: 'Yes, above logo'
   };
 
   const uk = {
@@ -253,7 +264,12 @@
     set_card_image_mode_name: 'Тип зображення картки',
     set_card_image_mode_desc: 'Бекдроп + логотип або постер без логотипу',
     val_card_image_backdrop: 'Бекдроп + Логотип',
-    val_card_image_poster: 'Постер'
+    val_card_image_poster: 'Постер',
+    set_logo_title_name: 'Назва на локальній мові',
+    set_logo_title_desc: 'Показувати назву локальною мовою, якщо логотип завантажено лише англійською',
+    val_logo_title_off: 'Ні',
+    val_logo_title_below: 'Так, знизу логотипу',
+    val_logo_title_above: 'Так, зверху логотипу'
   };
 
   const GENRE_MAP_LOCALIZED = {
@@ -543,7 +559,8 @@
       OVERLAY_ALIGN_KEY,
       OVERLAY_ALIGN_ATTR,
       CARD_IMAGE_MODE_KEY,
-      CARD_IMAGE_MODE_ATTR
+      CARD_IMAGE_MODE_ATTR,
+      LOGO_TITLE_KEY
     } = AGNATIVE_KEYS;
 
     var scheduled = false;
@@ -632,6 +649,13 @@
         if (!v || v === 'auto') return detectLampaLang();
         return v;
       } catch (e) { return 'ru'; }
+    }
+
+    function getLogoTitleFallback() {
+      try {
+        if (!window.Lampa || !Lampa.Storage) return 'off';
+        return Lampa.Storage.get(LOGO_TITLE_KEY, 'off') || 'off';
+      } catch (e) { return 'off'; }
     }
 
     function getFontSize() {
@@ -1048,6 +1072,7 @@
         Lampa.Storage.set(POSTER_QUALITY_KEY, 'w500');
         Lampa.Storage.set(OVERLAY_ALIGN_KEY, 'start');
         Lampa.Storage.set(CARD_IMAGE_MODE_KEY, 'backdrop');
+        Lampa.Storage.set(LOGO_TITLE_KEY, 'off');
         Lampa.Storage.set(TOPNAV_ITEMS_KEY, ['main', 'movie', 'tv', 'cartoon']);
         logoCache = {};
         titledBackdropCache = {};
@@ -1355,6 +1380,30 @@
             logoCache = {};
             titledBackdropCache = {};
             clearAll();
+            setTimeout(function () { schedulePatch(); }, 80);
+          }
+        });
+
+        Lampa.SettingsApi.addParam({
+          component: SETTINGS_COMPONENT,
+          param: {
+            name: LOGO_TITLE_KEY,
+            type: 'select',
+            values: {
+              off: t('val_logo_title_off'),
+              below: t('val_logo_title_below'),
+              above: t('val_logo_title_above')
+            },
+            default: 'off'
+          },
+          field: {
+            name: t('set_logo_title_name'),
+            description: t('set_logo_title_desc')
+          },
+          onChange: function () {
+            logoCache = {};
+            clearAll();
+            resetCardSwitches();
             setTimeout(function () { schedulePatch(); }, 80);
           }
         });
@@ -2008,8 +2057,8 @@
         '  padding: .15em .55em !important;',
         '}',
         'body.' + BODY_CLASS + ' .settings-param__status {',
-        '  left: .5em !important;',
-        '  top: .5em !important;',
+        '  left: 95% !important;',
+        '  top: 15% !important;',
         '  transform: none !important;',
         '}',
         'body.' + BODY_CLASS + ' .settings-folder {',
@@ -2336,16 +2385,20 @@
         'body.' + BODY_CLASS + ' .nfx-card-overlay { position:absolute; left:0; right:0; bottom:0; z-index:0; display:flex !important; flex-direction:column; justify-content:center; align-items:flex-start; opacity:1 !important; visibility:visible !important; border-radius:0 0 1.35em 1.35em !important; background:linear-gradient(0deg, rgba(6,8,14,.88) 0%, rgba(6,8,14,.56) 38%, rgba(6,8,14,.16) 68%, rgba(6,8,14,0) 100%) !important; padding:2.15em 1.02em .92em !important; transform: translateZ(14px); transition: transform .28s cubic-bezier(.22,.61,.36,1), opacity .24s ease; pointer-events:none; }',
         'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="start"] .nfx-card-overlay { align-items:flex-start !important; }',
         'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="start"] .nfx-card-overlay__title,',
+        'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="start"] .nfx-card-overlay__local-title,',
         'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="start"] .nfx-card-overlay__meta { text-align:left !important; }',
         'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="center"] .nfx-card-overlay { align-items:center !important; }',
         'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="center"] .nfx-card-overlay__title,',
+        'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="center"] .nfx-card-overlay__local-title,',
         'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="center"] .nfx-card-overlay__meta { text-align:center !important; }',
         'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="end"] .nfx-card-overlay { align-items:flex-end !important; }',
         'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="end"] .nfx-card-overlay__title,',
+        'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="end"] .nfx-card-overlay__local-title,',
         'body.' + BODY_CLASS + '[' + OVERLAY_ALIGN_ATTR + '="end"] .nfx-card-overlay__meta { text-align:right !important; }',
         'body.' + BODY_CLASS + ' .card.focus .nfx-card-overlay { transform: translateZ(18px) translateY(-.02em); }',
         'body.' + BODY_CLASS + ' .nfx-card-overlay__logo, body.' + BODY_CLASS + ' img.nfx-card-overlay__logo { display:block !important; opacity:1 !important; visibility:visible !important; max-height:2.55em !important; max-width:82% !important; margin-bottom:.28em !important; border-radius:0 !important; clip-path:none !important; -webkit-clip-path:none !important; mask-image:none !important; -webkit-mask-image:none !important; overflow:visible !important; }',
         'body.' + BODY_CLASS + ' .nfx-card-overlay__title { color:#fff; font-size:1.02em !important; line-height:1.14 !important; font-weight:800 !important; text-shadow:0 2px 12px rgba(0,0,0,.5); white-space:normal !important; display:-webkit-box !important; -webkit-line-clamp:2 !important; -webkit-box-orient:vertical !important; overflow:hidden !important; }',
+        'body.' + BODY_CLASS + ' .nfx-card-overlay__local-title { color:#fff; font-size:.82em !important; line-height:1.18 !important; font-weight:700 !important; text-shadow:0 2px 10px rgba(0,0,0,.55); white-space:normal !important; display:-webkit-box !important; -webkit-line-clamp:2 !important; -webkit-box-orient:vertical !important; overflow:hidden !important; opacity:.9; margin-bottom:.18em !important; }',
         'body.' + BODY_CLASS + ' .nfx-card-overlay__meta { color:rgba(255,255,255,.88); font-size:.74em !important; margin-top:.2em !important; line-height:1.28 !important; white-space:normal !important; max-width:100% !important; text-shadow:0 1px 8px rgba(0,0,0,.45); }',
         'body.' + BODY_CLASS + ' .nfx-card-logo { position:absolute; top:.7em; left:.82em; z-index:4; display:inline-flex !important; opacity:1 !important; visibility:visible !important; align-items:center; justify-content:center; padding:.38em .88em; border-radius:.92em; background:rgba(12,14,20,.62); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.96); font-size:.74em; font-weight:800; letter-spacing:.05em; backdrop-filter: blur(10px) saturate(140%); -webkit-backdrop-filter: blur(10px) saturate(140%); pointer-events:none; }',
         'body.' + BODY_CLASS + ' { --agnative-scale: 1; --agnative-category-scale: 1; }',
@@ -2802,7 +2855,7 @@
         '  max-width: none !important; max-height: none !important;',
         '  margin: 0 !important; padding: 0 !important;',
         '  background: transparent !important;',
-        '  z-index: 35 !important;',
+        '  z-index: 55 !important;',
         '  pointer-events: none !important;',
         '  font-size: calc(clamp(0.62rem, 0.34rem + 1.45vmin, 2.05rem) * var(--agnative-scale, 1)) !important;',
         '}',
@@ -2946,17 +2999,21 @@
         '}',
         'body.' + BODY_CLASS + ' .selectbox-item.selected:not(.nomark):not(.selectbox-item--checkbox)::after,',
         'body.' + BODY_CLASS + ' .selectbox-item.picked:not(.selectbox-item--checkbox)::after {',
-        '  content: "" !important;',
+        '  content: "✓" !important;',
         '  display: block !important;',
-        '  width: .55em !important;',
-        '  height: 1.1em !important;',
-        '  border-right: .18em solid rgba(255,255,255,.82) !important;',
-        '  border-bottom: .18em solid rgba(255,255,255,.82) !important;',
+        '  width: auto !important;',
+        '  height: fit-content !important;',
+        '  border: none !important;',
         '  position: absolute !important;',
-        '  top: 50% !important;',
+        '  top: 0 !important;',
+        '  bottom: 0 !important;',
         '  right: 1em !important;',
-        '  transform: rotate(45deg) translateY(-60%) !important;',
-        '  margin-top: 0 !important;',
+        '  margin: auto 0 !important;',
+        '  transform: none !important;',
+        '  font-size: 1.1em !important;',
+        '  font-weight: 700 !important;',
+        '  color: rgba(255,255,255,.82) !important;',
+        '  line-height: 1 !important;',
         '  z-index: 2 !important;',
         '}',
         'body.' + BODY_CLASS + ' .selectbox-item.selected:not(.nomark):not(.selectbox-item--checkbox),',
@@ -4200,7 +4257,8 @@
               logo = {
                 path: picked.file_path,
                 width: picked.width,
-                height: picked.height
+                height: picked.height,
+                iso_639_1: picked.iso_639_1 || null
               };
             }
           }
@@ -4479,6 +4537,20 @@
               img.src = src;
             });
             titleDiv.replaceWith(img);
+
+            var fallback = getLogoTitleFallback();
+            var logoLang = getLogoLang();
+            var isNonLocalLogo = logoLang !== 'en' && logo.iso_639_1 && logo.iso_639_1 !== logoLang;
+            if (fallback !== 'off' && isNonLocalLogo && title) {
+              var localTitle = document.createElement('div');
+              localTitle.className = 'nfx-card-overlay__local-title';
+              localTitle.textContent = title;
+              if (fallback === 'above') {
+                overlay.insertBefore(localTitle, img);
+              } else if (fallback === 'below') {
+                img.parentNode.insertBefore(localTitle, img.nextSibling);
+              }
+            }
           }
         });
       }

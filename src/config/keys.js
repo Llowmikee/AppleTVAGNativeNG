@@ -37,5 +37,6 @@ export const AGNATIVE_KEYS = {
   OVERLAY_ALIGN_KEY: 'appletv_agnative_overlay_align',
   OVERLAY_ALIGN_ATTR: 'data-agnative-overlay-align',
   CARD_IMAGE_MODE_KEY: 'appletv_agnative_card_image_mode',
-  CARD_IMAGE_MODE_ATTR: 'data-agnative-card-image-mode'
+  CARD_IMAGE_MODE_ATTR: 'data-agnative-card-image-mode',
+  LOGO_TITLE_KEY: 'appletv_agnative_logo_title_fallback'
 };

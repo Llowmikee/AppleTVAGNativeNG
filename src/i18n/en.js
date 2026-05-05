@@ -63,5 +63,10 @@ export const en = {
   set_card_image_mode_name: 'Card image type',
   set_card_image_mode_desc: 'Backdrop + logo or poster without logo',
   val_card_image_backdrop: 'Backdrop + Logo',
-  val_card_image_poster: 'Poster'
+  val_card_image_poster: 'Poster',
+  set_logo_title_name: 'Local language title',
+  set_logo_title_desc: 'Show title in local language when only an English logo is available',
+  val_logo_title_off: 'No',
+  val_logo_title_below: 'Yes, below logo',
+  val_logo_title_above: 'Yes, above logo'
 };
