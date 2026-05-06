@@ -1,7 +1,7 @@
 export const ru = {
   nav_feed: 'Лента',
   badge_movie: 'ФИЛЬМ', badge_tv: 'СЕРИАЛ',
-  set_about_desc: 'Версия 0.3.14  Авторы: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
+  set_about_desc: 'Версия 0.3.15  Авторы: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
   set_main_title: 'Основные настройки',
   set_enable_name: 'AppleTV AgNative',
   set_enable_desc: 'Включает и выключает плагин',
@@ -63,5 +63,10 @@ export const ru = {
   set_card_image_mode_name: 'Тип изображения карточки',
   set_card_image_mode_desc: 'Бекдроп + логотип или постер без логотипа',
   val_card_image_backdrop: 'Бекдроп + Логотип',
-  val_card_image_poster: 'Постер'
+  val_card_image_poster: 'Постер',
+  set_logo_title_name: 'Название на локальном языке',
+  set_logo_title_desc: 'Показывать название на локальном языке, если логотип загружен только на английском',
+  val_logo_title_off: 'Нет',
+  val_logo_title_below: 'Да, снизу логотипа',
+  val_logo_title_above: 'Да, сверху логотипа'
 };

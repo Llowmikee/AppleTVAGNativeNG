@@ -1,7 +1,7 @@
 export const uk = {
   nav_feed: 'Стрічка',
   badge_movie: 'ФІЛЬМ', badge_tv: 'СЕРІАЛ',
-  set_about_desc: 'Версія 0.3.14  Автори: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
+  set_about_desc: 'Версія 0.3.15  Автори: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
   set_main_title: 'Основні налаштування',
   set_enable_name: 'AppleTV AgNative',
   set_enable_desc: 'Вмикає та вимикає плагін',
@@ -63,5 +63,10 @@ export const uk = {
   set_card_image_mode_name: 'Тип зображення картки',
   set_card_image_mode_desc: 'Бекдроп + логотип або постер без логотипу',
   val_card_image_backdrop: 'Бекдроп + Логотип',
-  val_card_image_poster: 'Постер'
+  val_card_image_poster: 'Постер',
+  set_logo_title_name: 'Назва на локальній мові',
+  set_logo_title_desc: 'Показувати назву локальною мовою, якщо логотип завантажено лише англійською',
+  val_logo_title_off: 'Ні',
+  val_logo_title_below: 'Так, знизу логотипу',
+  val_logo_title_above: 'Так, зверху логотипу'
 };

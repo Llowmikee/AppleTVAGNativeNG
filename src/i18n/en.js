@@ -1,7 +1,7 @@
 export const en = {
   nav_feed: 'Feed',
   badge_movie: 'MOVIE', badge_tv: 'TV SHOW',
-  set_about_desc: 'Version 0.3.14  Authors: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
+  set_about_desc: 'Version 0.3.15  Authors: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
   set_main_title: 'Main settings',
   set_enable_name: 'AppleTV AgNative',
   set_enable_desc: 'Enables and disables the plugin',
@@ -63,5 +63,10 @@ export const en = {
   set_card_image_mode_name: 'Card image type',
   set_card_image_mode_desc: 'Backdrop + logo or poster without logo',
   val_card_image_backdrop: 'Backdrop + Logo',
-  val_card_image_poster: 'Poster'
+  val_card_image_poster: 'Poster',
+  set_logo_title_name: 'Local language title',
+  set_logo_title_desc: 'Show title in local language when only an English logo is available',
+  val_logo_title_off: 'No',
+  val_logo_title_below: 'Yes, below logo',
+  val_logo_title_above: 'Yes, above logo'
 };
