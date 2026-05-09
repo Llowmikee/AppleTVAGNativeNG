@@ -1,7 +1,7 @@
 export const ru = {
   nav_feed: 'Лента',
   badge_movie: 'ФИЛЬМ', badge_tv: 'СЕРИАЛ',
-  set_about_desc: 'Версия 0.3.15  Авторы: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z',
+  set_about_desc: 'Версия 0.3.15  Авторы: llowmikee, nrsua, gwynnbleiidd, arabianq, ang3el7z, dimir96',
   set_main_title: 'Основные настройки',
   set_enable_name: 'AppleTV AgNative',
   set_enable_desc: 'Включает и выключает плагин',
